@@ -59,7 +59,7 @@ namespace SP2.Controllers
                     <UserName xsi:type=""xsd:string"">"+ request.Username +@"</UserName>
                     <Password xsi:type=""xsd:string"">"+ request.Password +@"</Password>
                     <Creator xsi:type=""xsd:string"">"+ request.Creator +@"</Creator>
-                    <fStream xsi:type=""xsd:string"">{""CATEGORY_ID"":"+ request.CategoryId +@",""TERMINAL_ID"":"+ request.TerminalId +@",""GROUP_ID"":"+ request.GroupId +@"}</fStream>
+                    <fStream xsi:type=""xsd:string"">{""CATEGORY_ID"":"""+ request.CategoryId +@""",""TERMINAL_ID"":"""+ request.TerminalId +@""",""GROUP_ID"":"""+ request.GroupId +@"""}</fStream>
                 </urn:MAIN_GetTransactionsType>
             </soapenv:Body>
             </soapenv:Envelope>";
@@ -85,7 +85,7 @@ namespace SP2.Controllers
                     <UserName xsi:type=""xsd:string"">"+ request.Username +@"</UserName>
                     <Password xsi:type=""xsd:string"">"+ request.Password +@"</Password>
                     <Creator xsi:type=""xsd:string"">"+ request.Creator +@"</Creator>
-                    <fStream xsi:type=""xsd:string"">{""CATEGORY_ID"":"+ request.CategoryId +@",""TERMINAL_ID"":"+ request.TerminalId +@",""GROUP_ID"":"+ request.GroupId +@"}</fStream>
+                    <fStream xsi:type=""xsd:string"">{""CATEGORY_ID"":"""+ request.CategoryId +@""",""TERMINAL_ID"":"""+ request.TerminalId +@""",""GROUP_ID"":"""+ request.GroupId +@"""}</fStream>
                 </urn:MAIN_GetDocCodeCustoms>
             </soapenv:Body>
             </soapenv:Envelope>";
