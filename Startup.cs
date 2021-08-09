@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+
+using SP2.Data;
 
 namespace SP2
 {
@@ -16,17 +19,37 @@ namespace SP2
 
         public IConfiguration Configuration { get; }
 
+        public const string CorsPolicy = "AllowAny";
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy(CorsPolicy, pol => pol
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin()
+                    .Build());
+            });
+
             services.AddControllers();
 
             services.AddSwaggerGen(opt => opt
                 .SwaggerDoc("SP2", new OpenApiInfo
                 {
                     Title = "SP2.API",
-                    Version = "0.1"
+                    Version = "1.0"
                 }));
+        
+            services.AddEntityFrameworkNpgsql()
+                .AddDbContext<GoLogContext>(Setup);
+        }
+
+        private void Setup(DbContextOptionsBuilder obj)
+        {
+            var connectionString = Configuration.GetConnectionString("GoLog");
+            obj.UseNpgsql(connectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,12 +65,14 @@ namespace SP2
             app.UseSwaggerUI(opt => 
             {
                 opt.RoutePrefix = "";
-                opt.SwaggerEndpoint("/swagger/SP2/swagger.json", "SP2.API 0.1");
+                opt.SwaggerEndpoint("/swagger/SP2/swagger.json", "Version 1.0");
             });
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(CorsPolicy);
 
             app.UseAuthorization();
 

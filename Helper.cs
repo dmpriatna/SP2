@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -6,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+
 using Newtonsoft.Json;
 
 namespace SP2
@@ -40,6 +40,24 @@ namespace SP2
                 var values = hash.ComputeHash(buffer).Select(s => s.ToString("x2"));
                 return string.Concat(values);
             }
+        }
+
+        public static string Envelope(string urn, string body)
+        {
+            var hUrn = urn + "wsdl";
+            return @"<?xml version=""1.0"" encoding=""utf-8""?>
+            <soapenv:Envelope
+                xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/""
+                xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
+                xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+                xmlns:urn=""urn:{" + hUrn + @"}"">
+            <soapenv:Header/>
+            <soapenv:Body>
+                <urn:" + urn + @" soapenv:encodingStyle=""http://schemas.xmlsoap.org/soap/encoding/"">
+                " + body + @"
+                </urn:" + urn + @">
+            </soapenv:Body>
+            </soapenv:Envelope>";
         }
     }
 }
