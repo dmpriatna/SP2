@@ -29,8 +29,7 @@ namespace SP2
                 opt.AddPolicy(CorsPolicy, pol => pol
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowAnyOrigin()
-                    .Build());
+                    .AllowAnyOrigin());
             });
 
             services.AddControllers();
@@ -42,8 +41,7 @@ namespace SP2
                     Version = "1.0"
                 }));
         
-            services.AddEntityFrameworkNpgsql()
-                .AddDbContext<GoLogContext>(Setup);
+            services.AddDbContext<GoLogContext>(Setup);
         }
 
         private void Setup(DbContextOptionsBuilder obj)

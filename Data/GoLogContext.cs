@@ -9,5 +9,6 @@ namespace SP2.Data
         }
 
         public DbSet<DOContainer> Containers { get; set; }
+        public DbSet<Koja> Koja { get; set; }
     }
 }

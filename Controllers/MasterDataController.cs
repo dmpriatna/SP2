@@ -1,102 +1,207 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+
 using SP2.Data;
 using SP2.Models;
+using SP2.Models.Main;
+
+using Swashbuckle.AspNetCore.Annotations;
+
+using static Newtonsoft.Json.JsonConvert;
 using static SP2.Helper;
 
 namespace SP2.Controllers
 {
-    [ApiController]
-    [Route("[controller]/[action]")]
-    public class MasterDataController : ControllerBase
+  [ApiController]
+  [Route("[controller]/[action]")]
+  public class MasterDataController : Controller
+  {
+    public MasterDataController(IConfiguration _config,
+        GoLogContext _context)
     {
-        public MasterDataController(IConfiguration _config, GoLogContext _context)
-        {
-            WebService = _config.GetSection("WebService").Value;
-            Context = _context;
-        }
-
-        string WebService { get; }
-
-        GoLogContext Context { get; }
-
-        [HttpPost]
-        public async Task<string> ListTerminal([FromBody] DataRequest request)
-        {
-            string body = @"<UserName xsi:type=""xsd:string"">"+ request.Username +@"</UserName>
-                <Password xsi:type=""xsd:string"">"+ request.Password +@"</Password>
-                <Creator xsi:type=""xsd:string"">"+ request.Creator +@"</Creator>";
-            var xml = Envelope("MAIN_GetTerminal", body);
-
-            var response = await PostXmlRequest(WebService, xml);
-            var source = await response.Content.ReadAsStringAsync();
-
-            return Beautify(source);
-        }
-
-        [HttpPost]
-        public async Task<string> ListTransactionType([FromBody] DocumentRequest request)
-        {
-            string body = @"<UserName xsi:type=""xsd:string"">"+ request.Username +@"</UserName>
-                <Password xsi:type=""xsd:string"">"+ request.Password +@"</Password>
-                <Creator xsi:type=""xsd:string"">"+ request.Creator +@"</Creator>
-                <fStream xsi:type=""xsd:string"">{""CATEGORY_ID"":"""+ request.CategoryId +
-                @""",""TERMINAL_ID"":"""+ request.TerminalId +
-                @""",""GROUP_ID"":"""+ request.GroupId +@"""}</fStream>";
-            var xml = Envelope("", body);
-
-            var response = await PostXmlRequest(WebService, xml);
-            var source = await response.Content.ReadAsStringAsync();
-
-            return Beautify(source);
-        }
-
-        [HttpPost]
-        public async Task<string> ListDocumentType([FromBody] DocumentRequest request)
-        {
-            string body = @"<UserName xsi:type=""xsd:string"">"+ request.Username +@"</UserName>
-                <Password xsi:type=""xsd:string"">"+ request.Password +@"</Password>
-                <Creator xsi:type=""xsd:string"">"+ request.Creator +@"</Creator>
-                <fStream xsi:type=""xsd:string"">{""CATEGORY_ID"":"""+ request.CategoryId +
-                @""",""TERMINAL_ID"":"""+ request.TerminalId +
-                @""",""GROUP_ID"":"""+ request.GroupId +@"""}</fStream>";
-            var xml = Envelope("MAIN_GetDocCodeCustoms", body);
-
-            var response = await PostXmlRequest(WebService, xml);
-            var source = await response.Content.ReadAsStringAsync();
-
-            return Beautify(source);
-        }
-
-        [HttpPost]
-        public async Task<string> ActiveSession(string creator)
-        {
-            string body = @"<UserName xsi:type=""xsd:string"">GOLOGS</UserName>
-                <Password xsi:type=""xsd:string"">123</Password>
-                <Creator xsi:type=""xsd:string"">"+ creator +@"</Creator>";
-            var xml = Envelope("MAIN_GetActiveSession", body);
-
-            var response = await PostXmlRequest(WebService, xml);
-            var source = await response.Content.ReadAsStringAsync();
-
-            return Beautify(source);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ListContainer()
-        {
-            var containers = await Context.Containers.ToListAsync();
-            var response = new BaseResponse<List<DOContainer>>
-            {
-                Data = containers,
-                Status = HttpStatusCode.OK
-            };
-            return Ok(response);
-        }
+        Config = _config;
+        Context = _context;
+        WebService = _config["WebService"];
     }
+
+    string WebService { get; }
+
+    [HttpPost]
+    [SwaggerOperation(
+        Description = "Info of terminal",
+        Summary = "List of terminal"
+    )]
+    public async Task<IActionResult> Terminal([FromBody]
+        DataRequest request)
+    {
+        var body = Builder
+            .UserName()
+            .Password()
+            .Creator(request.Creator)
+            .Instance;
+        var xml = Envelope("MAIN_GetTerminal", body);
+
+        var response = await PostXmlRequest(WebService, xml);
+        if (!response.IsSuccessStatusCode)
+            return StatusCode((int)response.StatusCode);
+        var source = await response.Content.ReadAsStringAsync();
+        var xer = source.XERetrun();
+
+        if (!xer.IsEmpty)
+        {
+            System.Diagnostics.Debug.WriteLine(xer.Value);
+            var res = DeserializeObject<BaseResponse>(xer.Value);
+            if (res.Status)
+                await Context.SetKoja("main_getterminal_response_true", xer.Value);
+            await Context.SetKoja("main_getterminal_response_false", xer.Value);
+        }
+
+        return Ok(source.XERetrun().Beautify());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> TransactionsType([FromBody]
+        DocNTransRequest request)
+    {
+        var body = Builder
+            .UserName()
+            .Password()
+            .Creator(request.Creator)
+            .FStream(request.Request)
+            .Instance;
+        var xml = Envelope("MAIN_GetTransactionsType", body);
+
+        var response = await PostXmlRequest(WebService, xml);
+        if (!response.IsSuccessStatusCode)
+            return StatusCode((int)response.StatusCode);
+        var source = await response.Content.ReadAsStringAsync();
+        var xer = source.XERetrun();
+
+        if (!xer.IsEmpty)
+        {
+            System.Diagnostics.Debug.WriteLine(xer.Value);
+            var res = DeserializeObject<BaseResponse>(xer.Value);
+            if (res.Status)
+                await Context.SetKoja("main_gettransactionstype_response_true", xer.Value);
+            await Context.SetKoja("main_gettransactionstype_response_false", xer.Value);
+        }
+
+        return Ok(source.XERetrun().Beautify());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DocCodeCustoms([FromBody]
+        DocNTransRequest request)
+    {
+        var body = Builder
+            .UserName()
+            .Password()
+            .Creator(request.Creator)
+            .FStream(request.Request)
+            .Instance;
+        var xml = Envelope("MAIN_GetDocCodeCustoms", body);
+
+        var response = await PostXmlRequest(WebService, xml);
+        if (!response.IsSuccessStatusCode)
+            return StatusCode((int)response.StatusCode);
+        var source = await response.Content.ReadAsStringAsync();
+        var xer = source.XERetrun();
+
+        if (!xer.IsEmpty)
+        {
+            System.Diagnostics.Debug.WriteLine(xer.Value);
+            var res = DeserializeObject<BaseResponse>(xer.Value);
+            if (res.Status)
+                await Context.SetKoja("main_getdoccodecustoms_response_true", xer.Value);
+            await Context.SetKoja("main_getdoccodecustoms_response_false", xer.Value);
+        }
+
+        return Ok(source.XERetrun().Beautify());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DocumentCustomsNGen([FromBody]
+        DocNGenRequest request)
+    {
+        var body = Builder
+            .UserName()
+            .Password()
+            .Creator(request.Creator)
+            .FStream(request.Request)
+            .Instance;
+        var xml = Envelope("MAIN_GetDocumentCustomsNGen", body);
+
+        var response = await PostXmlRequest(WebService, xml);
+        if (!response.IsSuccessStatusCode)
+            return StatusCode((int)response.StatusCode);
+        var source = await response.Content.ReadAsStringAsync();
+        var xer = source.XERetrun();
+
+        if (!xer.IsEmpty)
+        {
+            System.Diagnostics.Debug.WriteLine(xer.Value);
+            var res = DeserializeObject<BaseResponse>(xer.Value);
+            if (res.Status)
+                await Context.SetKoja("main_getdocumentcustomsngen_response_true", xer.Value);
+            await Context.SetKoja("main_getdocumentcustomsngen_response_false", xer.Value);
+        }
+
+        return Ok(source.XERetrun().Beautify());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Coreor([FromForm]
+        CoreorRequest request)
+    {
+        var body = Builder
+            .UserName()
+            .Password()
+            .Creator(request.Creator)
+            .FStream(request.Request)
+            .Instance;
+        var xml = Envelope("MAIN_GetCoreor", body);
+
+        var response = await PostXmlRequest(WebService, xml);
+        if (!response.IsSuccessStatusCode)
+            return StatusCode((int)response.StatusCode);
+        var source = await response.Content.ReadAsStringAsync();
+        var xer = source.XERetrun();
+
+        if (!xer.IsEmpty)
+        {
+            System.Diagnostics.Debug.WriteLine(xer.Value);
+            var res = DeserializeObject<BaseResponse>(xer.Value);
+            if (res.Status)
+                await Context.SetKoja("main_getcoreor_response_true", xer.Value);
+            await Context.SetKoja("main_getcoreor_response_false", xer.Value);
+        }
+
+        return Ok(source.XERetrun().Beautify());
+    }
+
+    [HttpGet]
+    private async Task<IActionResult> Container([FromQuery] string creator,
+        [FromQuery] string cntrId, [FromQuery] string terminalId,
+        [FromQuery] string transactionTypeId)
+    {
+        var body = Builder
+            .UserName()
+            .Password()
+            .Creator(creator)
+            .FStream(new { CNTR_ID = cntrId,
+            TRANSACTION_TYPE_ID = transactionTypeId,
+            TERMINAL_ID = terminalId })
+            .Instance;
+        var xml = Envelope("MAIN_GetContainer", body);
+
+        var response = await PostXmlRequest(WebService, xml);
+        if (!response.IsSuccessStatusCode)
+            return StatusCode((int)response.StatusCode);
+        var source = await response.Content.ReadAsStringAsync();
+
+        return Ok(source.XERetrun().Beautify());
+    }
+  }
 }

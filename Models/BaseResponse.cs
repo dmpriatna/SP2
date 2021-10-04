@@ -19,4 +19,15 @@ namespace SP2.Models
         }
         public T Data { get; set; }
     }
+
+    public class BaseResponse
+    {
+        public bool Status { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class LoginResponse : BaseResponse
+    {
+        public string SessionId { get; set; }
+    }
 }
