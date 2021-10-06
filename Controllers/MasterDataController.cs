@@ -55,7 +55,8 @@ namespace SP2.Controllers
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
                 await Context.SetKoja("main_getterminal_response_true", xer.Value);
-            await Context.SetKoja("main_getterminal_response_false", xer.Value);
+            else
+                await Context.SetKoja("main_getterminal_response_false", xer.Value);
         }
 
         return Ok(source.XERetrun().Beautify());
@@ -85,7 +86,8 @@ namespace SP2.Controllers
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
                 await Context.SetKoja("main_gettransactionstype_response_true", xer.Value);
-            await Context.SetKoja("main_gettransactionstype_response_false", xer.Value);
+            else
+                await Context.SetKoja("main_gettransactionstype_response_false", xer.Value);
         }
 
         return Ok(source.XERetrun().Beautify());
@@ -115,7 +117,8 @@ namespace SP2.Controllers
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
                 await Context.SetKoja("main_getdoccodecustoms_response_true", xer.Value);
-            await Context.SetKoja("main_getdoccodecustoms_response_false", xer.Value);
+            else
+                await Context.SetKoja("main_getdoccodecustoms_response_false", xer.Value);
         }
 
         return Ok(source.XERetrun().Beautify());
@@ -145,7 +148,8 @@ namespace SP2.Controllers
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
                 await Context.SetKoja("main_getdocumentcustomsngen_response_true", xer.Value);
-            await Context.SetKoja("main_getdocumentcustomsngen_response_false", xer.Value);
+            else
+                await Context.SetKoja("main_getdocumentcustomsngen_response_false", xer.Value);
         }
 
         return Ok(source.XERetrun().Beautify());
@@ -175,7 +179,8 @@ namespace SP2.Controllers
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
                 await Context.SetKoja("main_getcoreor_response_true", xer.Value);
-            await Context.SetKoja("main_getcoreor_response_false", xer.Value);
+            else
+                await Context.SetKoja("main_getcoreor_response_false", xer.Value);
         }
 
         return Ok(source.XERetrun().Beautify());

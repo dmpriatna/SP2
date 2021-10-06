@@ -32,7 +32,7 @@ namespace SP2.Controllers
             if (SessionId != "Key not found")
             {
                 var IsActive = await SessionId.IsActive();
-                if (IsActive)
+                if (IsActive.Status)
                     return Ok(SerializeObject(new { SESSIONID = SessionId, STATUS = "TRUE" }));
             }
 
@@ -40,8 +40,8 @@ namespace SP2.Controllers
             var body = Builder
                 .UserName(request.Username)
                 .Password(request.Password)
-                .DeviceName()
                 .FStream(new { PASSWORD = Encrypt, USERNAME = request.PhoneNumber })
+                .DeviceName()
                 .Instance;
             var xml = Envelope("AUTH_GetLogin", body);
 
@@ -60,10 +60,13 @@ namespace SP2.Controllers
                     await Context.SetKoja("login_response_true", xer.Value);
                     await Context.SetKoja("sessionid", res.SessionId);
                 }
-                await Context.SetKoja("login_response_false", xer.Value);
+                else
+                    await Context.SetKoja("login_response_false", xer.Value);
+                return Ok(res);
             }
 
-            return Ok(xer.Beautify());
+            return Ok(new LoginResponse {
+                Message = "AUTH_GetLogin : response does not have block call return" });
         }
 
         [HttpPost]
@@ -73,8 +76,8 @@ namespace SP2.Controllers
             var body = Builder
                 .UserName()
                 .Password()
-                .DeviceName()
                 .FStream(new { SESSIONID = request.SessionId })
+                .DeviceName()
                 .Instance;
             var xml = Envelope("AUTH_GetLogOut", body);
 
@@ -88,7 +91,8 @@ namespace SP2.Controllers
                 var res = DeserializeObject<BaseResponse>(xer.Value);
                 if (res.Status)
                     await Context.SetKoja("logout_response_true", xer.Value);
-                await Context.SetKoja("logout_response_false", xer.Value);
+                else
+                    await Context.SetKoja("logout_response_false", xer.Value);
             }
 
             return Ok(source.XERetrun().Beautify());

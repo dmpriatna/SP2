@@ -119,7 +119,7 @@ namespace SP2
             }
         }
 
-        public static async Task<bool> IsActive(this string creator)
+        public static async Task<BaseResponse> IsActive(this string creator)
         {
             var body = Builder
                 .UserName()
@@ -130,12 +130,23 @@ namespace SP2
 
             var response = await PostXmlRequest(WebService, xml);
             if (!response.IsSuccessStatusCode)
-                return false;
+                return new BaseResponse { Message = response.ReasonPhrase };
             var source = await response.Content.ReadAsStringAsync();
-            var xE = XDocument.Parse(source)
-                .XPathSelectElement("//return");
-            var result = DeserializeAnonymousType(xE.Value, new { status = false });
-            return result.status;
+            var xer = source.XERetrun();
+
+            if (!xer.IsEmpty)
+            {
+                System.Diagnostics.Debug.WriteLine(xer.Value);
+                var res = DeserializeObject<BaseResponse>(xer.Value);
+                if (res.Status)
+                    await Context.SetKoja("MAIN_GetActiveSession_true", xer.Value);
+                else
+                    await Context.SetKoja("MAIN_GetActiveSession_false", xer.Value);
+                return res;
+            }
+
+            return new BaseResponse {
+                Message = "MAIN_GetActiveSession : response does not have block call return" };
         }
 
         public static string EncryptMD5(string source)
@@ -192,7 +203,6 @@ namespace SP2
                     ModifiedBy = "System",
                     ModifiedDate = now
                 });
-                await source.SaveChangesAsync();
             }
             else
             {
@@ -200,8 +210,9 @@ namespace SP2
                 hasData.ModifiedBy = "System";
                 hasData.ModifiedDate = now;
             }
+            await source.SaveChangesAsync();
         }
-   }
+    }
 
     public class XSI
     {

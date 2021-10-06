@@ -50,7 +50,8 @@ namespace SP2.Controllers
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_confirmtransaction_response_true", xer.Value);
-        await Context.SetKoja("billing_confirmtransaction_response_false", xer.Value);
+        else
+          await Context.SetKoja("billing_confirmtransaction_response_false", xer.Value);
       }
 
       return Ok(source.XERetrun().Beautify());
@@ -80,7 +81,8 @@ namespace SP2.Controllers
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_getbilling_response_true", xer.Value);
-        await Context.SetKoja("billing_getbilling_response_false", xer.Value);
+        else
+          await Context.SetKoja("billing_getbilling_response_false", xer.Value);
       }
 
       return Ok(source.XERetrun().Beautify());
@@ -110,7 +112,8 @@ namespace SP2.Controllers
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_getproforma_response_true", xer.Value);
-        await Context.SetKoja("billing_getproforma_response_false", xer.Value);
+        else
+          await Context.SetKoja("billing_getproforma_response_false", xer.Value);
       }
 
       return Ok(source.XERetrun().Beautify());
@@ -140,7 +143,8 @@ namespace SP2.Controllers
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_getbillingdetail_response_true", xer.Value);
-        await Context.SetKoja("billing_getbillingdetail_response_false", xer.Value);
+        else
+          await Context.SetKoja("billing_getbillingdetail_response_false", xer.Value);
       }
 
       return Ok(source.XERetrun().Beautify());
