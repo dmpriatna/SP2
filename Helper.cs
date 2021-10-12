@@ -86,6 +86,7 @@ namespace SP2
                     }
                 };
 
+                // System.Diagnostics.Debug.WriteLine(source);
                 using (var httpClient = new HttpClient(handler))
                 {
                     var httpContent = new StringContent(source, UTF8, "text/xml");
@@ -101,6 +102,7 @@ namespace SP2
 
         public static XElement XERetrun(this string source, string expression = "//return")
         {
+            // System.Diagnostics.Debug.WriteLine(source);
             return XDocument.Parse(source)
                 .XPathSelectElement(expression);
         }
@@ -108,9 +110,11 @@ namespace SP2
         public static string Beautify(this XElement source)
         {
             if (source.IsEmpty)
-            return string.Empty;
+                return string.Empty;
+            // System.Diagnostics.Debug.WriteLine(source.Value);
             try
             {
+                System.Diagnostics.Debug.WriteLine(source.Value);
                 return JToken.Parse(source.Value).ToString(Indented);
             }
             catch (System.Exception)

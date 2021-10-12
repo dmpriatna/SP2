@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace SP2.Models.Main
 {
@@ -15,9 +16,9 @@ namespace SP2.Models.Main
 
   public class DocNTrans
   {
-    public string CATEGORY_ID { get; set; } = "I";
-    public string TERMINAL_ID { get; set; } = "KOJA";
-    public string GROUP_ID { get; set; } = "11";
+    [JsonProperty("CATEGORY_ID")] public string CategoryId { get; set; } = "I";
+    [JsonProperty("TERMINAL_ID")] public string TerminalId { get; set; } = "KOJA";
+    [JsonProperty("GROUP_ID")] public string GroupId { get; set; } = "11";
   }
 
   public class DocNGenRequest : DataRequest
@@ -27,15 +28,15 @@ namespace SP2.Models.Main
 
   public class DocNGen
   {
-    public string NPWP_DEPO { get; set; }
-    public string DOCUMENT_NO { get; set; }
-    public string CUSTOMS_DOCUMENT_ID { get; set; }
-    public string TRANSACTION_TYPE_ID { get; set; }
-    public string DOCUMENT_SHIPPING_DATE { get; set; }
-    public string DOCUMENT_DATE { get; set; }
-    public string DOCUMENT_SHIPPING_NO { get; set; }
-    public string CUST_ID_PPJK { get; set; }
-    public string TERMINAL_ID { get; set; }
+    [JsonProperty("NPWP_DEPO")] public string NpwpDepo { get; set; }
+    [JsonProperty("DOCUMENT_NO")] public string DocumentNo { get; set; }
+    [JsonProperty("CUSTOMS_DOCUMENT_ID")] public string CustomsDocumentId { get; set; }
+    [JsonProperty("TRANSACTION_TYPE_ID")] public string TransactionTypeId { get; set; }
+    [JsonProperty("DOCUMENT_SHIPPING_DATE")] public string DocumentShippingDate { get; set; }
+    [JsonProperty("DOCUMENT_DATE")] public string DocumentDate { get; set; }
+    [JsonProperty("DOCUMENT_SHIPPING_NO")] public string DocumentShippingNo { get; set; }
+    [JsonProperty("CUST_ID_PPJK")] public string CustIdPpjk { get; set; }
+    [JsonProperty("TERMINAL_ID")] public string TerminalId { get; set; }
   }
 
   public class CoreorRequest : DataRequest
@@ -45,9 +46,9 @@ namespace SP2.Models.Main
 
   public class Coreor
   {
-    public string DOCUMENT_NO { get; set; }
-    public string BL_NBR { get; set; }
-    public string PIN { get; set; }
-    public string TERMINAL_ID { get; set; }
+    [JsonProperty("DOCUMENT_NO")] public string DocumentNo { get; set; }
+    [JsonProperty("BL_NBR")] public string BlNbr { get; set; }
+    [JsonProperty("PIN")] public string Pin { get; set; }
+    [JsonProperty("TERMINAL_ID")] public string TerminalId { get; set; }
   }
 }

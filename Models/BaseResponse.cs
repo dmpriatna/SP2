@@ -1,4 +1,5 @@
 using System.Net;
+using Newtonsoft.Json;
 
 namespace SP2.Models
 {
@@ -28,6 +29,13 @@ namespace SP2.Models
 
     public class LoginResponse : BaseResponse
     {
-        public string SessionId { get; set; }
+        [JsonProperty("CATEGORY_ID")] public string[] CategoryId { get; set; }
+        [JsonProperty("CATEGORY_NAME")] public string[] CategoryName { get; set; }
+        [JsonProperty("CUST_ID")] public string CustId { get; set; }
+        [JsonProperty("CUST_NAME")] public string CustName { get; set; }
+        [JsonProperty("GROUPID")] public string GroupId { get; set; }
+        [JsonProperty("SESSIONID")] public string SessionId { get; set; }
+        [JsonProperty("TERMINAL_ID")] public string[] TerminalId { get; set; }
+        [JsonProperty("TERMINAL_NAME")] public string[] TerminalName { get; set; }
     }
 }

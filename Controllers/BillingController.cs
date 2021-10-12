@@ -46,7 +46,6 @@ namespace SP2.Controllers
 
       if (!xer.IsEmpty)
       {
-        System.Diagnostics.Debug.WriteLine(xer.Value);
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_confirmtransaction_response_true", xer.Value);
@@ -54,7 +53,7 @@ namespace SP2.Controllers
           await Context.SetKoja("billing_confirmtransaction_response_false", xer.Value);
       }
 
-      return Ok(source.XERetrun().Beautify());
+      return Ok(xer.Beautify());
     }
 
     [HttpPost]
@@ -77,7 +76,6 @@ namespace SP2.Controllers
 
       if (!xer.IsEmpty)
       {
-        System.Diagnostics.Debug.WriteLine(xer.Value);
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_getbilling_response_true", xer.Value);
@@ -85,7 +83,7 @@ namespace SP2.Controllers
           await Context.SetKoja("billing_getbilling_response_false", xer.Value);
       }
 
-      return Ok(source.XERetrun().Beautify());
+      return Ok(xer.Beautify());
     }
 
     [HttpPost]
@@ -108,7 +106,6 @@ namespace SP2.Controllers
 
       if (!xer.IsEmpty)
       {
-        System.Diagnostics.Debug.WriteLine(xer.Value);
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_getproforma_response_true", xer.Value);
@@ -116,7 +113,7 @@ namespace SP2.Controllers
           await Context.SetKoja("billing_getproforma_response_false", xer.Value);
       }
 
-      return Ok(source.XERetrun().Beautify());
+      return Ok(xer.Beautify());
     }
 
     [HttpPost]
@@ -139,7 +136,6 @@ namespace SP2.Controllers
 
       if (!xer.IsEmpty)
       {
-        System.Diagnostics.Debug.WriteLine(xer.Value);
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
           await Context.SetKoja("billing_getbillingdetail_response_true", xer.Value);
@@ -147,7 +143,7 @@ namespace SP2.Controllers
           await Context.SetKoja("billing_getbillingdetail_response_false", xer.Value);
       }
 
-      return Ok(source.XERetrun().Beautify());
+      return Ok(xer.Beautify());
     }
   }
 }

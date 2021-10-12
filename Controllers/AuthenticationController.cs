@@ -53,7 +53,6 @@ namespace SP2.Controllers
 
             if (!xer.IsEmpty)
             {
-                System.Diagnostics.Debug.WriteLine(xer.Value);
                 var res = DeserializeObject<LoginResponse>(xer.Value);
                 if (res.Status)
                 {
@@ -87,7 +86,6 @@ namespace SP2.Controllers
 
             if (!xer.IsEmpty)
             {
-                System.Diagnostics.Debug.WriteLine(xer.Value);
                 var res = DeserializeObject<BaseResponse>(xer.Value);
                 if (res.Status)
                     await Context.SetKoja("logout_response_true", xer.Value);
@@ -95,7 +93,7 @@ namespace SP2.Controllers
                     await Context.SetKoja("logout_response_false", xer.Value);
             }
 
-            return Ok(source.XERetrun().Beautify());
+            return Ok(xer.Beautify());
         }
     }
 }
