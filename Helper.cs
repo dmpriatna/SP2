@@ -86,7 +86,6 @@ namespace SP2
                     }
                 };
 
-                // System.Diagnostics.Debug.WriteLine(source);
                 using (var httpClient = new HttpClient(handler))
                 {
                     var httpContent = new StringContent(source, UTF8, "text/xml");
@@ -102,7 +101,6 @@ namespace SP2
 
         public static XElement XERetrun(this string source, string expression = "//return")
         {
-            // System.Diagnostics.Debug.WriteLine(source);
             return XDocument.Parse(source)
                 .XPathSelectElement(expression);
         }
@@ -111,16 +109,36 @@ namespace SP2
         {
             if (source.IsEmpty)
                 return string.Empty;
-            // System.Diagnostics.Debug.WriteLine(source.Value);
             try
-            {
-                System.Diagnostics.Debug.WriteLine(source.Value);
-                return JToken.Parse(source.Value).ToString(Indented);
+            {                
+                return JToken.Parse(source.Value.CamelCase()).ToString(Indented);
             }
             catch (System.Exception)
             {
                 return source.Value;
             }
+        }
+
+        private static string CamelCase(this string source)
+        {
+          var jo = JObject.Parse(source);
+          var props = jo.Properties();
+          foreach (var each in props)
+          {
+            var lower = each.Name.ToLower();
+            var chunks = lower.Split('_');
+            if (chunks.Length > 1)
+            {
+              for (int i = 1; i < chunks.Length; i++)
+              {
+                if (chunks[i].Length > 1)
+                  chunks[i] = $"{chunks[i].Substring(0,1).ToUpper()}{chunks[i].Substring(1)}";
+              }
+              lower = string.Join("", chunks);
+            }
+            source = source.Replace(each.Name, lower, true, null);
+          }
+          return source;
         }
 
         public static async Task<BaseResponse> IsActive(this string creator)
@@ -140,7 +158,6 @@ namespace SP2
 
             if (!xer.IsEmpty)
             {
-                System.Diagnostics.Debug.WriteLine(xer.Value);
                 var res = DeserializeObject<BaseResponse>(xer.Value);
                 if (res.Status)
                     await Context.SetKoja("MAIN_GetActiveSession_true", xer.Value);

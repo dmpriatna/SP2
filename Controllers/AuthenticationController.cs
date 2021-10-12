@@ -34,6 +34,7 @@ namespace SP2.Controllers
                 var IsActive = await SessionId.IsActive();
                 if (IsActive.Status)
                     return Ok(SerializeObject(new { SESSIONID = SessionId, STATUS = "TRUE" }));
+                await InLogout(new LogOutRequest { SessionId = SessionId });
             }
 
             var Encrypt = EncryptMD5(request.Password);
@@ -56,11 +57,11 @@ namespace SP2.Controllers
                 var res = DeserializeObject<LoginResponse>(xer.Value);
                 if (res.Status)
                 {
-                    await Context.SetKoja("login_response_true", xer.Value);
+                    await Context.SetKoja("auth_getlogin_response_true", xer.Value);
                     await Context.SetKoja("sessionid", res.SessionId);
                 }
                 else
-                    await Context.SetKoja("login_response_false", xer.Value);
+                    await Context.SetKoja("auth_getlogin_response_false", xer.Value);
                 return Ok(res);
             }
 
@@ -68,9 +69,7 @@ namespace SP2.Controllers
                 Message = "AUTH_GetLogin : response does not have block call return" });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Logout([FromBody]
-            LogOutRequest request)
+        private async Task<System.Xml.Linq.XElement> InLogout(LogOutRequest request)
         {
             var body = Builder
                 .UserName()
@@ -88,11 +87,19 @@ namespace SP2.Controllers
             {
                 var res = DeserializeObject<BaseResponse>(xer.Value);
                 if (res.Status)
-                    await Context.SetKoja("logout_response_true", xer.Value);
+                    await Context.SetKoja("auth_getlogout_response_true", xer.Value);
                 else
-                    await Context.SetKoja("logout_response_false", xer.Value);
+                    await Context.SetKoja("auth_getlogout_response_false", xer.Value);
             }
 
+            return xer;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout([FromBody]
+            LogOutRequest request)
+        {
+            var xer = await InLogout(request);
             return Ok(xer.Beautify());
         }
     }
