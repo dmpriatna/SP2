@@ -48,9 +48,9 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_confirmtransaction_response_true", xer.Value);
+          await Context.SetKoja("billing_confirmtransaction_true", xer.Value);
         else
-          await Context.SetKoja("billing_confirmtransaction_response_false", xer.Value);
+          await Context.SetKoja("billing_confirmtransaction_false", xer.Value);
       }
 
       return Ok(xer.Beautify());
@@ -78,9 +78,9 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_getbilling_response_true", xer.Value);
+          await Context.SetKoja("billing_getbilling_true", xer.Value);
         else
-          await Context.SetKoja("billing_getbilling_response_false", xer.Value);
+          await Context.SetKoja("billing_getbilling_false", xer.Value);
       }
 
       return Ok(xer.Beautify());
@@ -108,9 +108,9 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_getproforma_response_true", xer.Value);
+          await Context.SetKoja("billing_getproforma_true", xer.Value);
         else
-          await Context.SetKoja("billing_getproforma_response_false", xer.Value);
+          await Context.SetKoja("billing_getproforma_false", xer.Value);
       }
 
       return Ok(xer.Beautify());
@@ -138,9 +138,9 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_getbillingdetail_response_true", xer.Value);
+          await Context.SetKoja("billing_getbillingdetail_true", xer.Value);
         else
-          await Context.SetKoja("billing_getbillingdetail_response_false", xer.Value);
+          await Context.SetKoja("billing_getbillingdetail_false", xer.Value);
       }
 
       return Ok(xer.Beautify());

@@ -53,7 +53,7 @@ namespace SP2.Models.Billing
     [JsonProperty("NO_CONT")] public string[] NoCont { get; set; }
     [JsonProperty("REFEER_TEMPERATURE")] public string[] RefeerTemperature { get; set; }
     [JsonProperty("VOLTAGE_PLUG")] public string[] VoltagePlug { get; set; }
-    [JsonProperty("OLD_POD")] public string[] OolPod { get; set; }
+    [JsonProperty("OLD_POD")] public string[] OldPod { get; set; }
     [JsonProperty("WEIGHT_VGM")] public string[] WeightVgm { get; set; }
     [JsonProperty("OLD_NO_CONT")] public string[] OldNoCont { get; set; }
     [JsonProperty("NPWP_SERTIFICATED")] public string[] NpwpSetificated { get; set; }

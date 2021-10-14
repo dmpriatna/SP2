@@ -53,10 +53,22 @@ namespace SP2.Controllers
         {
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
-                await Context.SetKoja("main_getterminal_response_true", xer.Value);
+                await Context.SetKoja("main_getterminal_true", xer.Value);
             else
-                await Context.SetKoja("main_getterminal_response_false", xer.Value);
+                await Context.SetKoja("main_getterminal_false", xer.Value);
         }
+
+        var head = HttpContext.Request.Headers["User-Agent"];
+        System.Diagnostics.Debug.WriteLine("\n");
+        System.Diagnostics.Debug.WriteLine(head);
+
+        var ip = HttpContext.Connection.RemoteIpAddress;
+        System.Diagnostics.Debug.WriteLine("\n");
+        System.Diagnostics.Debug.WriteLine(ip);
+
+        var uName = HttpContext.User.Identity.Name;
+        System.Diagnostics.Debug.WriteLine("\n");
+        System.Diagnostics.Debug.WriteLine(uName);
 
         return Ok(xer.Beautify());
     }
@@ -83,9 +95,9 @@ namespace SP2.Controllers
         {
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
-                await Context.SetKoja("main_gettransactionstype_response_true", xer.Value);
+                await Context.SetKoja("main_gettransactionstype_true", xer.Value);
             else
-                await Context.SetKoja("main_gettransactionstype_response_false", xer.Value);
+                await Context.SetKoja("main_gettransactionstype_false", xer.Value);
         }
 
         return Ok(xer.Beautify());
@@ -113,9 +125,9 @@ namespace SP2.Controllers
         {
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
-                await Context.SetKoja("main_getdoccodecustoms_response_true", xer.Value);
+                await Context.SetKoja("main_getdoccodecustoms_true", xer.Value);
             else
-                await Context.SetKoja("main_getdoccodecustoms_response_false", xer.Value);
+                await Context.SetKoja("main_getdoccodecustoms_false", xer.Value);
         }
 
         return Ok(xer.Beautify());
@@ -143,9 +155,9 @@ namespace SP2.Controllers
         {
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
-                await Context.SetKoja("main_getdocumentcustomsngen_response_true", xer.Value);
+                await Context.SetKoja("main_getdocumentcustomsngen_true", xer.Value);
             else
-                await Context.SetKoja("main_getdocumentcustomsngen_response_false", xer.Value);
+                await Context.SetKoja("main_getdocumentcustomsngen_false", xer.Value);
         }
 
         return Ok(xer.Beautify());
@@ -173,9 +185,9 @@ namespace SP2.Controllers
         {
             var res = DeserializeObject<BaseResponse>(xer.Value);
             if (res.Status)
-                await Context.SetKoja("main_getcoreor_response_true", xer.Value);
+                await Context.SetKoja("main_getcoreor_true", xer.Value);
             else
-                await Context.SetKoja("main_getcoreor_response_false", xer.Value);
+                await Context.SetKoja("main_getcoreor_false", xer.Value);
         }
 
         return Ok(xer.Beautify());

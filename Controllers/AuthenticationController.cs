@@ -33,7 +33,7 @@ namespace SP2.Controllers
             {
                 var IsActive = await SessionId.IsActive();
                 if (IsActive.Status)
-                    return Ok(SerializeObject(new { SESSIONID = SessionId, STATUS = "TRUE" }));
+                    return Ok(IsActive);
                 await InLogout(new LogOutRequest { SessionId = SessionId });
             }
 
@@ -57,11 +57,11 @@ namespace SP2.Controllers
                 var res = DeserializeObject<LoginResponse>(xer.Value);
                 if (res.Status)
                 {
-                    await Context.SetKoja("auth_getlogin_response_true", xer.Value);
+                    await Context.SetKoja("auth_getlogin_true", xer.Value);
                     await Context.SetKoja("sessionid", res.SessionId);
                 }
                 else
-                    await Context.SetKoja("auth_getlogin_response_false", xer.Value);
+                    await Context.SetKoja("auth_getlogin_false", xer.Value);
                 return Ok(res);
             }
 
@@ -87,9 +87,9 @@ namespace SP2.Controllers
             {
                 var res = DeserializeObject<BaseResponse>(xer.Value);
                 if (res.Status)
-                    await Context.SetKoja("auth_getlogout_response_true", xer.Value);
+                    await Context.SetKoja("auth_getlogout_true", xer.Value);
                 else
-                    await Context.SetKoja("auth_getlogout_response_false", xer.Value);
+                    await Context.SetKoja("auth_getlogout_false", xer.Value);
             }
 
             return xer;

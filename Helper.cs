@@ -141,7 +141,7 @@ namespace SP2
           return source;
         }
 
-        public static async Task<BaseResponse> IsActive(this string creator)
+        public static async Task<LoginResponse> IsActive(this string creator)
         {
             var body = Builder
                 .UserName()
@@ -152,21 +152,25 @@ namespace SP2
 
             var response = await PostXmlRequest(WebService, xml);
             if (!response.IsSuccessStatusCode)
-                return new BaseResponse { Message = response.ReasonPhrase };
+                return new LoginResponse { Message = response.ReasonPhrase };
             var source = await response.Content.ReadAsStringAsync();
             var xer = source.XERetrun();
 
             if (!xer.IsEmpty)
             {
-                var res = DeserializeObject<BaseResponse>(xer.Value);
+                var res = DeserializeObject<LoginResponse>(xer.Value);
                 if (res.Status)
+                {
+                    var lastLog = await Context.GetKoja("AUTH_GetLogin_true");
+                    res = DeserializeObject<LoginResponse>(lastLog);
                     await Context.SetKoja("MAIN_GetActiveSession_true", xer.Value);
+                }
                 else
                     await Context.SetKoja("MAIN_GetActiveSession_false", xer.Value);
                 return res;
             }
 
-            return new BaseResponse {
+            return new LoginResponse {
                 Message = "MAIN_GetActiveSession : response does not have block call return" };
         }
 
