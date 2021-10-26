@@ -50,6 +50,7 @@ namespace SP2.Controllers
       return Ok(result);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Payment([FromQuery] string trxDate,
       [FromQuery] string transDate,
       [FromQuery] string companyCode,
