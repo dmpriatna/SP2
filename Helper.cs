@@ -211,13 +211,13 @@ namespace SP2
             return entity.Information;
         }
 
-        public static async Task SetKoja(this GoLogContext source, string KeyName, string Information)
+        public static async Task SetKoja(this GoLogContext source, string KeyName, string Information, bool replace = true)
         {
             var now = DateTime.Now;
             var hasData = await source.Koja
                 .Where(w => w.KeyName == KeyName.ToUpper())
                 .SingleOrDefaultAsync();
-            if (hasData == null)
+            if (hasData == null || !replace)
             {
                 await source.AddAsync(new Koja
                 {
@@ -236,6 +236,28 @@ namespace SP2
                 hasData.ModifiedDate = now;
             }
             await source.SaveChangesAsync();
+        }
+
+        public static string StatusPaid(this string source)
+        {
+            string result = "\"STATUS_PAID\":[]";
+            int st = 0, en = 0;
+            
+            st = source.IndexOf("STATUS_PAID", StringComparison.CurrentCultureIgnoreCase);
+            if (st > 0)
+                en = source.IndexOfAny(new [] {']'}, st);
+            if (en > 0)
+                result = source.Substring(st - 1, en - st + 2);
+            
+            return result;
+        }
+        
+        public static string Add(this string source, string additional)
+        {
+            string result = string.Empty;
+            if (!string.IsNullOrWhiteSpace(source))
+                result = source.Remove(source.Length - 1) + "," + additional + "}";
+            return result;
         }
     }
 

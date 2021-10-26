@@ -48,7 +48,7 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_confirmtransaction_true", xer.Value);
+          await Context.SetKoja("billing_confirmtransaction_true", xer.Value, false);
         else
           await Context.SetKoja("billing_confirmtransaction_false", xer.Value);
       }

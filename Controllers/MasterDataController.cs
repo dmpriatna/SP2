@@ -188,15 +188,56 @@ namespace SP2.Controllers
                 await Context.SetKoja("main_getcoreor_true", xer.Value);
             else
                 await Context.SetKoja("main_getcoreor_false", xer.Value);
+        
+            var swap = xer.Value.Add(await StatusPaid(request.Creator, request.Request.DocumentNo));
+            xer.Value = swap;
         }
 
         return Ok(xer.Beautify());
     }
 
+    private async Task<string> StatusPaid(string creator, string documentNo)
+    {
+        var request = new DocNGen
+        {
+            CustIdPpjk = "371954",
+            CustomsDocumentId = "1",
+            DocumentNo = documentNo,
+            TerminalId = "KOJA",
+            TransactionTypeId = "1"
+        };
+        var body = Builder
+            .UserName()
+            .Password()
+            .Creator(creator)
+            .FStream(request)
+            .Instance;
+        var xml = Envelope("MAIN_GetDocumentCustomsNGen", body);
+
+        var response = await PostXmlRequest(WebService, xml);
+        if (!response.IsSuccessStatusCode)
+            return string.Empty;
+        var source = await response.Content.ReadAsStringAsync();
+        var xer = source.XERetrun();
+
+        if (!xer.IsEmpty)
+        {
+            var res = DeserializeObject<BaseResponse>(xer.Value);
+            if (res.Status)
+                await Context.SetKoja("Status_Paid_true", xer.Value);
+            else
+                await Context.SetKoja("Status_Paid_false", xer.Value);
+        
+            return xer.Value.StatusPaid();
+        }
+
+        return "\"STATUS_PAID\":[]";
+    }
+
     [HttpGet]
     private async Task<IActionResult> Container([FromQuery] string creator,
-        [FromQuery] string cntrId, [FromQuery] string terminalId,
-        [FromQuery] string transactionTypeId)
+        [FromQuery] string cntrId, [FromQuery] string terminalId = "KOJA",
+        [FromQuery] string transactionTypeId = "1")
     {
         var body = Builder
             .UserName()
@@ -214,6 +255,25 @@ namespace SP2.Controllers
         var source = await response.Content.ReadAsStringAsync();
 
         return Ok(source.XERetrun().Beautify());
+    }
+
+    [HttpGet, Produces("application/json")]
+    public async Task<IActionResult> BLNumbers([FromQuery] string npwp, [FromQuery] string doc = "noblbc20")
+    {
+        try
+        {
+            string result;
+            using (var client = new System.Net.Http.HttpClient())
+            {
+                var message = await client.GetAsync($"https://esbbcext01.beacukai.go.id:9081/NLEMICROAPI-1.0/webresources/ceisa/{doc}/{npwp}");
+                result = await message.Content.ReadAsStringAsync();
+            }
+            return Ok(result);
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
     }
   }
 }
