@@ -10,5 +10,6 @@ namespace SP2.Data
 
         public DbSet<DOContainer> Containers { get; set; }
         public DbSet<Koja> Koja { get; set; }
+        public DbSet<SuratPenyerahanPetikemas> SP2 { get; set; }
     }
 }

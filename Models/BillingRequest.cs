@@ -10,47 +10,49 @@ namespace SP2.Models.Billing
 
   public class ConfirmTransaction
   {
-    [JsonProperty("OLD_COMPANY_CODE")] public string OldCompanyCode { get; set; }
     [JsonProperty("CUST_ID")] public string CustId { get; set; }
-    [JsonProperty("TRANSACTIONS_TYPE_ID")] public string TransactionsTypeId { get; set; }
-    [JsonProperty("DOCUMENT_SHIPPING_NO")] public string DocumentShippingNo { get; set; }
-    [JsonProperty("OLD_VOYAGE_NO")] public string OldVoyageNo { get; set; }
     [JsonProperty("PM_ID")] public string PmId { get; set; }
+    [JsonProperty("EMAIL_REQ")] public string EmailReq { get; set; }
+    [JsonProperty("PHONE_REQ")] public string PhoneReq { get; set; }
+    [JsonProperty("CUST_ID_REQ")] public string CustIdReq { get; set; }
+    [JsonProperty("CUST_ID_PPJK")] public string CustIdPpjk { get; set; }
+    [JsonProperty("TRANSACTIONS_TYPE_ID")] public string TransactionsTypeId { get; set; }
+    [JsonProperty("CUSTOMS_DOCUMENT_ID")] public string CustomsDocumentId { get; set; }
+    [JsonProperty("DOCUMENT_NO")] public string DocumentNo { get; set; }
+    [JsonProperty("DOCUMENT_DATE")] public string DocumentDate { get; set; }
+    [JsonProperty("DOCUMENT_SHIPPING_NO")] public string DocumentShippingNo { get; set; }
     [JsonProperty("DOCUMENT_SHIPPING_DATE")] public string DocumentShippingDate { get; set; }
+    [JsonProperty("NO_BL_AWB")] public string NoBlAwb { get; set; }
+    [JsonProperty("PAID_THRU")] public string PaidThru { get; set; }
     [JsonProperty("VOYAGE_NO")] public string VoyageNo { get; set; }
+    [JsonProperty("VESSEL_ID")] public string VesselId { get; set; }
+
+    [JsonProperty("NO_CONT")] public string[] NoCont { get; set; }
+    [JsonProperty("OWNER")] public string[] Owner { get; set; }
+    [JsonProperty("ISO_CODE")] public string[] IsoCode { get; set; }
+    [JsonProperty("WEIGHT")] public string[] Weight { get; set; }
+    [JsonProperty("POL")] public string[] Pol { get; set; }
+    [JsonProperty("POD")] public string[] Pod { get; set; }
+    [JsonProperty("FD")] public string[] Fd { get; set; }
+
+    [JsonProperty("OLD_COMPANY_CODE")] public string OldCompanyCode { get; set; }
+    [JsonProperty("OLD_VOYAGE_NO")] public string OldVoyageNo { get; set; }
     [JsonProperty("COMPANY_CODE")] public string CompanyCode { get; set; }
     [JsonProperty("OLD_VESSEL_ID")] public string OldVesselId { get; set; }
-    [JsonProperty("VESSEL_ID")] public string VesselId { get; set; }
-    [JsonProperty("DOCUMENT_DATE")] public string DocumanetDate { get; set; }
-    [JsonProperty("CUST_ID_PPJK")] public string CustIdPpjk { get; set; }
     [JsonProperty("OLD_INVOICE_NO")] public string OldInvoiceNo { get; set; }
-    [JsonProperty("EMAIL_REQ")] public string EmailReq { get; set; }
     [JsonProperty("TGL_NHI")] public string TglNhi { get; set; }
-    [JsonProperty("CUSTOMS_DOCUMENT_ID")] public string CustomsDocumentId { get; set; }
-    [JsonProperty("NO_BL_AWB")] public string NoBlAwb { get; set; }
-    [JsonProperty("PHONE_REQ")] public string PhoneReq { get; set; }
-    [JsonProperty("DOCUMENT_NO")] public string DocumentNo { get; set; }
-    [JsonProperty("PAID_THRU")] public string PaidThru { get; set; }
     [JsonProperty("TGL_BK_SEGEL_NHI")] public string TglBkSegelNhi { get; set; }
     [JsonProperty("QUEUE_COUNTER_ID")] public string QueueCounterId { get; set; }
-    [JsonProperty("CUST_ID_REQ")] public string CustIdReq { get; set; }
 
     [JsonProperty("CERTIFICATED_ID")] public string[] CertificatedId { get; set; }
-    [JsonProperty("ISO_CODE")] public string[] IsoCode { get; set; }
     [JsonProperty("OVER_RIGHT")] public string[] OverRight { get; set; }
     [JsonProperty("START_PLUG")] public string[] StartPlug { get; set; }
     [JsonProperty("OVER_LEFT")] public string[] OverLeft { get; set; }
-    [JsonProperty("OWNER")] public string[] Owner { get; set; }
-    [JsonProperty("WEIGHT")] public string[] Weight { get; set; }
     [JsonProperty("CERTIFICATED_PIC")] public string[] CertificatedPic { get; set; }
     [JsonProperty("IMO_CODE")] public string[] ImoCode { get; set; }
     [JsonProperty("UN_NUMBER")] public string[] UnNumber { get; set; }
-    [JsonProperty("POD")] public string[] Pod { get; set; }
     [JsonProperty("CUST_SERTIFICATED")] public string[] CustSertificated { get; set; }
     [JsonProperty("STOP_PLUG")] public string[] StopPlug { get; set; }
-    [JsonProperty("POL")] public string[] Pol { get; set; }
-    [JsonProperty("FD")] public string[] Fd { get; set; }
-    [JsonProperty("NO_CONT")] public string[] NoCont { get; set; }
     [JsonProperty("REFEER_TEMPERATURE")] public string[] RefeerTemperature { get; set; }
     [JsonProperty("VOLTAGE_PLUG")] public string[] VoltagePlug { get; set; }
     [JsonProperty("OLD_POD")] public string[] OldPod { get; set; }
