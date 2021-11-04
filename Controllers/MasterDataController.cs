@@ -378,13 +378,8 @@ namespace SP2.Controllers
         try
         {
             var result = new {
-                DocumentType = "",
-                DONumber = "",
-                DODate = "",
-                PIBNumber = "",
-                PIBDate = "",
-                SPPBNumber = "",
-                SPPBDate = ""
+                Status = "Berhasil",
+                Message = "Tidak ada data yang dicari"
             };
             blNumber = blNumber.ToLower();
             transactionType = transactionType.ToLower();
