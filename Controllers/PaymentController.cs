@@ -45,8 +45,13 @@ namespace SP2.Controllers
    </soapenv:Body>
 </soapenv:Envelope>";
       
+      System.Diagnostics.Debug.WriteLine(xml);
+      
       var message = await PostXmlRequest(BillService, xml);
       var result = await message.Content.ReadAsStringAsync();
+
+      System.Diagnostics.Debug.WriteLine(result);
+
       return Ok(result);
     }
 
@@ -89,9 +94,14 @@ namespace SP2.Controllers
    </soapenv:Body>
 </soapenv:Envelope>";
       
+      System.Diagnostics.Debug.WriteLine(xml);
+
       var message = await PostXmlRequest(BillService, xml);
       var result = await message.Content.ReadAsStringAsync();
-      return Ok();
+
+      System.Diagnostics.Debug.WriteLine(result);
+
+      return Ok(result);
     }
   }
 }

@@ -279,7 +279,7 @@ namespace SP2.Controllers
     }
 
     [HttpGet, Produces("application/json")]
-    public async Task<IActionResult> DetailDocumentV1(
+    private async Task<IActionResult> DetailDocumentV1(
         [FromQuery] string terminalId,
         [FromQuery] string terminalName,
         [FromQuery] string transactionType,
@@ -320,7 +320,7 @@ namespace SP2.Controllers
     }
 
     [HttpGet, Produces("application/json")]
-    public async Task<IActionResult> DetailDocumentV2(
+    private async Task<IActionResult> DetailDocumentV2(
         [FromQuery] string terminalId,
         [FromQuery] string terminalName,
         [FromQuery] string transactionType,
@@ -360,6 +360,57 @@ namespace SP2.Controllers
             }
 
             return Ok(result);
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+    }
+
+    [HttpGet, Produces("application/json"),
+    Route("{blNumber}/{blDate}/{transactionType}/{terminalOperator}")]
+    public async Task<IActionResult> DocumentDetail(
+        [FromRoute] string blNumber,
+        [FromRoute] string blDate,
+        [FromRoute] string transactionType,
+        [FromRoute] string terminalOperator)
+    {
+        try
+        {
+            var result = new {
+                DocumentType = "",
+                DONumber = "",
+                DODate = "",
+                PIBNumber = "",
+                PIBDate = "",
+                SPPBNumber = "",
+                SPPBDate = ""
+            };
+            blNumber = blNumber.ToLower();
+            transactionType = transactionType.ToLower();
+            terminalOperator = terminalOperator.ToLower();
+            var dateOfBL = System.DateTime.Parse(blDate);
+            var entity = await Context.SP2
+                .Where(w => w.BLNumber.ToLower() == blNumber &&
+                    w.BLDate.Date == dateOfBL.Date &&
+                    (w.TransactionName.ToLower() == transactionType
+                        || w.TransactionType.ToLower() == transactionType) &&
+                    (w.TerminalId.ToLower() == terminalOperator
+                        || w.TerminalName.ToLower() == terminalOperator))
+                .Select(s => new {
+                    DocumentType = s.DocumentName,
+                    s.DONumber,
+                    s.DODate,
+                    s.PIBNumber,
+                    s.PIBDate,
+                    s.SPPBNumber,
+                    s.SPPBDate
+                })
+                .SingleOrDefaultAsync();
+            if (entity == null)
+                return Ok(result);
+
+            return Ok(entity);
         }
         catch (System.Exception)
         {
