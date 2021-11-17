@@ -21,9 +21,11 @@ namespace SP2.Controllers
     {
       Config = _config;
       Context = _context;
+      GPService = _config["GPService"];
       WebService = _config["WebService"];
     }
 
+    string GPService { get; }
     string WebService { get; }
 
     [HttpPost]
@@ -144,6 +146,34 @@ namespace SP2.Controllers
       }
 
       return Ok(xer.Beautify());
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GatePass(
+      [FromQuery] string proforma,
+      [FromQuery] string[] container,
+      [FromQuery] string filename
+    )
+    {
+      try
+      {
+        using (var client = new System.Net.Http.HttpClient())
+        {
+          var ID = SerializeObject(new {
+            CONTAINER = container,
+            PROFORMA = proforma,
+            ACTION = "V"
+          });
+          var requestUri = $"{GPService}?ID={ID}&FILENAME={filename}&METHOD=FD";
+          var response = await client.GetAsync(requestUri);
+          var stream = await response.Content.ReadAsStreamAsync();
+          return File(stream, System.Net.Mime.MediaTypeNames.Application.Octet, $"{filename}.pdf");
+        }
+      }
+      catch (System.Exception)
+      {
+        throw;
+      }
     }
   }
 }

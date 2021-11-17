@@ -214,10 +214,32 @@ namespace SP2
         public static async Task SetKoja(this GoLogContext source, string KeyName, string Information, bool replace = true)
         {
             var now = DateTime.Now;
-            var hasData = await source.Koja
-                .Where(w => w.KeyName == KeyName.ToUpper())
-                .SingleOrDefaultAsync();
-            if (hasData == null || !replace)
+            if (replace)
+            {
+                var hasData = await source.Koja
+                    .Where(w => w.KeyName == KeyName.ToUpper())
+                    .SingleOrDefaultAsync();
+
+                if (hasData == null)
+                {
+                    await source.AddAsync(new Koja
+                    {
+                        CreatedBy = "System",
+                        CreatedDate = now,
+                        Information = Information,
+                        KeyName = KeyName.ToUpper(),
+                        ModifiedBy = "System",
+                        ModifiedDate = now
+                    });
+                }
+                else
+                {
+                    hasData.Information = Information;
+                    hasData.ModifiedBy = "System";
+                    hasData.ModifiedDate = now;
+                }
+            }
+            else
             {
                 await source.AddAsync(new Koja
                 {
@@ -228,12 +250,6 @@ namespace SP2
                     ModifiedBy = "System",
                     ModifiedDate = now
                 });
-            }
-            else
-            {
-                hasData.Information = Information;
-                hasData.ModifiedBy = "System";
-                hasData.ModifiedDate = now;
             }
             await source.SaveChangesAsync();
         }
