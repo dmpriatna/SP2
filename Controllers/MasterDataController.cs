@@ -278,95 +278,6 @@ namespace SP2.Controllers
         }
     }
 
-    [HttpGet, Produces("application/json")]
-    private async Task<IActionResult> DetailDocumentV1(
-        [FromQuery] string terminalId,
-        [FromQuery] string terminalName,
-        [FromQuery] string transactionType,
-        [FromQuery] string transactionName,
-        [FromQuery] string blnumber,
-        [FromQuery] string documentCode,
-        [FromQuery] string documentName)
-    {
-        var result = new { BLDate = "", SPPBNumber = "", SPPBDate = "",
-                PIBNumber = "", PIBDate = "", DONumber = "", DODate = "" };
-        try
-        {
-            var query = Context.SP2.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(blnumber))
-            query = query.Where(w => w.BLNumber.ToLower() == blnumber.ToLower());
-            if (!string.IsNullOrWhiteSpace(documentCode))
-            query = query.Where(w => w.DocumentCode.ToLower() == documentCode.ToLower());
-            if (!string.IsNullOrWhiteSpace(documentName))
-            query = query.Where(w => w.DocumentName.ToLower() == documentName.ToLower());
-            if (!string.IsNullOrWhiteSpace(terminalId))
-            query = query.Where(w => w.TerminalId.ToLower() == terminalId.ToLower());
-            if (!string.IsNullOrWhiteSpace(terminalName))
-            query = query.Where(w => w.TerminalName.ToLower() == terminalName.ToLower());
-            if (!string.IsNullOrWhiteSpace(transactionName))
-            query = query.Where(w => w.TransactionName.ToLower() == transactionName.ToLower());
-            if (!string.IsNullOrWhiteSpace(transactionType))
-            query = query.Where(w => w.TransactionType.ToLower() == transactionType.ToLower());
-
-            var entity = await query.FirstOrDefaultAsync();
-            if (entity == null) return Ok(result);
-            return Ok(new { entity.BLDate, entity.SPPBNumber, entity.SPPBDate,
-                    entity.PIBNumber, entity.PIBDate, entity.DONumber, entity.DODate });
-        }
-        catch (System.Exception)
-        {
-            throw;
-        }
-    }
-
-    [HttpGet, Produces("application/json")]
-    private async Task<IActionResult> DetailDocumentV2(
-        [FromQuery] string terminalId,
-        [FromQuery] string terminalName,
-        [FromQuery] string transactionType,
-        [FromQuery] string transactionName,
-        [FromQuery] string blnumber,
-        [FromQuery] string documentCode,
-        [FromQuery] string documentName)
-    {
-        var result = new { BLDate = "", SPPBNumber = "", SPPBDate = "",
-                PIBNumber = "", PIBDate = "", DONumber = "", DODate = "" };
-        try
-        {
-            var bl = !string.IsNullOrWhiteSpace(blnumber);
-            var doc = !string.IsNullOrWhiteSpace(documentCode) || !string.IsNullOrWhiteSpace(documentName);
-            var terminal = !string.IsNullOrWhiteSpace(terminalId) || !string.IsNullOrWhiteSpace(terminalName);
-            var trx = !string.IsNullOrWhiteSpace(transactionName) || !string.IsNullOrWhiteSpace(transactionType);
-
-            if (bl && doc && terminal && trx)
-            {
-                var query = Context.SP2.Where(w => w.BLNumber.ToLower() == blnumber.ToLower());
-                if (!string.IsNullOrWhiteSpace(documentCode))
-                query = query.Where(w => w.DocumentCode.ToLower() == documentCode.ToLower());
-                if (!string.IsNullOrWhiteSpace(documentName))
-                query = query.Where(w => w.DocumentName.ToLower() == documentName.ToLower());
-                if (!string.IsNullOrWhiteSpace(terminalId))
-                query = query.Where(w => w.TerminalId.ToLower() == terminalId.ToLower());
-                if (!string.IsNullOrWhiteSpace(terminalName))
-                query = query.Where(w => w.TerminalName.ToLower() == terminalName.ToLower());
-                if (!string.IsNullOrWhiteSpace(transactionName))
-                query = query.Where(w => w.TransactionName.ToLower() == transactionName.ToLower());
-                if (!string.IsNullOrWhiteSpace(transactionType))
-                query = query.Where(w => w.TransactionType.ToLower() == transactionType.ToLower());
-                var entity = await query.FirstOrDefaultAsync();
-                if (entity == null) return Ok(result);
-                return Ok(new { entity.BLDate, entity.SPPBNumber, entity.SPPBDate,
-                    entity.PIBNumber, entity.PIBDate, entity.DONumber, entity.DODate });
-            }
-
-            return Ok(result);
-        }
-        catch (System.Exception)
-        {
-            throw;
-        }
-    }
-
     [HttpGet, Produces("application/json"),
     Route("{blNumber}/{blDate}/{transactionType}/{terminalOperator}")]
     public async Task<IActionResult> DocumentDetail(
@@ -385,7 +296,7 @@ namespace SP2.Controllers
             transactionType = transactionType.ToLower();
             terminalOperator = terminalOperator.ToLower();
             var dateOfBL = System.DateTime.Parse(blDate);
-            var entity = await Context.SP2
+            var entity = await Context.Set<SuratPenyerahanPetikemas>()
                 .Where(w => w.BLNumber.ToLower() == blNumber &&
                     w.BLDate.Date == dateOfBL.Date &&
                     (w.TransactionName.ToLower() == transactionType

@@ -204,7 +204,7 @@ namespace SP2
 
         public static async Task<string> GetKoja(this GoLogContext source, string KeyName)
         {
-            var entity = await source.Koja
+            var entity = await source.Set<Koja>()
                 .Where(w => w.KeyName == KeyName.ToUpper())
                 .SingleOrDefaultAsync();
             if (entity == null) return "Key not found";
@@ -216,7 +216,7 @@ namespace SP2
             var now = DateTime.Now;
             if (replace)
             {
-                var hasData = await source.Koja
+                var hasData = await source.Set<Koja>()
                     .Where(w => w.KeyName == KeyName.ToUpper())
                     .SingleOrDefaultAsync();
 

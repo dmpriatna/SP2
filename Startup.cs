@@ -14,12 +14,11 @@ namespace SP2
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            ConnectionString = configuration["ConnectionStrings:GoLog"];
         }
 
-        public IConfiguration Configuration { get; }
-
-        public const string CorsPolicy = "AllowAny";
+        private string ConnectionString { get; }
+        private const string CorsPolicy = "AllowAny";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -42,12 +41,12 @@ namespace SP2
                 }));
         
             services.AddDbContext<GoLogContext>(Setup);
+            services.AddTransient<IService, Services>();
         }
 
         private void Setup(DbContextOptionsBuilder obj)
         {
-            var connectionString = Configuration.GetConnectionString("GoLog");
-            obj.UseNpgsql(connectionString);
+            obj.UseNpgsql(ConnectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +56,10 @@ namespace SP2
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseSwagger();
 
@@ -65,8 +68,6 @@ namespace SP2
                 opt.RoutePrefix = "";
                 opt.SwaggerEndpoint("/swagger/SP2/swagger.json", "Version 1.0");
             });
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
