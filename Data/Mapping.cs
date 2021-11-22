@@ -9,6 +9,7 @@ namespace SP2.Data
         Id = entity.Id,
         InvoiceAmount = entity.InvoiceAmount,
         InvoiceId = entity.InvoiceId,
+        RowStatus = entity.RowStatus,
         TransactionTypeId = entity.TransactionTypeId
       };
     }
@@ -26,6 +27,7 @@ namespace SP2.Data
         IsContract = entity.IsContract,
         JobNumber = entity.JobNumber,
         PaidThru = entity.PaidThru,
+        RowStatus = entity.RowStatus,
         TotalAmount = entity.TotalAmount
       };
     }
@@ -37,6 +39,7 @@ namespace SP2.Data
         ContractId = entity.ContractId,
         Id = entity.Id,
         RateNominal = entity.RateNominal,
+        RowStatus = entity.RowStatus,
         TransactionTypeId = entity.TransactionTypeId
       };
     }
@@ -48,6 +51,7 @@ namespace SP2.Data
         Id = entity.Id,
         RateContractId = entity.RateContractId,
         RateNominal = entity.RateNominal,
+        RowStatus = entity.RowStatus,
         TransactionTypeId = entity.TransactionTypeId
       };
     }
@@ -60,6 +64,7 @@ namespace SP2.Data
         Delegated = entity.Delegated,
         Id = entity.Id,
         JobNumber = entity.JobNumber,
+        RowStatus = entity.RowStatus,
         TransactionNumber = entity.TransactionNumber,
         TransactionTypeId = entity.TransactionTypeId
       };
@@ -70,6 +75,7 @@ namespace SP2.Data
       return new TransactionTypeDto
       {
         Id = entity.Id,
+        RowStatus = entity.RowStatus,
         TableName = entity.TableName,
         TransactionName = entity.TransactionName
       };

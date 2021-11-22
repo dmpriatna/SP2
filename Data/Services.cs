@@ -20,7 +20,7 @@ namespace SP2.Data
       try
       {
         var entities = await Context.InvoiceDetailSet
-        .Where(w => w.InvoiceId == InvoiceId)
+        .Where(w => w.InvoiceId == InvoiceId && w.RowStatus)
         .ToListAsync();
         var result = entities.Select(To);
         return result;
@@ -36,6 +36,7 @@ namespace SP2.Data
       try
       {
         var entities = await Context.InvoiceSet
+        .Where(w => w.RowStatus)
         .ToListAsync();
         var result = entities.Select(To);
         return result;
@@ -51,6 +52,7 @@ namespace SP2.Data
       try
       {
         var entities = await Context.RateContractSet
+        .Where(w => w.RowStatus)
         .ToListAsync();
         var result = entities.Select(To);
         return result;
@@ -66,6 +68,7 @@ namespace SP2.Data
       try
       {
         var entities = await Context.RatePlateformFeeSet
+        .Where(w => w.RowStatus)
         .ToListAsync();
         var result = entities.Select(To);
         return result;
@@ -81,6 +84,7 @@ namespace SP2.Data
       try
       {
         var entities = await Context.TransactionSet
+        .Where(w => w.RowStatus)
         .ToListAsync();
         var result = entities.Select(To);
         return result;
@@ -96,6 +100,7 @@ namespace SP2.Data
       try
       {
         var entities = await Context.TransactionTypeSet
+        .Where(w => w.RowStatus)
         .ToListAsync();
         var result = entities.Select(To);
         return result;
@@ -116,7 +121,7 @@ namespace SP2.Data
         if (dto.Id.HasValue)
         {
           var entity = await Context.InvoiceSet
-            .Where(w => w.Id == dto.Id)
+            .Where(w => w.Id == dto.Id && w.RowStatus)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -154,7 +159,7 @@ namespace SP2.Data
         if (dto.Id.HasValue)
         {
           var entity = await Context.InvoiceDetailSet
-            .Where(w => w.Id == dto.Id)
+            .Where(w => w.Id == dto.Id && w.RowStatus)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -189,7 +194,7 @@ namespace SP2.Data
         if (dto.Id.HasValue)
         {
           var entity = await Context.RateContractSet
-            .Where(w => w.Id == dto.Id)
+            .Where(w => w.Id == dto.Id && w.RowStatus)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -224,7 +229,7 @@ namespace SP2.Data
         if (dto.Id.HasValue)
         {
           var entity = await Context.RatePlateformFeeSet
-            .Where(w => w.Id == dto.Id)
+            .Where(w => w.Id == dto.Id && w.RowStatus)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -259,7 +264,7 @@ namespace SP2.Data
         if (dto.Id.HasValue)
         {
           var entity = await Context.TransactionSet
-            .Where(w => w.Id == dto.Id)
+            .Where(w => w.Id == dto.Id && w.RowStatus)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -294,7 +299,7 @@ namespace SP2.Data
         if (dto.Id.HasValue)
         {
           var entity = await Context.TransactionTypeSet
-            .Where(w => w.Id == dto.Id)
+            .Where(w => w.Id == dto.Id && w.RowStatus)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -326,7 +331,7 @@ namespace SP2.Data
       try
       {
         var entity = await Context.Set<Company>()
-        .Where(w => w.Id == CompanyId)
+        .Where(w => w.Id == CompanyId && w.RowStatus)
         .SingleOrDefaultAsync();
         return entity != null;
       }
@@ -341,7 +346,7 @@ namespace SP2.Data
       try
       {
         var entity = await Context.InvoiceSet
-        .Where(w => w.Id == InvoiceId)
+        .Where(w => w.Id == InvoiceId && w.RowStatus)
         .SingleOrDefaultAsync();
         return entity != null;
       }

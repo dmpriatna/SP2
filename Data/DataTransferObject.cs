@@ -8,6 +8,7 @@ namespace SP2.Data
     public Guid InvoiceId { get; set; }
     public Guid TransactionTypeId { get; set; }
     public double InvoiceAmount { get; set; }
+    public bool RowStatus { get; set; }
   }
 
   public class InvoiceDto
@@ -22,6 +23,7 @@ namespace SP2.Data
     public double DiscAmount { get; set; }
     public DateTime PaidThru { get; set; }
     public DateTime InvoiceDate { get; set; }
+    public bool RowStatus { get; set; }
   }
 
   public class RateContractDto
@@ -30,6 +32,7 @@ namespace SP2.Data
     public Guid ContractId { get; set; }
     public Guid TransactionTypeId { get; set; }
     public double RateNominal { get; set; }
+    public bool RowStatus { get; set; }
   }
 
   public class RatePlatformDto
@@ -38,6 +41,7 @@ namespace SP2.Data
     public Guid RateContractId { get; set; }
     public Guid TransactionTypeId { get; set; }
     public double RateNominal { get; set; }
+    public bool RowStatus { get; set; }
   }
 
   public class TransactionDto
@@ -48,6 +52,7 @@ namespace SP2.Data
     public string TransactionNumber { get; set; }
     public string JobNumber { get; set; }
     public bool Delegated { get; set; }
+    public bool RowStatus { get; set; }
   }
 
   public class TransactionTypeDto
@@ -55,5 +60,6 @@ namespace SP2.Data
     public Guid? Id { get; set; }
     public string TransactionName { get; set; }
     public string TableName { get; set; }
+    public bool RowStatus { get; set; }
   }
 }

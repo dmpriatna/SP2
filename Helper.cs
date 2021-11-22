@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net.Http;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -122,9 +120,16 @@ namespace SP2
         private static string CamelCase(this string source)
         {
           var jo = JObject.Parse(source);
+          return CamelCase(jo, source);
+        }
+
+        private static string CamelCase(JObject jo, string source)
+        {
           var props = jo.Properties();
           foreach (var each in props)
           {
+            if (each.Value.Type == JTokenType.Object)
+              source = CamelCase(each.Value as JObject, source);
             var lower = each.Name.ToLower();
             var chunks = lower.Split('_');
             if (chunks.Length > 1)
