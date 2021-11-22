@@ -8,8 +8,10 @@ namespace SP2.Data
         {
         }
 
-        // public DbSet<Koja> Koja { get; set; }
-        // public DbSet<SuratPenyerahanPetikemas> SP2 { get; set; }
+        public DbSet<Koja> Koja { get; set; }
+        public DbSet<SuratPenyerahanPetikemas> SP2 { get; set; }
+
+        public DbSet<Company> CompanieSet { get; set; }
 
         public DbSet<Transaction> TransactionSet { get; set; }
         public DbSet<TransactionType> TransactionTypeSet { get; set; }

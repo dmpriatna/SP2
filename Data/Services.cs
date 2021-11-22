@@ -115,8 +115,8 @@ namespace SP2.Data
     {
       try
       {
-        // if (await ValidateCompany(dto.CompanyId))
-        // throw new Exception($"field name {nameof(dto.CompanyId)} is not FOREIGN KEY in table Companies");
+        if (await ValidateCompany(dto.CompanyId))
+        throw new Exception($"field name {nameof(dto.CompanyId)} is not FOREIGN KEY in table Companies");
         var result = 0;
         if (dto.Id.HasValue)
         {
@@ -190,6 +190,9 @@ namespace SP2.Data
     {
       try
       {
+        if (await ValidateTransactionType(dto.TransactionTypeId))
+        throw new Exception($"field name {nameof(dto.TransactionTypeId)} is not FOREIGN KEY in table TransactionType");
+
         var result = 0;
         if (dto.Id.HasValue)
         {
@@ -225,6 +228,9 @@ namespace SP2.Data
     {
       try
       {
+        if (await ValidateTransactionType(dto.TransactionTypeId))
+        throw new Exception($"field name {nameof(dto.TransactionTypeId)} is not FOREIGN KEY in table TransactionType");
+
         var result = 0;
         if (dto.Id.HasValue)
         {
@@ -260,6 +266,11 @@ namespace SP2.Data
     {
       try
       {
+        if (await ValidateCompany(dto.CompanyId))
+        throw new Exception($"field name {nameof(dto.CompanyId)} is not FOREIGN KEY in table Companies");
+        if (await ValidateTransactionType(dto.TransactionTypeId))
+        throw new Exception($"field name {nameof(dto.TransactionTypeId)} is not FOREIGN KEY in table TransactionType");
+
         var result = 0;
         if (dto.Id.HasValue)
         {
@@ -333,7 +344,7 @@ namespace SP2.Data
         var entity = await Context.Set<Company>()
         .Where(w => w.Id == CompanyId && w.RowStatus)
         .SingleOrDefaultAsync();
-        return entity != null;
+        return entity == null;
       }
       catch (System.Exception se)
       {
@@ -348,7 +359,22 @@ namespace SP2.Data
         var entity = await Context.InvoiceSet
         .Where(w => w.Id == InvoiceId && w.RowStatus)
         .SingleOrDefaultAsync();
-        return entity != null;
+        return entity == null;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    private async Task<bool> ValidateTransactionType(Guid TransactionTypeId)
+    {
+      try
+      {
+        var entity = await Context.TransactionTypeSet
+        .Where(w => w.Id == TransactionTypeId && w.RowStatus)
+        .SingleOrDefaultAsync();
+        return entity == null;
       }
       catch (System.Exception se)
       {

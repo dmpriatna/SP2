@@ -39,7 +39,12 @@ namespace SP2.Controllers
       }
       catch (System.Exception se)
       {
-        throw se;
+        return new ContentResult
+        {
+          Content = Newtonsoft.Json.JsonConvert.SerializeObject(new { Message = se.Message }),
+          ContentType = "application/json",
+          StatusCode = 422
+        };
       }
     }
 
@@ -53,7 +58,12 @@ namespace SP2.Controllers
       }
       catch (System.Exception se)
       {
-        throw se;
+        return new ContentResult
+        {
+          Content = Newtonsoft.Json.JsonConvert.SerializeObject(new { Message = se.Message }),
+          ContentType = "application/json",
+          StatusCode = 422
+        };
       }
     }
 
@@ -67,7 +77,12 @@ namespace SP2.Controllers
       }
       catch (System.Exception se)
       {
-        throw se;
+        return new ContentResult
+        {
+          Content = Newtonsoft.Json.JsonConvert.SerializeObject(new { Message = se.Message }),
+          ContentType = "application/json",
+          StatusCode = 422
+        };
       }
     }
 
@@ -81,7 +96,12 @@ namespace SP2.Controllers
       }
       catch (System.Exception se)
       {
-        throw se;
+        return new ContentResult
+        {
+          Content = Newtonsoft.Json.JsonConvert.SerializeObject(new { Message = se.Message }),
+          ContentType = "application/json",
+          StatusCode = 422
+        };
       }
     }
 
@@ -95,7 +115,12 @@ namespace SP2.Controllers
       }
       catch (System.Exception se)
       {
-        throw se;
+        return new ContentResult
+        {
+          Content = Newtonsoft.Json.JsonConvert.SerializeObject(new { Message = se.Message }),
+          ContentType = "application/json",
+          StatusCode = 422
+        };
       }
     }
 
