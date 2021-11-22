@@ -275,6 +275,21 @@ namespace SP2
                 result = source.Remove(source.Length - 1) + "," + additional + "}";
             return result;
         }
+
+        public static void Changes<TSource, TResult>(this TResult self, TSource source)
+        where TResult : class, new()
+        {
+            if (self == null)
+            self = new TResult();
+
+            var properties = source.GetType().GetProperties();
+            foreach (var each in properties)
+            {
+                var en = each.Name;
+                var ev = each.GetValue(source);
+                self.GetType().GetProperty(en)?.SetValue(self, ev);
+            }
+        }
     }
 
     public class XSI

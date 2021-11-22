@@ -30,6 +30,28 @@ namespace SP2.Data
       };
     }
 
+    public RateContractDto To(RateContract entity)
+    {
+      return new RateContractDto
+      {
+        ContractId = entity.ContractId,
+        Id = entity.Id,
+        RateNominal = entity.RateNominal,
+        TransactionTypeId = entity.TransactionTypeId
+      };
+    }
+
+    public RatePlatformDto To(RatePlateformFee entity)
+    {
+      return new RatePlatformDto
+      {
+        Id = entity.Id,
+        RateContractId = entity.RateContractId,
+        RateNominal = entity.RateNominal,
+        TransactionTypeId = entity.TransactionTypeId
+      };
+    }
+
     public TransactionDto To(Transaction entity)
     {
       return new TransactionDto
@@ -40,6 +62,16 @@ namespace SP2.Data
         JobNumber = entity.JobNumber,
         TransactionNumber = entity.TransactionNumber,
         TransactionTypeId = entity.TransactionTypeId
+      };
+    }
+
+    public TransactionTypeDto To(TransactionType entity)
+    {
+      return new TransactionTypeDto
+      {
+        Id = entity.Id,
+        TableName = entity.TableName,
+        TransactionName = entity.TransactionName
       };
     }
   }
