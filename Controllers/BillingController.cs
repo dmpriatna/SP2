@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +18,19 @@ namespace SP2.Controllers
   public class BillingController : Controller
   {
     public BillingController(IConfiguration _config,
-      GoLogContext _context)
+      GoLogContext _context,
+      IService _service)
     {
       Config = _config;
       Context = _context;
       GPService = _config["GPService"];
       WebService = _config["WebService"];
+      Service = _service;
     }
 
     string GPService { get; }
     string WebService { get; }
+    IService Service { get; }
 
     [HttpPost]
     public async Task<IActionResult> ConfirmTransaction([FromBody]
@@ -50,7 +54,15 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_confirmtransaction_true", xer.Value, false);
+        {
+          var ci = await Context.SetKoja("billing_confirmtransaction_true", xer.Value, false);
+          await Service.PutTransaction(new TransactionDto
+          {
+            CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
+            TransactionNumber = ci.ToString(),
+            TransactionTypeId = Guid.Parse("b02ea995-662b-4056-8a0c-0e69a1a98c35")
+          });
+        }
         else
           await Context.SetKoja("billing_confirmtransaction_false", xer.Value);
       }
@@ -80,7 +92,7 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_getbilling_true", xer.Value);
+          await Context.SetKoja($"billing_getbilling_{request.Request.TransactionId}_true", xer.Value, false);
         else
           await Context.SetKoja("billing_getbilling_false", xer.Value);
       }
@@ -110,7 +122,7 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_getproforma_true", xer.Value);
+          await Context.SetKoja("billing_getproforma_true", xer.Value, false);
         else
           await Context.SetKoja("billing_getproforma_false", xer.Value);
       }
@@ -140,7 +152,20 @@ namespace SP2.Controllers
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
-          await Context.SetKoja("billing_getbillingdetail_true", xer.Value);
+        {
+          var bdnumber = string.IsNullOrWhiteSpace(request.Request.ProformaInvoiceNo) ?
+            request.Request.InvoiceNo : request.Request.ProformaInvoiceNo;
+          await Context.SetKoja($"billing_getbillingdetail_{request.Request.ProformaInvoiceNo}_true", xer.Value, false);
+          var br = DeserializeObject<BillingResponse>(xer.Value);
+          if (br.DetailBilling.Status)
+          await Service.SendMail(new EmailDto {
+            CustEmail = br.DetailBilling.TrxEmail,
+            CustName = br.DetailBilling.TrxName,
+            EmailCC = new[] { br.DetailBilling.TrxEmail, "dedemaulanapriatna@gmail.com" },
+            GpUrl = $"http://13.213.73.45:3500/Billing/GatePass?proforma={br.ProformaInvoiceNo}&{br.DetailBilling.NoCont.ToQuery("container")}&filename=GP01",
+            TransNum = br.DetailBilling.TrxId
+          });
+        }
         else
           await Context.SetKoja("billing_getbillingdetail_false", xer.Value);
       }

@@ -1,19 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace SP2.Data
 {
   public class Services : Mapping, IService
   {
-    public Services(GoLogContext _context)
+    public Services(GoLogContext _context,
+      IConfiguration config)
     {
       Context = _context;
+      EmailService = config["GologService"] + "/api/Email/GatePass";
     }
 
     private GoLogContext Context { get; }
+    private string EmailService { get; }
+
+    public async Task SendMail(EmailDto oContent)
+    {
+      try
+      {
+        using (var client = new HttpClient())
+        {
+          var sContent = Newtonsoft.Json.JsonConvert.SerializeObject(oContent);
+          var content = new StringContent(sContent, System.Text.Encoding.UTF8, "application/json");
+          await client.PostAsync(EmailService, content);
+        }
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
 
     public async Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId)
     {
@@ -385,6 +407,7 @@ namespace SP2.Data
 
   public interface IService
   {
+    Task SendMail(EmailDto oContent);
     Task<IEnumerable<InvoiceDto>> GetInvoices();
     Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId);
     Task<IEnumerable<RateContractDto>> GetRateContracts();

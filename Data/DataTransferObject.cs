@@ -2,6 +2,15 @@ using System;
 
 namespace SP2.Data
 {
+  public class EmailDto
+  {
+    public string CustName { get; set; }
+    public string CustEmail { get; set; }
+    public string[] EmailCC { get; set; }
+    public string TransNum { get; set; }
+    public string GpUrl { get; set; }
+  }
+
   public class InvoiceDetailDto
   {
     public Guid? Id { get; set; }
