@@ -70,9 +70,9 @@ namespace SP2.Data
         public string Phone { get; set; }
         public string NPWP { get; set; }
         public string Type { get; set; }
-        public string PersonID { get; set; }
-        public string CreatedById { get; set; }
-        public string ModifiedById { get; set; }
+        public Guid? PersonID { get; set; }
+        public Guid CreatedById { get; set; }
+        public Guid ModifiedById { get; set; }
 
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
