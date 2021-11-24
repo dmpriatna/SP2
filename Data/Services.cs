@@ -85,20 +85,33 @@ namespace SP2.Data
       }
     }
 
-    public async Task<IEnumerable<RatePlatformDto>> GetRatePlatforms()
+    public async Task<IEnumerable<RatePlatformWithRelationDto>> GetRatePlatforms()
     {
       try
       {
         var entities = await Context.RatePlateformFeeSet
         .Where(w => w.RowStatus)
+        .Include(i => i.TrxType)
         .ToListAsync();
-        var result = entities.Select(To);
+        var result = entities.Select(TWR);
         return result;
       }
       catch (System.Exception se)
       {
         throw se;
       }
+    }
+
+    private RatePlatformWithRelationDto TWR(RatePlateformFee entity)
+    {
+      return new RatePlatformWithRelationDto
+      {
+        Id = entity.Id,
+        RateNominal = entity.RateNominal,
+        RowStatus = entity.RowStatus,
+        TransactionAlias = entity.TrxType.TransactionAlias,
+        TransactionTypeId = entity.TransactionTypeId
+      };
     }
 
     public async Task<IEnumerable<TransactionDto>> GetTransactions()
@@ -457,7 +470,7 @@ namespace SP2.Data
     Task<IEnumerable<InvoiceDto>> GetInvoices();
     Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId);
     Task<IEnumerable<RateContractDto>> GetRateContracts();
-    Task<IEnumerable<RatePlatformDto>> GetRatePlatforms();
+    Task<IEnumerable<RatePlatformWithRelationDto>> GetRatePlatforms();
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<bool> PutInvoice(InvoiceDto dto);

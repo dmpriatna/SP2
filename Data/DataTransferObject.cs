@@ -52,6 +52,11 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
+  public class RatePlatformWithRelationDto : RatePlatformDto
+  {
+    public string TransactionAlias { get; set; }
+  }
+
   public class TransactionDto
   {
     public Guid? Id { get; set; }

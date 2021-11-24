@@ -158,6 +158,7 @@ namespace SP2.Data
         #endregion
 
         public bool RowStatus { get; set; }
+        public virtual TransactionType TrxType { get; set; }
     }
 
     [Table("Transaction")]
