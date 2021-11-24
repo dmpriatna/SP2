@@ -332,6 +332,29 @@ namespace SP2
       var result = fromquery + "=" + string.Join($"&{fromquery}=", source); 
       return result;
     }
+
+    public static async Task<string> GenNumber(this GoLogContext context,
+      string JobNumberFormat = "TR/SP2/{0}-")
+    {
+      string result = null;
+      var now = DateTime.Now;
+      var patern = string.Format(JobNumberFormat,
+        now.ToString("MM-yyyy/dd"));
+
+      var lastCode = await context.TransactionSet
+        .Where(w => w.Delegated)
+        .OrderBy(ob => ob.CreatedDate)
+        .LastOrDefaultAsync();
+
+      if (lastCode == null)
+        result = patern + 1.ToString("D6");
+      else
+      {
+        var code = int.Parse(lastCode.JobNumber.Split('-').Last()) + 1;
+        result = patern + code.ToString("D6");
+      }
+      return result;
+    }
   }
 
   public class XSI

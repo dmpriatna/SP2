@@ -157,9 +157,6 @@ namespace SP2.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("RateContractId")
-                        .HasColumnType("uuid");
-
                     b.Property<double>("RateNominal")
                         .HasColumnType("double precision");
 
@@ -237,6 +234,9 @@ namespace SP2.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("TableName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TransactionAlias")
                         .HasColumnType("text");
 
                     b.Property<string>("TransactionName")

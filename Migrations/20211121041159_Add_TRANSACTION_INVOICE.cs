@@ -74,7 +74,6 @@ namespace SP2.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    RateContractId = table.Column<Guid>(type: "uuid", nullable: false),
                     TransactionTypeId = table.Column<Guid>(type: "uuid", nullable: false),
                     RateNominal = table.Column<double>(type: "double precision", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -114,6 +113,7 @@ namespace SP2.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TransactionAlias = table.Column<string>(type: "text", nullable: true),
                     TransactionName = table.Column<string>(type: "text", nullable: true),
                     TableName = table.Column<string>(type: "text", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),

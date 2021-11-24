@@ -59,6 +59,7 @@ namespace SP2.Controllers
           await Service.PutTransaction(new TransactionDto
           {
             CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
+            RowStatus = true,
             TransactionNumber = ci.ToString(),
             TransactionTypeId = Guid.Parse("b02ea995-662b-4056-8a0c-0e69a1a98c35")
           });
@@ -161,7 +162,7 @@ namespace SP2.Controllers
           await Service.SendMail(new EmailDto {
             CustEmail = br.DetailBilling.TrxEmail,
             CustName = br.DetailBilling.TrxName,
-            EmailCC = new[] { br.DetailBilling.TrxEmail, "dedemaulanapriatna@gmail.com" },
+            EmailCC = new[] { br.DetailBilling.TrxEmail },
             GpUrl = $"http://13.213.73.45:3500/Billing/GatePass?proforma={br.ProformaInvoiceNo}&{br.DetailBilling.NoCont.ToQuery("container")}&filename=GP01",
             TransNum = br.DetailBilling.TrxId
           });

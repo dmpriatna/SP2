@@ -14,20 +14,6 @@ namespace SP2.Controllers
     }
 
     private readonly IService Service;
-    
-    [HttpPost]
-    public async Task<IActionResult> SaveTransactionType([FromBody] TransactionTypeDto dto)
-    {
-      try
-      {
-        await Service.PutTransactionType(dto);
-        return Ok();
-      }
-      catch (System.Exception se)
-      {
-        throw se;
-      }
-    }
 
     [HttpPost]
     public async Task<IActionResult> SaveRateContract([FromBody] RateContractDto dto)
@@ -68,6 +54,20 @@ namespace SP2.Controllers
     }
 
     [HttpPost]
+    public async Task<IActionResult> SaveSP2(SP2Dto dto)
+    {
+      try
+      {
+        await Service.PutSP2(dto);
+        return Ok();
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpPost]
     public async Task<IActionResult> SaveTransaction([FromBody] TransactionDto dto)
     {
       try
@@ -83,6 +83,20 @@ namespace SP2.Controllers
           ContentType = "application/json",
           StatusCode = 422
         };
+      }
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> SaveTransactionType([FromBody] TransactionTypeDto dto)
+    {
+      try
+      {
+        await Service.PutTransactionType(dto);
+        return Ok();
+      }
+      catch (System.Exception se)
+      {
+        throw se;
       }
     }
 

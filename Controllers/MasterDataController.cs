@@ -298,7 +298,7 @@ namespace SP2.Controllers
             var dateOfBL = System.DateTime.Parse(blDate);
             var entity = await Context.Set<SuratPenyerahanPetikemas>()
                 .Where(w => w.BLNumber.ToLower() == blNumber &&
-                    w.BLDate.Date == dateOfBL.Date &&
+                    w.BLDate.Value.Date == dateOfBL.Date &&
                     (w.TransactionName.ToLower() == transactionType
                         || w.TransactionType.ToLower() == transactionType) &&
                     (w.TerminalId.ToLower() == terminalOperator

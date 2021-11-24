@@ -27,7 +27,7 @@ namespace SP2.Data
         public DateTime? ModifiedDate { get; set; }
     }
 
-    [Table("SP2")]
+    [Table("sp2")]
     public class SuratPenyerahanPetikemas
     {
         [Key]
@@ -40,13 +40,15 @@ namespace SP2.Data
         public string DocumentName { get; set; }
         public string BLNumber { get; set; }
         
-        public DateTime BLDate { get; set; }
+        public string JobNumber { get; set; }
+        public DateTime? BLDate { get; set; }
         public string SPPBNumber { get; set; }
-        public DateTime SPPBDate { get; set; }
+        public DateTime? SPPBDate { get; set; }
         public string PIBNumber { get; set; }
-        public DateTime PIBDate { get; set; }
+        public DateTime? PIBDate { get; set; }
         public string DONumber { get; set; }
-        public DateTime DODate { get; set; }
+        public DateTime? DODate { get; set; }
+
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public string ModifiedBy { get; set; }
@@ -107,6 +109,7 @@ namespace SP2.Data
     {
         [Key]
         public Guid Id { get; set; }
+        public string TransactionAlias { get; set; }
         public string TransactionName { get; set; }
         public string TableName { get; set; }
 
@@ -144,7 +147,6 @@ namespace SP2.Data
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid RateContractId { get; set; }
         public Guid TransactionTypeId { get; set; }
         public double RateNominal { get; set; }
 

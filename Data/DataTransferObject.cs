@@ -47,7 +47,6 @@ namespace SP2.Data
   public class RatePlatformDto
   {
     public Guid? Id { get; set; }
-    public Guid RateContractId { get; set; }
     public Guid TransactionTypeId { get; set; }
     public double RateNominal { get; set; }
     public bool RowStatus { get; set; }
@@ -67,8 +66,30 @@ namespace SP2.Data
   public class TransactionTypeDto
   {
     public Guid? Id { get; set; }
+    public string TransactionAlias { get; set; }
     public string TransactionName { get; set; }
     public string TableName { get; set; }
     public bool RowStatus { get; set; }
+  }
+
+  public class SP2Dto
+  {
+    public Guid? Id { get; set; }
+    public string TerminalId { get; set; }
+    public string TerminalName { get; set; }
+    public string TransactionType { get; set; }
+    public string TransactionName { get; set; }
+    public string DocumentCode { get; set; }
+    public string DocumentName { get; set; }
+    public string BLNumber { get; set; }
+    
+    public string JobNumber { get; set; }
+    public DateTime? BLDate { get; set; }
+    public string SPPBNumber { get; set; }
+    public DateTime? SPPBDate { get; set; }
+    public string PIBNumber { get; set; }
+    public DateTime? PIBDate { get; set; }
+    public string DONumber { get; set; }
+    public DateTime? DODate { get; set; }
   }
 }

@@ -358,6 +358,52 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<bool> PutSP2(SP2Dto dto)
+    {
+      try
+      {
+        var result = 0;
+        SuratPenyerahanPetikemas entity = null;
+        if (dto.Id.HasValue)
+        {
+          entity = await Context.SP2
+            .Where(w => w.Id == dto.Id)
+            .SingleOrDefaultAsync();
+          if (entity != null)
+          {
+            entity.Changes(dto);
+            entity.ModifiedBy = "system";
+            entity.ModifiedDate = DateTime.Now;
+          }
+        }
+        else
+        {
+          entity = new SuratPenyerahanPetikemas();
+          entity.Changes(dto);
+          entity.Id = Guid.NewGuid();
+          entity.CreatedBy = "system";
+          entity.CreatedDate = DateTime.Now;
+          await Context.AddAsync(entity);
+        }
+        result = await Context.SaveChangesAsync();
+        var number = await Context.GenNumber();
+        await PutTransaction(new TransactionDto
+        {
+          CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
+          Delegated = true,
+          JobNumber = entity.JobNumber,
+          RowStatus = true,
+          TransactionNumber = number,
+          TransactionTypeId = Guid.Parse("8529299c-0a69-494e-ba06-45f844e2a2d0"),
+        });
+        return result > 0;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
     
     private async Task<bool> ValidateCompany(Guid CompanyId)
     {
@@ -418,6 +464,7 @@ namespace SP2.Data
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);
     Task<bool> PutRateContract(RateContractDto dto);
     Task<bool> PutRatePlatform(RatePlatformDto dto);
+    Task<bool> PutSP2(SP2Dto dto);
     Task<bool> PutTransaction(TransactionDto dto);
     Task<bool> PutTransactionType(TransactionTypeDto dto);
   }

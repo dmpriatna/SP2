@@ -49,7 +49,6 @@ namespace SP2.Data
       return new RatePlatformDto
       {
         Id = entity.Id,
-        RateContractId = entity.RateContractId,
         RateNominal = entity.RateNominal,
         RowStatus = entity.RowStatus,
         TransactionTypeId = entity.TransactionTypeId
@@ -77,7 +76,31 @@ namespace SP2.Data
         Id = entity.Id,
         RowStatus = entity.RowStatus,
         TableName = entity.TableName,
+        TransactionAlias = entity.TransactionAlias,
         TransactionName = entity.TransactionName
+      };
+    }
+
+    public SP2Dto To(SuratPenyerahanPetikemas entity)
+    {
+      return new SP2Dto
+      {
+        BLDate = entity.BLDate,
+        BLNumber = entity.BLNumber,
+        DocumentCode = entity.DocumentCode,
+        DocumentName = entity.DocumentName,
+        DODate = entity.DODate,
+        DONumber = entity.DONumber,
+        Id = entity.Id,
+        JobNumber = entity.JobNumber,
+        PIBDate = entity.PIBDate,
+        PIBNumber = entity.PIBNumber,
+        SPPBDate = entity.SPPBDate,
+        SPPBNumber = entity.SPPBNumber,
+        TerminalId = entity.TerminalId,
+        TerminalName = entity.TerminalName,
+        TransactionName = entity.TransactionName,
+        TransactionType = entity.TransactionType
       };
     }
   }
