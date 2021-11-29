@@ -342,7 +342,7 @@ namespace SP2
         now.ToString("MM-yyyy/dd"));
 
       var lastCode = await context.TransactionSet
-        .Where(w => w.Delegated)
+        .Where(w => w.Delegated && w.CreatedDate.Date == now.Date)
         .OrderBy(ob => ob.CreatedDate)
         .LastOrDefaultAsync();
 
@@ -350,7 +350,7 @@ namespace SP2
         result = patern + 1.ToString("D6");
       else
       {
-        var code = int.Parse(lastCode.JobNumber.Split('-').Last()) + 1;
+        var code = int.Parse(lastCode.TransactionNumber.Split('-').Last()) + 1;
         result = patern + code.ToString("D6");
       }
       return result;

@@ -49,10 +49,13 @@ namespace SP2.Data
         public string DONumber { get; set; }
         public DateTime? DODate { get; set; }
 
+        public bool IsDraft { get; set; }
+
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
+        public bool RowStatus { get; set; }
     }
 
     [Table("Companies")]

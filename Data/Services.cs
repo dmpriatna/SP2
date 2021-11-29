@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -462,17 +463,88 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<Tuple<IEnumerable<SP2Dto>, int>> ListSP2(ListSP2Request request)
+    {
+      try
+      {
+        var query = Context.SP2.Where(w => w.RowStatus);
+        var entities = new List<SuratPenyerahanPetikemas>();
+        var orders = string.Join(',',
+          request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
+
+        if (request.IsDraft.HasValue)
+        {
+          var _isDraft = request.IsDraft.Value;
+          query = query.Where(w => w.IsDraft == _isDraft);
+        }
+
+        var countAll = query.Count();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+          var all = request.Search .ToLower();
+          query = query.Where(w => w.BLNumber.ToLower().Contains(all) ||
+            w.DocumentName.ToLower().Contains(all) ||
+            w.DONumber.ToLower().Contains(all) ||
+            w.JobNumber.ToLower().Contains(all) ||
+            w.PIBNumber.ToLower().Contains(all) ||
+            w.SPPBNumber.ToLower().Contains(all) ||
+            w.TerminalName.ToLower().Contains(all) ||
+            w.TransactionName.ToLower().Contains(all));
+        }
+
+        if (!string.IsNullOrWhiteSpace(orders))
+        {
+          query = query.OrderBy(orders);
+        }
+
+        if (request.Start > 0)
+        {
+          query = query.Skip(request.Start);
+        }
+
+        if (request.Length > 0)
+        {
+          query = query.Take(request.Length);
+        }
+
+        entities = await query.ToListAsync();
+        var result = Tuple.Create<IEnumerable<SP2Dto>, int>(entities.Select(To), countAll);
+        return result;
+      }
+      catch (Exception ex)
+      {
+        throw ex;
+      }
+    }
+
+    public async Task<SP2Dto> DetailSP2(Guid Id)
+    {
+      try
+      {
+        var result = await Context.SP2
+        .Where(w => w.RowStatus && w.Id == Id)
+        .SingleOrDefaultAsync();
+        return To(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 
   public interface IService
   {
-    Task SendMail(EmailDto oContent);
+    Task<SP2Dto> DetailSP2(Guid Id);
     Task<IEnumerable<InvoiceDto>> GetInvoices();
     Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId);
     Task<IEnumerable<RateContractDto>> GetRateContracts();
     Task<IEnumerable<RatePlatformWithRelationDto>> GetRatePlatforms();
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
+    Task<Tuple<IEnumerable<SP2Dto>, int>> ListSP2(ListSP2Request request);
     Task<bool> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);
     Task<bool> PutRateContract(RateContractDto dto);
@@ -480,5 +552,6 @@ namespace SP2.Data
     Task<bool> PutSP2(SP2Dto dto);
     Task<bool> PutTransaction(TransactionDto dto);
     Task<bool> PutTransactionType(TransactionTypeDto dto);
+    Task SendMail(EmailDto oContent);
   }
 }

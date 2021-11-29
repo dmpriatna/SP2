@@ -2,7 +2,7 @@ using System;
 
 namespace SP2.Data
 {
-  public class EmailDto
+  public class EmailFbr
   {
     public string CustName { get; set; }
     public string CustEmail { get; set; }
@@ -11,7 +11,7 @@ namespace SP2.Data
     public string GpUrl { get; set; }
   }
 
-  public class InvoiceDetailDto
+  public class InvoiceDetailFbr
   {
     public Guid? Id { get; set; }
     public Guid InvoiceId { get; set; }
@@ -20,7 +20,7 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class InvoiceDto
+  public class InvoiceFbr
   {
     public Guid? Id { get; set; }
     public Guid CompanyId { get; set; }
@@ -35,7 +35,7 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class RateContractDto
+  public class RateContractFbr
   {
     public Guid? Id { get; set; }
     public Guid ContractId { get; set; }
@@ -44,7 +44,7 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class RatePlatformDto
+  public class RatePlatformFbr
   {
     public Guid? Id { get; set; }
     public Guid TransactionTypeId { get; set; }
@@ -52,12 +52,7 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class RatePlatformWithRelationDto : RatePlatformDto
-  {
-    public string TransactionAlias { get; set; }
-  }
-
-  public class TransactionDto
+  public class TransactionFbr
   {
     public Guid? Id { get; set; }
     public Guid TransactionTypeId { get; set; }
@@ -68,7 +63,7 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class TransactionTypeDto
+  public class TransactionTypeFbr
   {
     public Guid? Id { get; set; }
     public string TransactionAlias { get; set; }
@@ -77,7 +72,7 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class SP2Dto
+  public class SP2Fbr
   {
     public Guid? Id { get; set; }
     public string TerminalId { get; set; }
@@ -87,10 +82,7 @@ namespace SP2.Data
     public string DocumentCode { get; set; }
     public string DocumentName { get; set; }
     public string BLNumber { get; set; }
-
-    public bool IsDraft { get; set; }
-    public bool RowStatus { get; set; }
-
+    
     public string JobNumber { get; set; }
     public DateTime? BLDate { get; set; }
     public string SPPBNumber { get; set; }
@@ -99,5 +91,16 @@ namespace SP2.Data
     public DateTime? PIBDate { get; set; }
     public string DONumber { get; set; }
     public DateTime? DODate { get; set; }
+  }
+
+  public class ListSP2Request
+  {
+    public int Start { get; set; }
+    public int Length { get; set; }
+    public bool? IsDraft { get; set; }
+    public string Search { get; set; }
+    // public FilterDeliveryStatus Status { get; set; }
+    // public FilterDeliveryType Type { get; set; }
+    public string[] Orders { get; set; }
   }
 }
