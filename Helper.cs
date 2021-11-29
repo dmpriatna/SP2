@@ -333,9 +333,11 @@ namespace SP2
       return result;
     }
 
-    public static async Task<string> GenNumber(this GoLogContext context,
+    public static async Task<string> TrxNumber(this GoLogContext context,
       string JobNumberFormat = "TR/SP2/{0}-")
     {
+      int one = 1;
+      string suffix = one.ToString("D6");
       string result = null;
       var now = DateTime.Now;
       var patern = string.Format(JobNumberFormat,
@@ -347,11 +349,54 @@ namespace SP2
         .LastOrDefaultAsync();
 
       if (lastCode == null)
-        result = patern + 1.ToString("D6");
+        result = patern + suffix;
       else
       {
-        var code = int.Parse(lastCode.TransactionNumber.Split('-').Last()) + 1;
-        result = patern + code.ToString("D6");
+        if (string.IsNullOrWhiteSpace(lastCode.TransactionNumber))
+          result = patern + suffix;
+        else
+        {
+          var chunk = lastCode.TransactionNumber.Split('-').Last();
+          if (int.TryParse(chunk, out int code))
+          {
+            code++;
+            result = patern + code.ToString("D6");
+          }
+        }
+      }
+      return result;
+    }
+
+    public static async Task<string> JobNumber(this GoLogContext context,
+      string JobNumberFormat = "IMP/SP2/GOLOGS/{0}-")
+    {
+      int one = 1;
+      string suffix = one.ToString("D6");
+      string result = null;
+      var now = DateTime.Now;
+      var patern = string.Format(JobNumberFormat,
+        now.ToString("MM-yyyy/dd"));
+
+      var lastCode = await context.SP2
+        .Where(w => w.CreatedDate.Date == now.Date)
+        .OrderBy(ob => ob.CreatedDate)
+        .LastOrDefaultAsync();
+
+      if (lastCode == null)
+        result = patern + suffix;
+      else
+      {
+        if (string.IsNullOrWhiteSpace(lastCode.JobNumber))
+          result = patern + suffix;
+        else
+        {
+          var chunk = lastCode.JobNumber.Split('-').Last();
+          if (int.TryParse(chunk, out int code))
+          {
+            code++;
+            result = patern + code.ToString("D6");
+          }
+        }
       }
       return result;
     }

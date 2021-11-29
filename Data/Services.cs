@@ -373,7 +373,7 @@ namespace SP2.Data
       }
     }
 
-    public async Task<bool> PutSP2(SP2Dto dto)
+    public async Task<string> PutSP2(SP2Dto dto)
     {
       try
       {
@@ -393,25 +393,28 @@ namespace SP2.Data
         }
         else
         {
+          var jobNumber = await Context.JobNumber();
           entity = new SuratPenyerahanPetikemas();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
+          entity.JobNumber = jobNumber;
           await Context.AddAsync(entity);
+
+          var trxNumber = await Context.TrxNumber();
+          await PutTransaction(new TransactionDto
+          {
+            CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
+            Delegated = true,
+            JobNumber = entity.JobNumber,
+            RowStatus = true,
+            TransactionNumber = trxNumber,
+            TransactionTypeId = Guid.Parse("8529299c-0a69-494e-ba06-45f844e2a2d0"),
+          });
         }
         result = await Context.SaveChangesAsync();
-        var number = await Context.GenNumber();
-        await PutTransaction(new TransactionDto
-        {
-          CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
-          Delegated = true,
-          JobNumber = entity.JobNumber,
-          RowStatus = true,
-          TransactionNumber = number,
-          TransactionTypeId = Guid.Parse("8529299c-0a69-494e-ba06-45f844e2a2d0"),
-        });
-        return result > 0;
+        return entity.JobNumber;
       }
       catch (System.Exception se)
       {
@@ -549,7 +552,7 @@ namespace SP2.Data
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);
     Task<bool> PutRateContract(RateContractDto dto);
     Task<bool> PutRatePlatform(RatePlatformDto dto);
-    Task<bool> PutSP2(SP2Dto dto);
+    Task<string> PutSP2(SP2Dto dto);
     Task<bool> PutTransaction(TransactionDto dto);
     Task<bool> PutTransactionType(TransactionTypeDto dto);
     Task SendMail(EmailDto oContent);

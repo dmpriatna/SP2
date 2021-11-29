@@ -58,8 +58,13 @@ namespace SP2.Controllers
     {
       try
       {
-        await Service.PutSP2(dto);
-        return Ok();
+        var result = await Service.PutSP2(dto);
+        return Ok(new {
+          JobNumber = result,
+          msg = "SP2 berhasil disimpan",
+          success = true,
+          result = true
+        });
       }
       catch (System.Exception se)
       {
