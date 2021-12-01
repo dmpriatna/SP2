@@ -296,7 +296,7 @@ namespace SP2.Controllers
             transactionType = transactionType.ToLower();
             terminalOperator = terminalOperator.ToLower();
             var dateOfBL = System.DateTime.Parse(blDate);
-            var entity = await Context.Set<SuratPenyerahanPetikemas>()
+            var entity = await Context.DocumentSet
                 .Where(w => w.BLNumber.ToLower() == blNumber &&
                     w.BLDate.Value.Date == dateOfBL.Date &&
                     (w.TransactionName.ToLower() == transactionType

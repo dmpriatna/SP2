@@ -161,9 +161,8 @@ namespace SP2.Controllers
     public async Task<IActionResult> ListSP2(
       [FromQuery] int Start, [FromQuery] int Length,
       [FromQuery] string Search,
-      [FromQuery] bool IsDraft,
-      [FromQuery] bool? IsJobNumberDesc,
-      [FromQuery] bool? IsCreatedDateDesc
+      [FromQuery] string PaymentMethod,
+      [FromQuery] SP2Status Status
     )
     {
       try
@@ -172,16 +171,9 @@ namespace SP2.Controllers
         {
           Length = Length,
           Start = Start,
-          IsDraft = IsDraft,
           Search = Search,
-          Orders = new string[] {
-            IsCreatedDateDesc.HasValue ?
-              (IsCreatedDateDesc.Value ? "CreatedDate Desc" : "CreatedDate Asc")
-                : null,
-            IsJobNumberDesc.HasValue ?
-              (IsJobNumberDesc.Value ? "JobNumber Desc" : "JobNumber Asc")
-                : null
-          }
+          PaymentMethod = PaymentMethod,
+          Status = ((int)Status)
         });
         return Ok(new {
           Data = result.Item1,

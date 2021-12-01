@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,8 +28,8 @@ namespace SP2.Data
         public DateTime? ModifiedDate { get; set; }
     }
 
-    [Table("sp2")]
-    public class SuratPenyerahanPetikemas
+    [Table("DummyDocument")]
+    public class Document
     {
         [Key]
         public Guid Id { get; set; }
@@ -49,13 +50,89 @@ namespace SP2.Data
         public string DONumber { get; set; }
         public DateTime? DODate { get; set; }
 
-        public bool IsDraft { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public bool RowStatus { get; set; }
+    }
+
+    [Table("SP2")]
+    public class SuratPenyerahanPetikemas
+    {
+        [Key]
+        public Guid Id { get; set; }
+        public string TerminalId { get; set; }
+        [Column("TerminalName")] public string TerminalOperator { get; set; }
+        [Column("TransactionType")] public string TypeTransaction { get; set; }
+        public string TransactionName { get; set; }
+        [Column("DocumentCode")] public string DocumentType { get; set; }
+        public string DocumentName { get; set; }
+        public string BLNumber { get; set; }
+        
+        public string JobNumber { get; set; }
+        public DateTime? BLDate { get; set; }
+        public string SPPBNumber { get; set; }
+        public DateTime? SPPBDate { get; set; }
+        public string PIBNumber { get; set; }
+        public DateTime? PIBDate { get; set; }
+        public string DONumber { get; set; }
+        public DateTime? DODate { get; set; }
+
+        public int PositionStatus { get; set; }
+        public string PaymentMethod { get; set; }
+
+        public string CargoOwnerTaxId { get; set; }
+        public string CargoOwnerName { get; set; }
+        public string ForwarderTaxId { get; set; }
+        public string ForwarderName { get; set; }
+        public DateTime DueDate { get; set; }
+        public string ProformaInvoiceNo { get; set; }
+        public double SubTotalByThirdParty { get; set; }
+        public double PlatformFee { get; set; }
+        public double Vat { get; set; }
+        public double GrandTotal { get; set; }
 
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public bool RowStatus { get; set; }
+
+        public virtual IEnumerable<Container> Containers { get; set; }
+    }
+
+    [Table("SP2Container")]
+    public class Container
+    {
+        [Key]
+        public Guid Id { get; set; }
+        public Guid SP2Id { get; set; }
+        public string BLNumber { get; set; }
+        public string VesselNumber { get; set; }
+        public string VesselName { get; set; }
+        public string VoyageNumber { get; set; }
+        public string ContainerNumber { get; set; }
+        public string ContainerSize { get; set; }
+        public string ContainerType { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+    }
+
+    [Table("SP2Log")]
+    public class Log
+    {
+        [Key]
+        public Guid Id { get; set; }
+        public Guid SP2Id { get; set; }
+        public int PositionStatus { get; set; }
+        public string PositionName { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
     }
 
     [Table("Companies")]

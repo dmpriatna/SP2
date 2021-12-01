@@ -10,8 +10,11 @@ namespace SP2.Data
 
         public DbSet<Koja> Koja { get; set; }
         public DbSet<SuratPenyerahanPetikemas> SP2 { get; set; }
+        public DbSet<Container> SP2Container { get; set; }
+        public DbSet<Log> SP2Log { get; set; }
 
-        public DbSet<Company> CompanieSet { get; set; }
+        public DbSet<Company> CompanySet { get; set; }
+        public DbSet<Document> DocumentSet { get; set; }
 
         public DbSet<Transaction> TransactionSet { get; set; }
         public DbSet<TransactionType> TransactionTypeSet { get; set; }

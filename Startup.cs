@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,11 @@ namespace SP2
                     .AllowAnyOrigin());
             });
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(jo => jo
+                    .JsonSerializerOptions
+                    .Converters
+                    .Add(new JsonStringEnumConverter()));
 
             services.AddSwaggerGen(opt => opt
                 .SwaggerDoc("SP2", new OpenApiInfo
@@ -41,7 +46,7 @@ namespace SP2
                 }));
         
             services.AddDbContext<GoLogContext>(Setup);
-            services.AddTransient<IService, Services>();
+            services.AddScoped<IService, Services>();
         }
 
         private void Setup(DbContextOptionsBuilder obj)

@@ -1,4 +1,7 @@
 using System;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace SP2.Data
 {
@@ -99,8 +102,16 @@ namespace SP2.Data
     public int Length { get; set; }
     public bool? IsDraft { get; set; }
     public string Search { get; set; }
-    // public FilterDeliveryStatus Status { get; set; }
-    // public FilterDeliveryType Type { get; set; }
+    public int Status { get; set; }
+    public string PaymentMethod { get; set; }
     public string[] Orders { get; set; }
+  }
+
+  [JsonConverter(typeof(StringEnumConverter))]
+  public enum SP2Status
+  {
+    [EnumMember(Value = "Actived")] Actived,
+    [EnumMember(Value = "Draft")] Draft,
+    [EnumMember(Value = "Completed")] Completed
   }
 }

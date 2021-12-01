@@ -389,6 +389,7 @@ namespace SP2.Data
             entity.Changes(dto);
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
+            await SP2Container(dto.Containers, entity.Id);
           }
         }
         else
@@ -400,7 +401,9 @@ namespace SP2.Data
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
           entity.JobNumber = jobNumber;
+          entity.PositionStatus = dto.IsDraft ? 0 : 2;
           await Context.AddAsync(entity);
+          await SP2Container(dto.Containers, entity.Id);
 
           var trxNumber = await Context.TrxNumber();
           await PutTransaction(new TransactionDto
@@ -421,12 +424,59 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    private async Task SP2Container(ContainerDto[] collection, Guid SP2Id)
+    {
+      foreach (var item in collection)
+      {
+        await PutContainer(item, SP2Id);
+      }
+    }
+
+    private async Task PutContainer(ContainerDto dto, Guid SP2Id)
+    {
+      try
+      {
+        if (await ValidateCompany(dto.SP2Id))
+        throw new Exception($"field name {nameof(dto.SP2Id)} is not FOREIGN KEY in table SP2");
+
+        var result = 0;
+        Container entity = null;
+        if (dto.Id.HasValue)
+        {
+          entity = await Context.SP2Container
+            .Where(w => w.Id == dto.Id && w.SP2Id == SP2Id)
+            .SingleOrDefaultAsync();
+          if (entity != null)
+          {
+            entity.Changes(dto);
+            entity.ModifiedBy = "system";
+            entity.ModifiedDate = DateTime.Now;
+          }
+        }
+        else
+        {
+          entity = new Container();
+          entity.Changes(dto);
+          entity.Id = Guid.NewGuid();
+          entity.CreatedBy = "system";
+          entity.CreatedDate = DateTime.Now;
+          entity.SP2Id = SP2Id;
+          await Context.AddAsync(entity);
+        }
+        result = await Context.SaveChangesAsync();
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
     
     private async Task<bool> ValidateCompany(Guid CompanyId)
     {
       try
       {
-        var entity = await Context.Set<Company>()
+        var entity = await Context.CompanySet
         .Where(w => w.Id == CompanyId && w.RowStatus)
         .SingleOrDefaultAsync();
         return entity == null;
@@ -467,39 +517,36 @@ namespace SP2.Data
       }
     }
 
-    public async Task<Tuple<IEnumerable<SP2Dto>, int>> ListSP2(ListSP2Request request)
+    private async Task<bool> ValidateSP2(Guid SP2Id)
+    {
+      try
+      {
+        var entity = await Context.SP2
+        .Where(w => w.Id == SP2Id && w.RowStatus)
+        .SingleOrDefaultAsync();
+        return entity == null;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    public async Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request)
     {
       try
       {
         var query = Context.SP2.Where(w => w.RowStatus);
         var entities = new List<SuratPenyerahanPetikemas>();
-        var orders = string.Join(',',
-          request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
-
-        if (request.IsDraft.HasValue)
-        {
-          var _isDraft = request.IsDraft.Value;
-          query = query.Where(w => w.IsDraft == _isDraft);
-        }
 
         var countAll = query.Count();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-          var all = request.Search .ToLower();
-          query = query.Where(w => w.BLNumber.ToLower().Contains(all) ||
-            w.DocumentName.ToLower().Contains(all) ||
-            w.DONumber.ToLower().Contains(all) ||
-            w.JobNumber.ToLower().Contains(all) ||
-            w.PIBNumber.ToLower().Contains(all) ||
-            w.SPPBNumber.ToLower().Contains(all) ||
-            w.TerminalName.ToLower().Contains(all) ||
+          var all = request.Search.ToLower();
+          query = query.Where(w => w.JobNumber.ToLower().Contains(all) ||
+            w.TypeTransaction.ToLower().Contains(all) ||
             w.TransactionName.ToLower().Contains(all));
-        }
-
-        if (!string.IsNullOrWhiteSpace(orders))
-        {
-          query = query.OrderBy(orders);
         }
 
         if (request.Start > 0)
@@ -512,9 +559,17 @@ namespace SP2.Data
           query = query.Take(request.Length);
         }
 
-        entities = await query.ToListAsync();
-        var result = Tuple.Create<IEnumerable<SP2Dto>, int>(entities.Select(To), countAll);
-        return result;
+        if (!string.IsNullOrWhiteSpace(request.PaymentMethod))
+        {
+          query = query
+            .Where(w => w.PaymentMethod.ToLower() == request.PaymentMethod.ToLower());
+        }
+
+        entities = await query
+          .Where(w => w.PositionStatus == request.Status)
+          .ToListAsync();
+        
+        return Tuple.Create<IEnumerable<SP2List>, int>(entities.Select(ToList), countAll);
       }
       catch (Exception ex)
       {
@@ -528,6 +583,7 @@ namespace SP2.Data
       {
         var result = await Context.SP2
         .Where(w => w.RowStatus && w.Id == Id)
+        .Include(i => i.Containers)
         .SingleOrDefaultAsync();
         return To(result);
       }
@@ -547,7 +603,7 @@ namespace SP2.Data
     Task<IEnumerable<RatePlatformWithRelationDto>> GetRatePlatforms();
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
-    Task<Tuple<IEnumerable<SP2Dto>, int>> ListSP2(ListSP2Request request);
+    Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
     Task<bool> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);
     Task<bool> PutRateContract(RateContractDto dto);

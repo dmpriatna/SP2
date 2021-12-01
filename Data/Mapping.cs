@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace SP2.Data
 {
   public class Mapping
@@ -87,22 +89,73 @@ namespace SP2.Data
       {
         BLDate = entity.BLDate,
         BLNumber = entity.BLNumber,
-        DocumentCode = entity.DocumentCode,
-        DocumentName = entity.DocumentName,
+        DocumentType = entity.DocumentType,
         DODate = entity.DODate,
         DONumber = entity.DONumber,
         Id = entity.Id,
-        IsDraft = entity.IsDraft,
         JobNumber = entity.JobNumber,
         PIBDate = entity.PIBDate,
         PIBNumber = entity.PIBNumber,
         SPPBDate = entity.SPPBDate,
         SPPBNumber = entity.SPPBNumber,
         RowStatus = entity.RowStatus,
-        TerminalId = entity.TerminalId,
-        TerminalName = entity.TerminalName,
+        TerminalOperator = entity.TerminalOperator,
+        TypeTransaction = entity.TypeTransaction,
+
+        CargoOwnerName = entity.CargoOwnerName,
+        CargoOwnerTaxId = entity.CargoOwnerTaxId,
+        Containers = entity.Containers.Select(To).ToArray(),
+        DueDate = entity.DueDate,
+        ForwarderName = entity.ForwarderName,
+        ForwarderTaxId = entity.ForwarderTaxId,
+        GrandTotal = entity.GrandTotal,
+        IsDraft = entity.PositionStatus == 0,
+        PaymentMethod = entity.PaymentMethod,
+        PlatformFee = entity.PlatformFee,
+        ProformaInvoiceNo = entity.ProformaInvoiceNo,
+        SubTotalByThirdParty = entity.SubTotalByThirdParty,
+        Vat = entity.Vat        
+      };
+    }
+
+    public ContainerDto To(Container entity)
+    {
+      return new ContainerDto
+      {
+        BLNumber = entity.BLNumber,
+        ContainerNumber = entity.ContainerNumber,
+        ContainerSize = entity.ContainerSize,
+        ContainerType = entity.ContainerType,
+        Id = entity.Id,
+        SP2Id = entity.SP2Id,
+        VesselName = entity.VesselName,
+        VesselNumber = entity.VesselNumber,
+        VoyageNumber = entity.VoyageNumber
+      };
+    }
+
+    public SP2List ToList(SuratPenyerahanPetikemas entity)
+    {
+      string positionName;
+      switch (entity.PositionStatus)
+      {
+        case 1: positionName = "Request Form"; break;
+        case 2: positionName = "Proforma Invoice"; break;
+        case 3: positionName = "Payment & Confirmation"; break;
+        case 4: positionName = "SP2 & Invoice Release"; break;
+        default: positionName = "Draft"; break;
+      }
+
+      return new SP2List
+      {
+        CreatedDate = entity.CreatedDate,
+        Id = entity.Id,
+        JobNumber = entity.JobNumber,
+        PaymentMethod = entity.PaymentMethod,
+        StatusPosition = entity.PositionStatus,
+        StatusName = positionName,
         TransactionName = entity.TransactionName,
-        TransactionType = entity.TransactionType
+        TypeTransaction = entity.TypeTransaction
       };
     }
   }
