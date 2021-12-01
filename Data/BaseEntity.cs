@@ -100,6 +100,7 @@ namespace SP2.Data
         public bool RowStatus { get; set; }
 
         public virtual IEnumerable<Container> Containers { get; set; }
+        public virtual IEnumerable<Log> Logs { get; set; }
     }
 
     [Table("SP2Container")]
@@ -107,7 +108,8 @@ namespace SP2.Data
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid SP2Id { get; set; }
+        [Column("SP2Id")]
+        public Guid SuratPenyerahanPetikemasId { get; set; }
         public string BLNumber { get; set; }
         public string VesselNumber { get; set; }
         public string VesselName { get; set; }
@@ -126,7 +128,8 @@ namespace SP2.Data
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid SP2Id { get; set; }
+        [Column("SP2Id")]
+        public Guid SuratPenyerahanPetikemasId { get; set; }
         public int PositionStatus { get; set; }
         public string PositionName { get; set; }
         public string CreatedBy { get; set; }

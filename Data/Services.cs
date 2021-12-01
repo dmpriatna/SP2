@@ -415,6 +415,12 @@ namespace SP2.Data
             TransactionNumber = trxNumber,
             TransactionTypeId = Guid.Parse("8529299c-0a69-494e-ba06-45f844e2a2d0"),
           });
+
+          await PutLog(new LogDto
+          {
+            PositionStatus = entity.PositionStatus,
+            SP2Id = entity.Id
+          });
         }
         result = await Context.SaveChangesAsync();
         return entity.JobNumber;
@@ -445,7 +451,7 @@ namespace SP2.Data
         if (dto.Id.HasValue)
         {
           entity = await Context.SP2Container
-            .Where(w => w.Id == dto.Id && w.SP2Id == SP2Id)
+            .Where(w => w.Id == dto.Id && w.SuratPenyerahanPetikemasId == SP2Id)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -461,10 +467,44 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
-          entity.SP2Id = SP2Id;
+          entity.SuratPenyerahanPetikemasId = SP2Id;
           await Context.AddAsync(entity);
         }
         result = await Context.SaveChangesAsync();
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    private async Task PutLog(LogDto dto)
+    {
+      try
+      {
+        if (dto.Id.HasValue)
+        {
+          var entity = await Context.SP2Log
+            .Where(w => w.Id == dto.Id && w.SuratPenyerahanPetikemasId == dto.SP2Id)
+            .SingleOrDefaultAsync();
+          if (entity != null)
+          {
+            entity.Changes(dto);
+            entity.ModifiedBy = "system";
+            entity.ModifiedDate = DateTime.Now;
+          }
+        }
+        else
+        {
+          var entity = new Log();
+          entity.Changes(dto);
+          entity.Id = Guid.NewGuid();
+          entity.CreatedBy = "system";
+          entity.CreatedDate = DateTime.Now;
+          entity.SuratPenyerahanPetikemasId = dto.SP2Id;
+          await Context.AddAsync(entity);
+        }
+        await Context.SaveChangesAsync();
       }
       catch (System.Exception se)
       {
@@ -577,13 +617,14 @@ namespace SP2.Data
       }
     }
 
-    public async Task<SP2Dto> DetailSP2(Guid Id)
+    public async Task<SP2Detail> DetailSP2(Guid Id)
     {
       try
       {
         var result = await Context.SP2
         .Where(w => w.RowStatus && w.Id == Id)
         .Include(i => i.Containers)
+        .Include(i => i.Logs)
         .SingleOrDefaultAsync();
         return To(result);
       }
@@ -596,7 +637,7 @@ namespace SP2.Data
 
   public interface IService
   {
-    Task<SP2Dto> DetailSP2(Guid Id);
+    Task<SP2Detail> DetailSP2(Guid Id);
     Task<IEnumerable<InvoiceDto>> GetInvoices();
     Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId);
     Task<IEnumerable<RateContractDto>> GetRateContracts();

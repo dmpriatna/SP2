@@ -132,6 +132,11 @@ namespace SP2.Data
     public int StatusPosition { get; set; }
     public DateTime CreatedDate { get; set; }
   }
+  
+  public class SP2Detail : SP2Dto
+  {
+    public LogDto[] Logs { get; set; }
+  }
 
   public class DocumentDto
   {
@@ -154,5 +159,29 @@ namespace SP2.Data
     public DateTime? PIBDate { get; set; }
     public string DONumber { get; set; }
     public DateTime? DODate { get; set; }
+  }
+
+  public class LogDto
+  {
+    public Guid? Id { get; set; }
+    public Guid SP2Id { get; set; }
+    private int pos;
+    public int PositionStatus
+    {
+      get { return pos; }
+      set
+      {
+        switch (value)
+        {
+          case 1: PositionName = "Request Form"; break;
+          case 2: PositionName = "Proforma Invoice"; break;
+          case 3: PositionName = "Payment & Confirmation"; break;
+          case 4: PositionName = "SP2 & Invoice Release"; break;
+          default: PositionName = "Draft"; break;
+        }
+        pos = value;
+      }
+    }
+    public string PositionName { get; set; }
   }
 }

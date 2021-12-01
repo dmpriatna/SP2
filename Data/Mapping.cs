@@ -83,9 +83,15 @@ namespace SP2.Data
       };
     }
 
-    public SP2Dto To(SuratPenyerahanPetikemas entity)
+    public SP2Detail To(SuratPenyerahanPetikemas entity)
     {
-      return new SP2Dto
+      var containers = entity.Containers == null ?
+        new ContainerDto[] {} :
+          entity.Containers.Select(To).ToArray();
+      var logs = entity.Logs == null ?
+        new LogDto[] {} :
+          entity.Logs.Select(To).ToArray();
+      return new SP2Detail
       {
         BLDate = entity.BLDate,
         BLNumber = entity.BLNumber,
@@ -104,12 +110,13 @@ namespace SP2.Data
 
         CargoOwnerName = entity.CargoOwnerName,
         CargoOwnerTaxId = entity.CargoOwnerTaxId,
-        Containers = entity.Containers.Select(To).ToArray(),
+        Containers = containers,
         DueDate = entity.DueDate,
         ForwarderName = entity.ForwarderName,
         ForwarderTaxId = entity.ForwarderTaxId,
         GrandTotal = entity.GrandTotal,
         IsDraft = entity.PositionStatus == 0,
+        Logs = logs,
         PaymentMethod = entity.PaymentMethod,
         PlatformFee = entity.PlatformFee,
         ProformaInvoiceNo = entity.ProformaInvoiceNo,
@@ -127,10 +134,21 @@ namespace SP2.Data
         ContainerSize = entity.ContainerSize,
         ContainerType = entity.ContainerType,
         Id = entity.Id,
-        SP2Id = entity.SP2Id,
+        SP2Id = entity.SuratPenyerahanPetikemasId,
         VesselName = entity.VesselName,
         VesselNumber = entity.VesselNumber,
         VoyageNumber = entity.VoyageNumber
+      };
+    }
+
+    public LogDto To(Log entity)
+    {
+      return new LogDto
+      {
+        Id = entity.Id,
+        PositionName = entity.PositionName,
+        PositionStatus = entity.PositionStatus,
+        SP2Id = entity.SuratPenyerahanPetikemasId
       };
     }
 
