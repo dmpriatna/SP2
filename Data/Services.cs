@@ -433,6 +433,7 @@ namespace SP2.Data
 
     private async Task SP2Container(ContainerDto[] collection, Guid SP2Id)
     {
+      if (collection == null) return;
       foreach (var item in collection)
       {
         await PutContainer(item, SP2Id);
@@ -443,7 +444,7 @@ namespace SP2.Data
     {
       try
       {
-        if (await ValidateCompany(dto.SP2Id))
+        if (dto.Id.HasValue && await ValidateCompany(dto.SP2Id))
         throw new Exception($"field name {nameof(dto.SP2Id)} is not FOREIGN KEY in table SP2");
 
         var result = 0;
@@ -577,7 +578,8 @@ namespace SP2.Data
       try
       {
         var entities = new List<SuratPenyerahanPetikemas>();
-
+        var orders = string.Join(',',
+            request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
         var query = Context.SP2.Where(w => w.RowStatus);
 
         if (request.Status == 0)
@@ -619,10 +621,9 @@ namespace SP2.Data
           query = query.Take(request.Length);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.PaymentMethod))
+        if (!string.IsNullOrWhiteSpace(orders))
         {
-          query = query
-            .Where(w => w.PaymentMethod.ToLower() == request.PaymentMethod.ToLower());
+            query = query.OrderBy(orders);
         }
 
         entities = await query.ToListAsync();

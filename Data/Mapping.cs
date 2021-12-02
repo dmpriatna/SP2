@@ -167,6 +167,7 @@ namespace SP2.Data
       return new SP2List
       {
         CreatedDate = entity.CreatedDate,
+        CompletedDate = entity.PositionStatus == 4 ? entity.ModifiedDate : null,
         Id = entity.Id,
         JobNumber = entity.JobNumber,
         PaymentMethod = entity.PaymentMethod,

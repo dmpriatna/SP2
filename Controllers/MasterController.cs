@@ -162,7 +162,10 @@ namespace SP2.Controllers
       [FromQuery] int Start, [FromQuery] int Length,
       [FromQuery] string Search,
       [FromQuery] string PaymentMethod,
-      [FromQuery] SP2Status Status
+      [FromQuery] SP2Status Status,
+      [FromQuery] bool? IsJobNumberDesc,
+      [FromQuery] bool? IsCreatedDateDesc,
+      [FromQuery] bool? IsCompleteDateDesc
     )
     {
       try
@@ -173,7 +176,18 @@ namespace SP2.Controllers
           Start = Start,
           Search = Search,
           PaymentMethod = PaymentMethod,
-          Status = ((int)Status)
+          Status = ((int)Status),
+          Orders = new string[] {
+              IsCreatedDateDesc.HasValue ?
+                  (IsCreatedDateDesc.Value ? "CreatedDate Desc" : "CreatedDate Asc")
+                      : null,
+              IsJobNumberDesc.HasValue ?
+                  (IsJobNumberDesc.Value ? "JobNumber Desc" : "JobNumber Asc")
+                      : null,
+              IsCompleteDateDesc.HasValue ?
+                  (IsCompleteDateDesc.Value ? "ModifiedDate Desc" : "ModifiedDate Asc")
+                      : null
+          }
         });
         return Ok(new {
           Data = result.Item1,

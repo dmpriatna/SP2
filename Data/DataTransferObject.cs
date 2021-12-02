@@ -131,6 +131,7 @@ namespace SP2.Data
     public string StatusName { get; set; }
     public int StatusPosition { get; set; }
     public DateTime CreatedDate { get; set; }
+    public DateTime? CompletedDate { get; set; }
   }
   
   public class SP2Detail : SP2Dto
