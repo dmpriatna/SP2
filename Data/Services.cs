@@ -576,8 +576,28 @@ namespace SP2.Data
     {
       try
       {
-        var query = Context.SP2.Where(w => w.RowStatus);
         var entities = new List<SuratPenyerahanPetikemas>();
+
+        var query = Context.SP2.Where(w => w.RowStatus);
+
+        if (request.Status == 0)
+        {
+          query = query.Where(w => w.PositionStatus > 0 && w.PositionStatus < 4);
+        }
+        else if (request.Status == 1)
+        {
+          query = query.Where(w => w.PositionStatus == 0);
+        }
+        else
+        {
+          query = query.Where(w => w.PositionStatus == 4);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.PaymentMethod))
+        {
+          query = query
+            .Where(w => w.PaymentMethod.ToLower() == request.PaymentMethod.ToLower());
+        }
 
         var countAll = query.Count();
 
@@ -605,9 +625,7 @@ namespace SP2.Data
             .Where(w => w.PaymentMethod.ToLower() == request.PaymentMethod.ToLower());
         }
 
-        entities = await query
-          .Where(w => w.PositionStatus == request.Status)
-          .ToListAsync();
+        entities = await query.ToListAsync();
         
         return Tuple.Create<IEnumerable<SP2List>, int>(entities.Select(ToList), countAll);
       }
