@@ -86,7 +86,7 @@ namespace SP2.Data
       }
     }
 
-    public async Task<IEnumerable<RatePlatformWithRelationDto>> GetRatePlatforms()
+    public async Task<IEnumerable<RatePlatformList>> GetRatePlatforms()
     {
       try
       {
@@ -94,25 +94,13 @@ namespace SP2.Data
         .Where(w => w.RowStatus)
         .Include(i => i.TrxType)
         .ToListAsync();
-        var result = entities.Select(TWR);
+        var result = entities.Select(To);
         return result;
       }
       catch (System.Exception se)
       {
         throw se;
       }
-    }
-
-    private RatePlatformWithRelationDto TWR(RatePlateformFee entity)
-    {
-      return new RatePlatformWithRelationDto
-      {
-        Id = entity.Id,
-        RateNominal = entity.RateNominal,
-        RowStatus = entity.RowStatus,
-        TransactionAlias = entity.TrxType.TransactionAlias,
-        TransactionTypeId = entity.TransactionTypeId
-      };
     }
 
     public async Task<IEnumerable<TransactionDto>> GetTransactions()
@@ -173,6 +161,7 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = dto.InvoiceDate;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
         result = await Context.SaveChangesAsync();
@@ -211,6 +200,7 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
         result = await Context.SaveChangesAsync();
@@ -249,6 +239,7 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
         result = await Context.SaveChangesAsync();
@@ -287,6 +278,7 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
         result = await Context.SaveChangesAsync();
@@ -327,6 +319,7 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
         result = await Context.SaveChangesAsync();
@@ -362,6 +355,7 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
         result = await Context.SaveChangesAsync();
@@ -377,11 +371,10 @@ namespace SP2.Data
     {
       try
       {
-        var result = 0;
-        SuratPenyerahanPetikemas entity = null;
+        string jobNumber = null;
         if (dto.Id.HasValue)
         {
-          entity = await Context.SP2
+          var entity = await Context.SP2
             .Where(w => w.Id == dto.Id)
             .SingleOrDefaultAsync();
           if (entity != null)
@@ -389,21 +382,26 @@ namespace SP2.Data
             entity.Changes(dto);
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
+
             await SP2Container(dto.Containers, entity.Id);
+            await SP2Notify(dto.Notifies, entity.Id);
           }
         }
         else
         {
-          var jobNumber = await Context.JobNumber();
-          entity = new SuratPenyerahanPetikemas();
+          jobNumber = await Context.JobNumber();
+          var entity = new SuratPenyerahanPetikemas();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
           entity.JobNumber = jobNumber;
           entity.PositionStatus = dto.IsDraft ? 0 : 2;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
+
           await SP2Container(dto.Containers, entity.Id);
+          await SP2Notify(dto.Notifies, entity.Id);
 
           var trxNumber = await Context.TrxNumber();
           await PutTransaction(new TransactionDto
@@ -422,8 +420,8 @@ namespace SP2.Data
             SP2Id = entity.Id
           });
         }
-        result = await Context.SaveChangesAsync();
-        return entity.JobNumber;
+        await Context.SaveChangesAsync();
+        return jobNumber;
       }
       catch (System.Exception se)
       {
@@ -444,14 +442,9 @@ namespace SP2.Data
     {
       try
       {
-        if (dto.Id.HasValue && await ValidateCompany(dto.SP2Id))
-        throw new Exception($"field name {nameof(dto.SP2Id)} is not FOREIGN KEY in table SP2");
-
-        var result = 0;
-        Container entity = null;
         if (dto.Id.HasValue)
         {
-          entity = await Context.SP2Container
+          var entity = await Context.SP2Container
             .Where(w => w.Id == dto.Id && w.SuratPenyerahanPetikemasId == SP2Id)
             .SingleOrDefaultAsync();
           if (entity != null)
@@ -463,15 +456,60 @@ namespace SP2.Data
         }
         else
         {
-          entity = new Container();
+          var entity = new Container();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
           entity.SuratPenyerahanPetikemasId = SP2Id;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
-        result = await Context.SaveChangesAsync();
+        await Context.SaveChangesAsync();
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    private async Task SP2Notify(NotifyDto[] collection, Guid SP2Id)
+    {
+      if (collection == null) return;
+      foreach (var item in collection)
+      {
+        await PutNotify(item, SP2Id);
+      }
+    }
+
+    private async Task PutNotify(NotifyDto dto, Guid SP2Id)
+    {
+      try
+      {
+        if (dto.Id.HasValue)
+        {
+          var entity = await Context.SP2Notify
+            .Where(w => w.Id == dto.Id && w.SuratPenyerahanPetikemasId == SP2Id)
+            .SingleOrDefaultAsync();
+          if (entity != null)
+          {
+            entity.Changes(dto);
+            entity.ModifiedBy = "system";
+            entity.ModifiedDate = DateTime.Now;
+          }
+        }
+        else
+        {
+          var entity = new Notify();
+          entity.Changes(dto);
+          entity.Id = Guid.NewGuid();
+          entity.CreatedBy = "system";
+          entity.CreatedDate = DateTime.Now;
+          entity.SuratPenyerahanPetikemasId = SP2Id;
+          entity.RowStatus = true;
+          await Context.AddAsync(entity);
+        }
+        await Context.SaveChangesAsync();
       }
       catch (System.Exception se)
       {
@@ -503,6 +541,7 @@ namespace SP2.Data
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
           entity.SuratPenyerahanPetikemasId = dto.SP2Id;
+          entity.RowStatus = true;
           await Context.AddAsync(entity);
         }
         await Context.SaveChangesAsync();
@@ -644,6 +683,7 @@ namespace SP2.Data
         .Where(w => w.RowStatus && w.Id == Id)
         .Include(i => i.Containers)
         .Include(i => i.Logs)
+        .Include(i => i.Notifies)
         .SingleOrDefaultAsync();
         return To(result);
       }
@@ -660,7 +700,7 @@ namespace SP2.Data
     Task<IEnumerable<InvoiceDto>> GetInvoices();
     Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId);
     Task<IEnumerable<RateContractDto>> GetRateContracts();
-    Task<IEnumerable<RatePlatformWithRelationDto>> GetRatePlatforms();
+    Task<IEnumerable<RatePlatformList>> GetRatePlatforms();
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);

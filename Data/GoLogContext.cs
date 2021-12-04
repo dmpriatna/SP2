@@ -12,6 +12,7 @@ namespace SP2.Data
         public DbSet<SuratPenyerahanPetikemas> SP2 { get; set; }
         public DbSet<Container> SP2Container { get; set; }
         public DbSet<Log> SP2Log { get; set; }
+        public DbSet<Notify> SP2Notify { get; set; }
 
         public DbSet<Company> CompanySet { get; set; }
         public DbSet<Document> DocumentSet { get; set; }

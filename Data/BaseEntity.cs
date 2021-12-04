@@ -101,6 +101,7 @@ namespace SP2.Data
 
         public virtual IEnumerable<Container> Containers { get; set; }
         public virtual IEnumerable<Log> Logs { get; set; }
+        public virtual IEnumerable<Notify> Notifies { get; set; }
     }
 
     [Table("SP2Container")]
@@ -121,6 +122,7 @@ namespace SP2.Data
         public DateTime CreatedDate { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
+        public bool RowStatus { get; set; }
     }
 
     [Table("SP2Log")]
@@ -136,6 +138,22 @@ namespace SP2.Data
         public DateTime CreatedDate { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
+        public bool RowStatus { get; set; }
+    }
+
+    [Table("SP2Notify")]
+    public class Notify
+    {
+        [Key]
+        public Guid Id { get; set; }
+        [Column("SP2Id")]
+        public Guid SuratPenyerahanPetikemasId { get; set; }
+        public string Email { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string ModifiedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public bool RowStatus { get; set; }
     }
 
     [Table("Companies")]

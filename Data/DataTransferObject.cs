@@ -52,9 +52,13 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class RatePlatformWithRelationDto : RatePlatformDto
+  public class RatePlatformList
   {
+    public Guid? Id { get; set; }
+    public Guid TransactionTypeId { get; set; }
     public string TransactionAlias { get; set; }
+    public double RateNominal { get; set; }
+    public bool RowStatus { get; set; }
   }
 
   public class TransactionDto
@@ -106,12 +110,12 @@ namespace SP2.Data
     public double GrandTotal { get; set; }
     public bool RowStatus { get; set; }
     public ContainerDto[] Containers { get; set; }
+    public NotifyDto[] Notifies { get; set; }
   }
 
   public class ContainerDto
   {
     public Guid? Id { get; set; }
-    public Guid SP2Id { get; set; }
     public string BLNumber { get; set; }
     public string VesselNumber { get; set; }
     public string VesselName { get; set; }
@@ -134,8 +138,36 @@ namespace SP2.Data
     public DateTime? CompletedDate { get; set; }
   }
   
-  public class SP2Detail : SP2Dto
+  public class SP2Detail
   {
+    public Guid? Id { get; set; }
+    public string CargoOwnerTaxId { get; set; }
+    public string CargoOwnerName { get; set; }
+    public string ForwarderTaxId { get; set; }
+    public string ForwarderName { get; set; }
+    public string TypeTransaction { get; set; }
+    public string TerminalOperator { get; set; }
+    public string JobNumber { get; set; }
+    public string BLNumber { get; set; }
+    public DateTime? BLDate { get; set; }
+    public string DocumentType { get; set; }
+    public DateTime? SPPBDate { get; set; }
+    public string SPPBNumber { get; set; }
+    public DateTime? PIBDate { get; set; }
+    public string PIBNumber { get; set; }
+    public DateTime? DODate { get; set; }
+    public string DONumber { get; set; }
+    public DateTime? DueDate { get; set; }
+    public bool IsDraft { get; set; }
+    public string PaymentMethod { get; set; }
+    public string ProformaInvoiceNo { get; set; }
+    public double SubTotalByThirdParty { get; set; }
+    public double PlatformFee { get; set; }
+    public double Vat { get; set; }
+    public double GrandTotal { get; set; }
+    public bool RowStatus { get; set; }
+    public ContainerDto[] Containers { get; set; }
+    public NotifyDto[] Notifies { get; set; }
     public LogDto[] Logs { get; set; }
   }
 
@@ -184,5 +216,11 @@ namespace SP2.Data
       }
     }
     public string PositionName { get; set; }
+  }
+
+  public class NotifyDto
+  {
+    public Guid? Id { get; set; }
+    public string Email { get; set; }
   }
 }

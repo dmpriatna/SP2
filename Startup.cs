@@ -42,7 +42,7 @@ namespace SP2
                 .SwaggerDoc("SP2", new OpenApiInfo
                 {
                     Title = "SP2.API",
-                    Version = "1.0"
+                    Version = "2021.12.04-1"
                 }));
         
             services.AddDbContext<GoLogContext>(Setup);
@@ -73,6 +73,8 @@ namespace SP2
                 opt.RoutePrefix = "";
                 opt.SwaggerEndpoint("/swagger/SP2/swagger.json", "Version 1.0");
             });
+
+            // app.UseMiddleware<HelperMid>();
 
             app.UseRouting();
 

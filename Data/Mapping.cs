@@ -46,13 +46,14 @@ namespace SP2.Data
       };
     }
 
-    public RatePlatformDto To(RatePlateformFee entity)
+    public RatePlatformList To(RatePlateformFee entity)
     {
-      return new RatePlatformDto
+      return new RatePlatformList
       {
         Id = entity.Id,
         RateNominal = entity.RateNominal,
         RowStatus = entity.RowStatus,
+        TransactionAlias = entity.TrxType.TransactionAlias,
         TransactionTypeId = entity.TransactionTypeId
       };
     }
@@ -91,6 +92,9 @@ namespace SP2.Data
       var logs = entity.Logs == null ?
         new LogDto[] {} :
           entity.Logs.Select(To).ToArray();
+      var notifies = entity.Notifies == null ?
+        new NotifyDto[] {} :
+          entity.Notifies.Select(To).ToArray();
       return new SP2Detail
       {
         BLDate = entity.BLDate,
@@ -117,6 +121,7 @@ namespace SP2.Data
         GrandTotal = entity.GrandTotal,
         IsDraft = entity.PositionStatus == 0,
         Logs = logs,
+        Notifies = notifies,
         PaymentMethod = entity.PaymentMethod,
         PlatformFee = entity.PlatformFee,
         ProformaInvoiceNo = entity.ProformaInvoiceNo,
@@ -134,7 +139,6 @@ namespace SP2.Data
         ContainerSize = entity.ContainerSize,
         ContainerType = entity.ContainerType,
         Id = entity.Id,
-        SP2Id = entity.SuratPenyerahanPetikemasId,
         VesselName = entity.VesselName,
         VesselNumber = entity.VesselNumber,
         VoyageNumber = entity.VoyageNumber
@@ -149,6 +153,15 @@ namespace SP2.Data
         PositionName = entity.PositionName,
         PositionStatus = entity.PositionStatus,
         SP2Id = entity.SuratPenyerahanPetikemasId
+      };
+    }
+
+    public NotifyDto To(Notify entity)
+    {
+      return new NotifyDto
+      {
+        Email = entity.Email,
+        Id = entity.Id
       };
     }
 

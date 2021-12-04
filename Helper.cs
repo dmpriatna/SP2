@@ -323,7 +323,8 @@ namespace SP2
       {
         var en = each.Name;
         var ev = each.GetValue(source);
-        if (each.PropertyType.Name != "IEnumerable`1")
+        if (each.PropertyType.Name != "IEnumerable`1" &&
+          each.PropertyType.BaseType.Name != "Array")
         self.GetType().GetProperty(en)?.SetValue(self, ev);
       }
     }
