@@ -416,9 +416,8 @@ namespace SP2.Data
 
           await PutLog(new LogDto
           {
-            PositionStatus = entity.PositionStatus,
-            SP2Id = entity.Id
-          });
+            PositionStatus = entity.PositionStatus
+          }, entity.Id);
         }
         await Context.SaveChangesAsync();
         return jobNumber;
@@ -517,14 +516,14 @@ namespace SP2.Data
       }
     }
 
-    private async Task PutLog(LogDto dto)
+    private async Task PutLog(LogDto dto, Guid SP2Id)
     {
       try
       {
         if (dto.Id.HasValue)
         {
           var entity = await Context.SP2Log
-            .Where(w => w.Id == dto.Id && w.SuratPenyerahanPetikemasId == dto.SP2Id)
+            .Where(w => w.Id == dto.Id && w.SuratPenyerahanPetikemasId == SP2Id)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
@@ -540,7 +539,7 @@ namespace SP2.Data
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
-          entity.SuratPenyerahanPetikemasId = dto.SP2Id;
+          entity.SuratPenyerahanPetikemasId = SP2Id;
           entity.RowStatus = true;
           await Context.AddAsync(entity);
         }

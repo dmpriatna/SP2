@@ -147,6 +147,7 @@ namespace SP2.Data
     public string ForwarderName { get; set; }
     public string TypeTransaction { get; set; }
     public string TerminalOperator { get; set; }
+    public int StatusPosition { get; set; }
     public string JobNumber { get; set; }
     public string BLNumber { get; set; }
     public DateTime? BLDate { get; set; }
@@ -166,6 +167,7 @@ namespace SP2.Data
     public double Vat { get; set; }
     public double GrandTotal { get; set; }
     public bool RowStatus { get; set; }
+    public DateTime? CreatedDate { get; set; }
     public ContainerDto[] Containers { get; set; }
     public NotifyDto[] Notifies { get; set; }
     public LogDto[] Logs { get; set; }
@@ -197,7 +199,6 @@ namespace SP2.Data
   public class LogDto
   {
     public Guid? Id { get; set; }
-    public Guid SP2Id { get; set; }
     private int pos;
     public int PositionStatus
     {
@@ -216,6 +217,7 @@ namespace SP2.Data
       }
     }
     public string PositionName { get; set; }
+    public DateTime? CreatedDate { get; set; }
   }
 
   public class NotifyDto

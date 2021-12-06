@@ -115,6 +115,7 @@ namespace SP2.Data
         CargoOwnerName = entity.CargoOwnerName,
         CargoOwnerTaxId = entity.CargoOwnerTaxId,
         Containers = containers,
+        CreatedDate = entity.CreatedDate,
         DueDate = entity.DueDate,
         ForwarderName = entity.ForwarderName,
         ForwarderTaxId = entity.ForwarderTaxId,
@@ -125,8 +126,9 @@ namespace SP2.Data
         PaymentMethod = entity.PaymentMethod,
         PlatformFee = entity.PlatformFee,
         ProformaInvoiceNo = entity.ProformaInvoiceNo,
+        StatusPosition = entity.PositionStatus,
         SubTotalByThirdParty = entity.SubTotalByThirdParty,
-        Vat = entity.Vat        
+        Vat = entity.Vat
       };
     }
 
@@ -152,7 +154,7 @@ namespace SP2.Data
         Id = entity.Id,
         PositionName = entity.PositionName,
         PositionStatus = entity.PositionStatus,
-        SP2Id = entity.SuratPenyerahanPetikemasId
+        CreatedDate = entity.CreatedDate
       };
     }
 
