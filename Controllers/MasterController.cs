@@ -283,5 +283,28 @@ namespace SP2.Controllers
         throw se;
       }
     }
+
+    [HttpGet, Produces("application/json"), Route("{npwp}/{blNumber}/{blDate}")]
+    public async Task<IActionResult> GetSPPB(
+      [FromRoute] string npwp,
+      [FromRoute] string blNumber,
+      [FromRoute] string blDate
+    )
+    {
+      try
+      {
+        string result;
+        using (var client = new System.Net.Http.HttpClient())
+        {
+            var message = await client.GetAsync($"https://esbbcext01.beacukai.go.id:9081/NLEMICROAPI-1.0/webresources/ceisa/BC20ByNoBL/{npwp}/{blNumber}/{blDate}");
+            result = await message.Content.ReadAsStringAsync();
+        }
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 }
