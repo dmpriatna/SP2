@@ -706,6 +706,12 @@ namespace SP2.Data
         var entity = await set.SingleOrDefaultAsync();
         if (entity == null) return result;
         result = entity.PositionStatus;
+        
+        await PutLog(new LogDto
+        {
+          PositionStatus = (int)request.Status
+        }, entity.Id);
+
         entity.PositionStatus = (int)request.Status;
         await Context.SaveChangesAsync();
         return result;
