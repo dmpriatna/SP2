@@ -16,6 +16,24 @@ namespace SP2.Controllers
     private readonly IService Service;
 
     [HttpPost]
+    public async Task<IActionResult> UpdateStatus([FromBody] SP2StatusRequest request)
+    {
+      try
+      {
+        var result = await Service.UpdateStatus(request);
+        return Ok(new {
+          message = "PositionStatus berhasil diubah.",
+          oldValue = result,
+          newValue = (int)request.Status
+        });
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpPost]
     public async Task<IActionResult> SaveRateContract([FromBody] RateContractDto dto)
     {
       try

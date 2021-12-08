@@ -691,6 +691,30 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<int> UpdateStatus(SP2StatusRequest request)
+    {
+      try
+      {
+        int result = -1;
+        var set = Context.SP2.AsQueryable();
+        if (request.Id.HasValue)
+        set = set.Where(w => w.Id == request.Id.Value);
+        if (!string.IsNullOrWhiteSpace(request.JobNumber))
+        set = set.Where(w => w.JobNumber == request.JobNumber);
+
+        var entity = await set.SingleOrDefaultAsync();
+        if (entity == null) return result;
+        result = entity.PositionStatus;
+        entity.PositionStatus = (int)request.Status;
+        await Context.SaveChangesAsync();
+        return result;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 
   public interface IService
@@ -708,6 +732,7 @@ namespace SP2.Data
     Task<bool> PutRateContract(RateContractDto dto);
     Task<bool> PutRatePlatform(RatePlatformDto dto);
     Task<string> PutSP2(SP2Dto dto);
+    Task<int> UpdateStatus(SP2StatusRequest request);
     Task<bool> PutTransaction(TransactionDto dto);
     Task<bool> PutTransactionType(TransactionTypeDto dto);
     Task SendMail(EmailDto oContent);

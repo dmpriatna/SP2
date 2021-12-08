@@ -114,4 +114,21 @@ namespace SP2.Data
     [EnumMember(Value = "Draft")] Draft,
     [EnumMember(Value = "Completed")] Completed
   }
+
+  public class SP2StatusRequest
+  {
+    public Guid? Id { get; set; }
+    public string JobNumber { get; set; }
+    public SP2StatusR Status { get; set; }
+  }
+
+  [JsonConverter(typeof(StringEnumConverter))]
+  public enum SP2StatusR
+  {
+    [EnumMember(Value = "Draft")] Draft,
+    [EnumMember(Value = "RequestForm")] RequestForm,
+    [EnumMember(Value = "ProformaInvoice")] ProformaInvoice,
+    [EnumMember(Value = "PaymentConfirmation")] PaymentConfirmation,
+    [EnumMember(Value = "SP2InvoiceRelease")] SP2InvoiceRelease
+   }
 }
