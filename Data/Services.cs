@@ -38,6 +38,22 @@ namespace SP2.Data
       }
     }
 
+    public async Task<IEnumerable<ContractDto>> GetContracts()
+    {
+      try
+      {
+        var entities = await Context.ContractSet
+        .Where(w => w.RowStatus)
+        .ToListAsync();
+        var result = entities.Select(To);
+        return result;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
     public async Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId)
     {
       try
@@ -824,6 +840,7 @@ namespace SP2.Data
   public interface IService
   {
     Task<SP2Detail> DetailSP2(Guid Id);
+    Task<IEnumerable<ContractDto>> GetContracts();
     Task<IEnumerable<InvoiceDto>> GetInvoices();
     Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId);
     Task<IEnumerable<RateContractDto>> GetRateContracts();

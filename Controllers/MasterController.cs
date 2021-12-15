@@ -183,6 +183,20 @@ namespace SP2.Controllers
     }
 
     [HttpGet]
+    public async Task<IActionResult> ListContract()
+    {
+      try
+      {
+        var result = await Service.GetContracts();
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpGet]
     public async Task<IActionResult> ListTransactionType()
     {
       try

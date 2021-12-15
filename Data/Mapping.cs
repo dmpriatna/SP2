@@ -4,6 +4,24 @@ namespace SP2.Data
 {
   public class Mapping
   {
+    public ContractDto To(Contract entity)
+    {
+      return new ContractDto
+      {
+        BillingPeriod = entity.BillingPeriod,
+        CompanyId = entity.CompanyId,
+        ContractNumber = entity.ContractNumber,
+        EndDate = entity.EndDate,
+        FirstParty = entity.FirstParty,
+        Id = entity.Id,
+        PriceRate = entity.PriceRate,
+        RowStatus = entity.RowStatus,
+        SecondParty = entity.SecondParty,
+        Services = entity.Services,
+        StartDate = entity.StartDate
+      };
+    }
+
     public InvoiceDetailDto To(InvoiceDetailPlatformFee entity)
     {
       return new InvoiceDetailDto

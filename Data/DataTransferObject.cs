@@ -238,5 +238,6 @@ namespace SP2.Data
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public double? PriceRate { get; set; }
+    public bool RowStatus { get; set; }
   }
 }
