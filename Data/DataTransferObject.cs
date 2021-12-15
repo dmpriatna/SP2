@@ -225,4 +225,18 @@ namespace SP2.Data
     public Guid? Id { get; set; }
     public string Email { get; set; }
   }
+
+  public class ContractDto
+  {
+    public Guid? Id { get; set; }
+    public Guid CompanyId { get; set; }
+    public string ContractNumber { get; set; }
+    public string FirstParty { get; set; }
+    public string SecondParty { get; set; }
+    public string Services { get; set; }
+    public string BillingPeriod { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public double? PriceRate { get; set; }
+  }
 }

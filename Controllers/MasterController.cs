@@ -34,6 +34,27 @@ namespace SP2.Controllers
     }
 
     [HttpPost]
+    public async Task<IActionResult> SaveContract([FromBody] ContractDto dto)
+    {
+      try
+      {
+        var result = await Service.PutContract(dto);
+        return Ok(new {
+          ContractId = result
+        });
+      }
+      catch (System.Exception se)
+      {
+        return new ContentResult
+        {
+          Content = Newtonsoft.Json.JsonConvert.SerializeObject(new { Message = se.Message }),
+          ContentType = "application/json",
+          StatusCode = 422
+        };
+      }
+    }
+
+    [HttpPost]
     public async Task<IActionResult> SaveRateContract([FromBody] RateContractDto dto)
     {
       try

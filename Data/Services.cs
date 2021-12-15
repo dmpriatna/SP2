@@ -135,13 +135,13 @@ namespace SP2.Data
       }
     }
 
-    public async Task<bool> PutInvoice(InvoiceDto dto)
+    public async Task<Guid> PutInvoice(InvoiceDto dto)
     {
       try
       {
         if (await ValidateCompany(dto.CompanyId))
         throw new Exception($"field name {nameof(dto.CompanyId)} is not FOREIGN KEY in table Companies");
-        var result = 0;
+        Guid result;
         if (dto.Id.HasValue)
         {
           var entity = await Context.InvoiceSet
@@ -153,6 +153,7 @@ namespace SP2.Data
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
           }
+          result = entity.Id;
         }
         else
         {
@@ -163,9 +164,10 @@ namespace SP2.Data
           entity.CreatedDate = dto.InvoiceDate;
           entity.RowStatus = true;
           await Context.AddAsync(entity);
+          result = entity.Id;
         }
-        result = await Context.SaveChangesAsync();
-        return result > 0;
+        await Context.SaveChangesAsync();
+        return result;
       }
       catch (System.Exception se)
       {
@@ -310,6 +312,7 @@ namespace SP2.Data
             entity.Changes(dto);
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
+            await Contract(entity);
           }
         }
         else
@@ -324,6 +327,61 @@ namespace SP2.Data
         }
         result = await Context.SaveChangesAsync();
         return result > 0;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    private async Task Contract(Transaction t)
+    {
+      try
+      {
+        Contract contract;
+        RateContract rateContract = null;
+        RatePlateformFee ratePlateform;
+
+        contract = await Context.ContractSet
+        .Where(w => w.CompanyId == t.CompanyId)
+        .FirstOrDefaultAsync();
+
+        if (contract != null)
+        rateContract = await Context.RateContractSet
+        .Where(w => w.ContractId == contract.Id)
+        .SingleOrDefaultAsync();
+        
+        ratePlateform = await Context.RatePlateformFeeSet
+        .Where(w => w.TransactionTypeId == t.TransactionTypeId)
+        .SingleOrDefaultAsync();
+
+        var total = rateContract?.RateNominal + ratePlateform?.RateNominal;
+
+        var invoiceId = await PutInvoice(new InvoiceDto
+        {
+          CompanyId = t.CompanyId,
+          InvoiceDate = DateTime.Now,
+          InvoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmss"),
+          IsContract = contract != null,
+          JobNumber = t.JobNumber,
+          PaidThru = DateTime.Now,
+          TotalAmount = total ?? 0
+        });
+
+        if (rateContract != null)
+        await PutInvoiceDetail(new InvoiceDetailDto
+        {
+          InvoiceAmount = rateContract.RateNominal,
+          InvoiceId = invoiceId,
+          TransactionTypeId = rateContract.TransactionTypeId
+        });
+
+        await PutInvoiceDetail(new InvoiceDetailDto
+        {
+          InvoiceAmount = ratePlateform.RateNominal,
+          InvoiceId = invoiceId,
+          TransactionTypeId = ratePlateform.TransactionTypeId
+        });
       }
       catch (System.Exception se)
       {
@@ -721,6 +779,46 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<Guid> PutContract(ContractDto dto)
+    {
+      try
+      {
+        if (await ValidateCompany(dto.CompanyId))
+        throw new Exception($"field name {nameof(dto.CompanyId)} is not FOREIGN KEY in table Companies");
+        Guid result;
+        if (dto.Id.HasValue)
+        {
+          var entity = await Context.ContractSet
+            .Where(w => w.Id == dto.Id && w.RowStatus)
+            .SingleOrDefaultAsync();
+          if (entity != null)
+          {
+            entity.Changes(dto);
+            entity.ModifiedBy = "system";
+            entity.ModifiedDate = DateTime.Now;
+          }
+          result = entity.Id;
+        }
+        else
+        {
+          var entity = new InvoicePlatformFee();
+          entity.Changes(dto);
+          entity.Id = Guid.NewGuid();
+          entity.CreatedBy = "system";
+          entity.CreatedDate = DateTime.Now;
+          entity.RowStatus = true;
+          await Context.AddAsync(entity);
+          result = entity.Id;
+        }
+        await Context.SaveChangesAsync();
+        return result;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 
   public interface IService
@@ -733,7 +831,8 @@ namespace SP2.Data
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
-    Task<bool> PutInvoice(InvoiceDto dto);
+    Task<Guid> PutContract(ContractDto dto);
+    Task<Guid> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);
     Task<bool> PutRateContract(RateContractDto dto);
     Task<bool> PutRatePlatform(RatePlatformDto dto);

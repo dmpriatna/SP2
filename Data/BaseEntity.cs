@@ -185,14 +185,20 @@ namespace SP2.Data
     }
 
     /// Master Contract
+    [Table("Contract")]
     public class Contract
     {
         [Key]
         public Guid Id { get; set; }
         public Guid CompanyId { get; set; }
-        public Guid PersonId { get; set; }
-        public DateTime DateStart { get; set; }
-        public DateTime DateEnd { get; set; }
+        public string ContractNumber { get; set; }
+        public string FirstParty { get; set; }
+        public string SecondParty { get; set; }
+        public string Services { get; set; }
+        public string BillingPeriod { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public double? PriceRate { get; set; }
 
         #region system need
         public string CreatedBy { get; set; }

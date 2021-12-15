@@ -14,6 +14,7 @@ namespace SP2.Data
         public DbSet<Log> SP2Log { get; set; }
         public DbSet<Notify> SP2Notify { get; set; }
 
+        public DbSet<Contract> ContractSet { get; set; }
         public DbSet<Company> CompanySet { get; set; }
         public DbSet<Document> DocumentSet { get; set; }
 
