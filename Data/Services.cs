@@ -448,45 +448,51 @@ namespace SP2.Data
         string jobNumber = null;
         if (dto.Id.HasValue)
         {
+          jobNumber = await Context.JobNumber();
           var entity = await Context.SP2
             .Where(w => w.Id == dto.Id)
             .SingleOrDefaultAsync();
           if (entity != null)
           {
             entity.Changes(dto);
+            entity.JobNumber = jobNumber;
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
 
             await SP2Container(dto.Containers, entity.Id);
             await SP2Notify(dto.Notifies, entity.Id);
+
+            var trxNumber = await Context.TrxNumber();
+            await PutTransaction(new TransactionDto
+            {
+              CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
+              Delegated = true,
+              JobNumber = entity.JobNumber,
+              RowStatus = true,
+              TransactionNumber = trxNumber,
+              TransactionTypeId = Guid.Parse("8529299c-0a69-494e-ba06-45f844e2a2d0"),
+            });
+
+            await PutLog(new LogDto
+            {
+              PositionStatus = entity.PositionStatus
+            }, entity.Id);
           }
         }
         else
         {
-          jobNumber = await Context.JobNumber();
+          jobNumber = dto.JobNumber;
           var entity = new SuratPenyerahanPetikemas();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
-          entity.JobNumber = jobNumber;
           entity.PositionStatus = dto.IsDraft ? 0 : 2;
           entity.RowStatus = true;
           await Context.AddAsync(entity);
 
           await SP2Container(dto.Containers, entity.Id);
           await SP2Notify(dto.Notifies, entity.Id);
-
-          var trxNumber = await Context.TrxNumber();
-          await PutTransaction(new TransactionDto
-          {
-            CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
-            Delegated = true,
-            JobNumber = entity.JobNumber,
-            RowStatus = true,
-            TransactionNumber = trxNumber,
-            TransactionTypeId = Guid.Parse("8529299c-0a69-494e-ba06-45f844e2a2d0"),
-          });
 
           await PutLog(new LogDto
           {
@@ -854,9 +860,9 @@ namespace SP2.Data
     Task<bool> PutRateContract(RateContractDto dto);
     Task<bool> PutRatePlatform(RatePlatformDto dto);
     Task<string> PutSP2(SP2Dto dto);
-    Task<int> UpdateStatus(SP2StatusRequest request);
     Task<bool> PutTransaction(TransactionDto dto);
     Task<bool> PutTransactionType(TransactionTypeDto dto);
     Task SendMail(EmailDto oContent);
+    Task<int> UpdateStatus(SP2StatusRequest request);
   }
 }
