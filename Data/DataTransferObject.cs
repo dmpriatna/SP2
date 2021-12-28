@@ -108,7 +108,7 @@ namespace SP2.Data
     public double PlatformFee { get; set; }
     public double Vat { get; set; }
     public double GrandTotal { get; set; }
-    public bool RowStatus { get; set; }
+    public bool? RowStatus { get; set; }
     public ContainerDto[] Containers { get; set; }
     public NotifyDto[] Notifies { get; set; }
   }

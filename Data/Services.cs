@@ -458,6 +458,8 @@ namespace SP2.Data
             entity.JobNumber = jobNumber;
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
+            entity.PositionStatus = dto.IsDraft ? 0 : 2;
+            entity.RowStatus = dto.RowStatus ?? true;
 
             await SP2Container(dto.Containers, entity.Id);
             await SP2Notify(dto.Notifies, entity.Id);
@@ -729,6 +731,11 @@ namespace SP2.Data
             w.TransactionName.ToLower().Contains(all));
         }
 
+        if (!string.IsNullOrWhiteSpace(orders))
+        {
+            query = query.OrderBy(orders);
+        }
+
         if (request.Start > 0)
         {
           query = query.Skip(request.Start);
@@ -737,11 +744,6 @@ namespace SP2.Data
         if (request.Length > 0)
         {
           query = query.Take(request.Length);
-        }
-
-        if (!string.IsNullOrWhiteSpace(orders))
-        {
-            query = query.OrderBy(orders);
         }
 
         entities = await query.ToListAsync();
