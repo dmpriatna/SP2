@@ -317,10 +317,10 @@ namespace SP2.Data
         if (await ValidateTransactionType(dto.TransactionTypeId))
         throw new Exception($"field name {nameof(dto.TransactionTypeId)} is not FOREIGN KEY in table TransactionType");
 
-        var result = 0;
+        Transaction entity;
         if (dto.Id.HasValue)
         {
-          var entity = await Context.TransactionSet
+          entity = await Context.TransactionSet
             .Where(w => w.Id == dto.Id && w.RowStatus)
             .SingleOrDefaultAsync();
           if (entity != null)
@@ -328,21 +328,20 @@ namespace SP2.Data
             entity.Changes(dto);
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
-            await Contract(entity);
           }
         }
         else
         {
-          var entity = new Transaction();
+          entity = new Transaction();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
           entity.RowStatus = true;
           await Context.AddAsync(entity);
+          await Contract(entity);
         }
-        result = await Context.SaveChangesAsync();
-        return result > 0;
+        return await Context.SaveChangesAsync() > 0;
       }
       catch (System.Exception se)
       {
@@ -377,7 +376,7 @@ namespace SP2.Data
         {
           CompanyId = t.CompanyId,
           InvoiceDate = DateTime.Now,
-          InvoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMddHHmmss"),
+          InvoiceNumber = Context.InvoiceNumber,
           IsContract = contract != null,
           JobNumber = t.JobNumber,
           PaidThru = DateTime.Now,
@@ -390,13 +389,6 @@ namespace SP2.Data
           InvoiceAmount = rateContract.RateNominal,
           InvoiceId = invoiceId,
           TransactionTypeId = rateContract.TransactionTypeId
-        });
-
-        await PutInvoiceDetail(new InvoiceDetailDto
-        {
-          InvoiceAmount = ratePlateform.RateNominal,
-          InvoiceId = invoiceId,
-          TransactionTypeId = ratePlateform.TransactionTypeId
         });
       }
       catch (System.Exception se)
@@ -843,10 +835,33 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<bool> CancelTransaction(Guid Id, string Reason)
+    {
+      try
+      {
+        var entity = await Context.TransactionSet
+          .Where(w => w.Id == Id && w.RowStatus)
+          .SingleOrDefaultAsync();
+        if (entity != null)
+        {
+          entity.CancelReason = Reason;
+          entity.ModifiedBy = "system";
+          entity.ModifiedDate = DateTime.Now;
+          entity.RowStatus = false;
+        }
+        return await Context.SaveChangesAsync() > 0;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 
   public interface IService
   {
+    Task<bool> CancelTransaction(Guid Id, string Reason);
     Task<SP2Detail> DetailSP2(Guid Id);
     Task<IEnumerable<ContractDto>> GetContracts();
     Task<IEnumerable<InvoiceDto>> GetInvoices();

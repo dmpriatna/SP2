@@ -130,5 +130,11 @@ namespace SP2.Data
     [EnumMember(Value = "ProformaInvoice")] ProformaInvoice,
     [EnumMember(Value = "PaymentConfirmation")] PaymentConfirmation,
     [EnumMember(Value = "SP2InvoiceRelease")] SP2InvoiceRelease
-   }
+  }
+
+  public class CancelTrxRequest
+  {
+    public Guid Id { get; set; }
+    public string Reason { get; set; }
+  }
 }

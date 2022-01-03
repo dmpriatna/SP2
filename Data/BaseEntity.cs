@@ -278,6 +278,7 @@ namespace SP2.Data
         public string TransactionNumber { get; set; }
         public string JobNumber { get; set; }
         public bool Delegated { get; set; }
+        public string CancelReason { get; set; }
 
         #region system need
         public string CreatedBy { get; set; }

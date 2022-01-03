@@ -16,6 +16,22 @@ namespace SP2.Controllers
     private readonly IService Service;
 
     [HttpPost]
+    public async Task<IActionResult> CancelTransaction([FromBody] CancelTrxRequest request)
+    {
+      try
+      {
+        var result = await Service.CancelTransaction(request.Id, request.Reason);
+        return Ok(new {
+          message = "Transaksi berhasil dibatalkan."
+        });
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpPost]
     public async Task<IActionResult> UpdateStatus([FromBody] SP2StatusRequest request)
     {
       try

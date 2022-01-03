@@ -402,6 +402,41 @@ namespace SP2
       }
       return result;
     }
+
+    public static async Task<string> InvNumber(this GoLogContext context)
+    {
+      int one = 1;
+      string suffix = one.ToString("D6");
+      string result = null;
+
+      var now = DateTime.Now;
+      var patern = DateTime.Now.ToString("yyyy-MM/INV/SP2/dd-");
+
+      var lastCode = await context.SP2
+        .Where(w => w.CreatedDate.Date == now.Date)
+        .OrderBy(ob => ob.CreatedDate)
+        .LastOrDefaultAsync();
+
+      if (lastCode == null)
+        result = patern + suffix;
+      else
+      {
+        if (string.IsNullOrWhiteSpace(lastCode.JobNumber))
+          result = patern + suffix;
+        else
+        {
+          var chunk = lastCode.JobNumber.Split('-').Last();
+          if (int.TryParse(chunk, out int code))
+          {
+            code++;
+            result = patern + code.ToString("D6");
+          }
+          else
+            result = patern + now.ToString("HHmmss");
+        }
+      }
+      return result;
+    }
   }
 
   public class XSI
