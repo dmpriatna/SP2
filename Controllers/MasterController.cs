@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SP2.Data;
@@ -381,7 +382,12 @@ namespace SP2.Controllers
     {
       try
       {
-        return Ok(await Service.ListDoSp2());
+        var result = await Service.ListDoSp2();
+        return Ok(new
+        {
+          Data = result,
+          Total = result.Count()
+        });
       }
       catch (System.Exception se)
       {
