@@ -92,6 +92,7 @@ namespace SP2.Data
     public double PlatformFee { get; set; }
     public double Vat { get; set; }
     public double GrandTotal { get; set; }
+    public string CancelReason { get; set; }
 
     public string CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }

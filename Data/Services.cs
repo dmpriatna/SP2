@@ -845,6 +845,7 @@ namespace SP2.Data
           .SingleOrDefaultAsync();
         if (sp2 != null)
         {
+          sp2.CancelReason = Reason;
           sp2.ModifiedBy = "system";
           sp2.ModifiedDate = DateTime.Now;
           sp2.RowStatus = false;
@@ -860,7 +861,7 @@ namespace SP2.Data
           trx.ModifiedDate = DateTime.Now;
           trx.RowStatus = false;
         }
-        
+
         return await Context.SaveChangesAsync() > 0;
       }
       catch (System.Exception se)
