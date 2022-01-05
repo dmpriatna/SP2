@@ -840,16 +840,27 @@ namespace SP2.Data
     {
       try
       {
-        var entity = await Context.TransactionSet
+        var sp2 = await Context.SP2
           .Where(w => w.Id == Id && w.RowStatus)
           .SingleOrDefaultAsync();
-        if (entity != null)
+        if (sp2 != null)
         {
-          entity.CancelReason = Reason;
-          entity.ModifiedBy = "system";
-          entity.ModifiedDate = DateTime.Now;
-          entity.RowStatus = false;
+          sp2.ModifiedBy = "system";
+          sp2.ModifiedDate = DateTime.Now;
+          sp2.RowStatus = false;
         }
+
+        var trx = await Context.TransactionSet
+          .Where(w => w.JobNumber == sp2.JobNumber && w.RowStatus)
+          .SingleOrDefaultAsync();
+        if (trx != null)
+        {
+          trx.CancelReason = Reason;
+          trx.ModifiedBy = "system";
+          trx.ModifiedDate = DateTime.Now;
+          trx.RowStatus = false;
+        }
+        
         return await Context.SaveChangesAsync() > 0;
       }
       catch (System.Exception se)
