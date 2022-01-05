@@ -42,7 +42,7 @@ namespace SP2
                 .SwaggerDoc("SP2", new OpenApiInfo
                 {
                     Title = "SP2.API",
-                    Version = "2021.12.28-1"
+                    Version = "2022.01.05-1"
                 }));
         
             services.AddDbContext<GoLogContext>(Setup);
