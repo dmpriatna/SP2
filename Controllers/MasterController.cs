@@ -375,5 +375,18 @@ namespace SP2.Controllers
         throw se;
       }
     }
+
+    [HttpGet, Route("[action]")]
+    public async Task<IActionResult> ListDoSp2()
+    {
+      try
+      {
+        return Ok(await Service.ListDoSp2());
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 }

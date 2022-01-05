@@ -857,6 +857,32 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<IEnumerable<object>> ListDoSp2()
+    {
+      try
+      {
+        var result = new List<object>();
+
+        var doList = await Context.DeliveryOrderSet
+        .Where(w => w.RowStatus == 0)
+        .ToListAsync();
+
+        result.AddRange(doList.Select(To));
+
+        var sp2List = await Context.SP2
+        .Where(w => w.RowStatus)
+        .ToListAsync();
+
+        result.AddRange(sp2List.Select(To));
+
+        return result;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 
   public interface IService
@@ -871,6 +897,7 @@ namespace SP2.Data
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
+    Task<IEnumerable<object>> ListDoSp2();
     Task<Guid> PutContract(ContractDto dto);
     Task<Guid> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);

@@ -210,5 +210,42 @@ namespace SP2.Data
         TypeTransaction = entity.TypeTransaction
       };
     }
+
+    public object To(DeliveryOrder entity)
+    {
+      return new DoSp2Dto
+      {
+        BillOfLadingDate = entity.BillOfLadingDate,
+        BillOfLadingNumber = entity.BillOfLadingNumber,
+        Consignee = entity.Consignee,
+        CreatedBy = entity.CreatedBy,
+        CreatedDate = entity.CreatedDate,
+        CustomerCode = entity.CustomerCode,
+        CustomerID = entity.CustomerID,
+        CustomerName = entity.CustomerName,
+        DeliveryOrderExpiredDate = entity.DeliveryOrderExpiredDate,
+        DeliveryOrderNumber = entity.DeliveryOrderNumber,
+        DeliveryOrderStatus = entity.DeliveryOrderStatus,
+        DeliveryOrderType = entity.DeliveryOrderType,
+        Id = entity.Id,
+        JobNumber = entity.JobNumber,
+        ModifiedBy = entity.ModifiedBy,
+        ModifiedDate = entity.ModifiedDate,
+        NoPos = entity.NoPos,
+        NotifyPartyAdress = entity.NotifyPartyAdress,
+        NotifyPartyName = entity.NotifyPartyName,
+        PortOfDelivery = entity.PortOfDelivery,
+        PortOfDischarge = entity.PortOfDischarge,
+        PortOfLoading = entity.PortOfLoading,
+        PositionStatus = entity.PositionStatus,
+        ProformaInvoiceAmount = entity.ProformaInvoiceAmount,
+        RowStatus = entity.RowStatus,
+        Shipper = entity.Shipper,
+        ShippingLineEmail = entity.ShippingLineEmail,
+        ShippingLineName = entity.ShippingLineName,
+        Vessel = entity.Vessel,
+        VoyageNumber = entity.VoyageNumber
+      };
+    }
   }
 }

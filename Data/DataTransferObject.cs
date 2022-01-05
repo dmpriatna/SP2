@@ -240,4 +240,41 @@ namespace SP2.Data
     public double? PriceRate { get; set; }
     public bool RowStatus { get; set; }
   }
+
+  public class DoSp2Dto
+  {
+    public Guid Id { get; set; }
+
+    public string DeliveryOrderType { get; set; }
+    public string DeliveryOrderNumber { get; set; }
+    public DateTime? DeliveryOrderExpiredDate { get; set; }
+    public string DeliveryOrderStatus { get; set; }
+    public string JobNumber { get; set; }
+    public string CustomerCode { get; set; }
+    public string CustomerName { get; set; }
+    public string BillOfLadingNumber { get; set; }
+    public DateTime BillOfLadingDate { get; set; }
+    public string ShippingLineName { get; set; }
+    public string ShippingLineEmail { get; set; }
+    public string Vessel { get; set; }
+    public string VoyageNumber { get; set; }
+    public string Consignee { get; set; }
+    public string PortOfLoading { get; set; }
+    public string PortOfDischarge { get; set; }
+    public string PortOfDelivery { get; set; }
+    public string NotifyPartyName { get; set; }
+    public string NotifyPartyAdress { get; set; }
+    public Guid? CustomerID { get; set; }
+    public int PositionStatus { get; set; }
+    public string Shipper { get; set; }
+    public string NoPos { get; set; }
+    public long ProformaInvoiceAmount { get; set; }
+
+    public byte RowStatus { get; set; }
+
+    public string CreatedBy { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public string ModifiedBy { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+  }
 }
