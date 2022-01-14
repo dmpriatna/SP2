@@ -475,7 +475,7 @@ namespace SP2.Data
         }
         else
         {
-          jobNumber = dto.JobNumber;
+          jobNumber = dto.IsDraft ? dto.JobNumber : await Context.JobNumber();
           var entity = new SuratPenyerahanPetikemas();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
