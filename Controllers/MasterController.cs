@@ -377,12 +377,15 @@ namespace SP2.Controllers
       }
     }
 
-    [HttpGet, Route("[action]")]
-    public async Task<IActionResult> ListDoSp2()
+    [HttpGet]
+    public async Task<IActionResult> ListDoSp2(
+      [FromQuery] int start,
+      [FromQuery] int lenght
+    )
     {
       try
       {
-        var result = await Service.ListDoSp2();
+        var result = await Service.ListDoSp2(start, lenght);
         return Ok(new
         {
           Data = result,

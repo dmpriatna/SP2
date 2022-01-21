@@ -548,11 +548,51 @@ namespace SP2.Data
 
     private async Task SP2Notify(NotifyDto[] collection, Guid SP2Id)
     {
-      if (collection == null) return;
-      foreach (var item in collection)
+      var entities = await Context.SP2Notify
+        .Where(w => w.SuratPenyerahanPetikemasId == SP2Id)
+        .ToListAsync();
+      
+      if (collection == null)
       {
-        await PutNotify(item, SP2Id);
+        foreach (var item in entities)
+        {
+          Context.SP2Notify.Remove(item);
+        }
+        await Context.SaveChangesAsync();
+        return;
       }
+      
+      var toAdd = collection
+        .Select(s => new { Email = s.Email })
+        .Except(entities.Select(s => new { Email = s.Email }))
+        .ToList();
+
+      var toRemove = entities
+        .Select(s => new { Email = s.Email })
+        .Except(collection.Select(s => new { Email = s.Email }))
+        .ToList();
+      
+      foreach (var each in toAdd)
+      {
+        var entity = new Notify
+        {
+          CreatedBy = "system",
+          CreatedDate = DateTime.Now,
+          Email = each.Email,
+          Id = Guid.NewGuid(),
+          RowStatus = true,
+          SuratPenyerahanPetikemasId = SP2Id
+        };
+        await Context.AddAsync(entity);
+      }
+
+      foreach (var each in toRemove)
+      {
+        var item = entities.Where(w => w.Email == each.Email).SingleOrDefault();
+        Context.SP2Notify.Remove(item);
+      }
+
+      await Context.SaveChangesAsync();
     }
 
     private async Task PutNotify(NotifyDto dto, Guid SP2Id)
@@ -870,7 +910,7 @@ namespace SP2.Data
       }
     }
 
-    public async Task<IEnumerable<object>> ListDoSp2()
+    public async Task<IEnumerable<object>> ListDoSp2(int start, int lenght)
     {
       try
       {
@@ -887,6 +927,16 @@ namespace SP2.Data
         .ToListAsync();
 
         result.AddRange(sp2List.Select(To));
+
+        if (start > 0)
+        {
+          result = result.Skip(start).ToList();
+        }
+
+        if (lenght > 0)
+        {
+          result = result.Take(lenght).ToList();
+        }
 
         return result;
       }
@@ -909,7 +959,7 @@ namespace SP2.Data
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
-    Task<IEnumerable<object>> ListDoSp2();
+    Task<IEnumerable<object>> ListDoSp2(int start, int lenght);
     Task<Guid> PutContract(ContractDto dto);
     Task<Guid> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);
