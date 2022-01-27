@@ -397,5 +397,19 @@ namespace SP2.Controllers
         throw se;
       }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> SaveDelegate([FromBody] TrxDelegateDto dto)
+    {
+      try
+      {
+        var result = await Service.PutTrxDelegate(dto);
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 }

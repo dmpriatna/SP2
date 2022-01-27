@@ -144,6 +144,7 @@ namespace SP2.Data
         PaymentMethod = entity.PaymentMethod,
         PlatformFee = entity.PlatformFee,
         ProformaInvoiceNo = entity.ProformaInvoiceNo,
+        ProformaInvoiceUrl = entity.ProformaInvoiceNo,
         StatusPosition = entity.PositionStatus,
         SubTotalByThirdParty = entity.SubTotalByThirdParty,
         Vat = entity.Vat

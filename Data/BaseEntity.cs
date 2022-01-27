@@ -88,6 +88,7 @@ namespace SP2.Data
     public string ForwarderName { get; set; }
     public DateTime DueDate { get; set; }
     public string ProformaInvoiceNo { get; set; }
+    public string ProformaInvoiceUrl { get; set; }
     public double SubTotalByThirdParty { get; set; }
     public double PlatformFee { get; set; }
     public double Vat { get; set; }
@@ -441,6 +442,32 @@ namespace SP2.Data
     public int PaymentStatusId { get; set; }
     public string PDFId { get; set; }
     public string PDFName { get; set; }
+    public byte RowStatus { get; set; }
+    public string CreatedBy { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public string ModifiedBy { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+  }
+
+  [Table("TransactionDelegate")]
+  public class TrxDelegate
+  {
+    [Key]
+    public Guid Id { get; set; }
+    [Column("IsDraft")]
+    public bool SaveAsDraft { get; set; }
+    public string ServiceName { get; set; }
+    public string ContractNumber { get; set; }
+    public string FrieghtForwarderName { get; set; }
+    [Column("BillOfLadingFile")]
+    public string BLDocument { get; set; }
+    [Column("LetterOfIndemnityFile")]
+    public string LetterOfIndemnity { get; set; }
+    [Column("AttorneyLetterFile")]
+    public string AttorneyLetter { get; set; }
+    public string PositionStatus { get; set; }
+    public string PositionStatusName { get; set; }
+    
     public byte RowStatus { get; set; }
     public string CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }

@@ -946,6 +946,40 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<bool> PutTrxDelegate(TrxDelegateDto dto)
+    {
+      try
+      {
+        if (dto.Id.HasValue)
+        {
+          var entity = await Context.TrxDelegateSet
+            .Where(w => w.Id == dto.Id && w.RowStatus == 0)
+            .SingleOrDefaultAsync();
+          if (entity != null)
+          {
+            entity.Changes(dto);
+            entity.ModifiedBy = "system";
+            entity.ModifiedDate = DateTime.Now;
+          }
+        }
+        else
+        {
+          var entity = new TrxDelegate();
+          entity.Changes(dto);
+          entity.Id = Guid.NewGuid();
+          entity.CreatedBy = "system";
+          entity.RowStatus = 0;
+          await Context.AddAsync(entity);
+        }
+        var entryState = await Context.SaveChangesAsync();
+        return entryState > 0;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 
   public interface IService
@@ -971,5 +1005,6 @@ namespace SP2.Data
     Task<bool> PutTransactionType(TransactionTypeDto dto);
     Task SendMail(EmailDto oContent);
     Task<int> UpdateStatus(SP2StatusRequest request);
+    Task<bool> PutTrxDelegate(TrxDelegateDto dto);
   }
 }
