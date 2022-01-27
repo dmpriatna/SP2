@@ -910,7 +910,7 @@ namespace SP2.Data
       }
     }
 
-    public async Task<IEnumerable<object>> ListDoSp2(int start, int lenght)
+    public async Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght)
     {
       try
       {
@@ -927,6 +927,7 @@ namespace SP2.Data
         .ToListAsync();
 
         result.AddRange(sp2List.Select(To));
+        var count = result.Count;
 
         if (start > 0)
         {
@@ -938,7 +939,7 @@ namespace SP2.Data
           result = result.Take(lenght).ToList();
         }
 
-        return result;
+        return new Tuple<IEnumerable<object>, int>(result, count);
       }
       catch (System.Exception se)
       {
@@ -959,7 +960,7 @@ namespace SP2.Data
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
-    Task<IEnumerable<object>> ListDoSp2(int start, int lenght);
+    Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght);
     Task<Guid> PutContract(ContractDto dto);
     Task<Guid> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);

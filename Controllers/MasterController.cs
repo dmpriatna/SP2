@@ -388,8 +388,8 @@ namespace SP2.Controllers
         var result = await Service.ListDoSp2(start, lenght);
         return Ok(new
         {
-          Data = result,
-          Total = result.Count()
+          Data = result.Item1,
+          Total = result.Item2
         });
       }
       catch (System.Exception se)
