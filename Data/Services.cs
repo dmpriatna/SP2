@@ -970,6 +970,9 @@ namespace SP2.Data
             entity.ModifiedBy = "system";
             entity.ModifiedDate = DateTime.Now;
             entity.NotifyEmails = string.Join(";", dto.NotifyEmails);
+            entity.PositionStatus = dto.SaveAsDraft ? 1 : 0;
+            entity.PositionStatusName = dto.SaveAsDraft ?
+              SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
           }
         }
         else
@@ -980,7 +983,11 @@ namespace SP2.Data
           entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
           entity.JobNumber = JobNumber;
+          entity.ModifiedBy = null;
           entity.NotifyEmails = string.Join(";", dto.NotifyEmails);
+          entity.PositionStatus = dto.SaveAsDraft ? 1 : 0;
+          entity.PositionStatusName = dto.SaveAsDraft ?
+            SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
           entity.RowStatus = 0;
           await Context.AddAsync(entity);
         }
