@@ -437,7 +437,7 @@ namespace SP2.Data
     {
       try
       {
-        string jobNumber = dto.IsDraft ? null : Context.JobNumberS;
+        string jobNumber = dto.IsDraft ? null : Context.JobNumber;
         if (dto.Id.HasValue)
         {
           var entity = await Context.SP2
