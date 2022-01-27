@@ -286,17 +286,27 @@ namespace SP2.Data
     public bool SaveAsDraft { get; set; }
     public string ServiceName { get; set; }
     public string ContractNumber { get; set; }
+    public string JobNumber { get; set; }
     public string FrieghtForwarderName { get; set; }
     public string BLDocument { get; set; }
     public string LetterOfIndemnity { get; set; }
     public string AttorneyLetter { get; set; }
-    public string PositionStatus { get; set; }
+    public int PositionStatus { get; set; }
     public string PositionStatusName { get; set; }
+    public string[] NotifyEmails { get; set; }
     
     public byte RowStatus { get; set; }
     public string CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }
     public string ModifiedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
+  }
+
+  public class TrxDelegateList
+  {
+    public Guid Id { get; set; }
+    public string JobNumber { get; set; }
+    public string ServiceName { get; set; }
+    public DateTime CreatedDate { get; set; }
   }
 }

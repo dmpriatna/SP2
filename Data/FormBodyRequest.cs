@@ -137,4 +137,10 @@ namespace SP2.Data
     public Guid Id { get; set; }
     public string Reason { get; set; }
   }
+
+  public class TrxDelegateRequest
+  {
+    public SP2Status Status { get; set; }
+    public string Keyword { get; set; }
+  }
 }

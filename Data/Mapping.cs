@@ -248,5 +248,44 @@ namespace SP2.Data
         VoyageNumber = entity.VoyageNumber
       };
     }
+
+    public TrxDelegateDto To(TrxDelegate entity)
+    {
+      if (entity == null) return new TrxDelegateDto();
+      var notifies = entity.NotifyEmails == null ?
+        new string[] {} :
+          entity.NotifyEmails.Split(';');
+      return new TrxDelegateDto
+      {
+        AttorneyLetter = entity.AttorneyLetter,
+        BLDocument = entity.BLDocument,
+        ContractNumber = entity.ContractNumber,
+        CreatedBy = entity.CreatedBy,
+        CreatedDate = entity.CreatedDate,
+        FrieghtForwarderName = entity.FrieghtForwarderName,
+        Id = entity.Id,
+        JobNumber = entity.JobNumber,
+        LetterOfIndemnity = entity.LetterOfIndemnity,
+        ModifiedBy = entity.ModifiedBy,
+        ModifiedDate = entity.ModifiedDate,
+        NotifyEmails = notifies,
+        PositionStatus = entity.PositionStatus,
+        PositionStatusName = entity.PositionStatusName,
+        RowStatus = entity.RowStatus,
+        SaveAsDraft = entity.SaveAsDraft,
+        ServiceName = entity.ServiceName
+      };
+    }
+
+    public TrxDelegateList ToList(TrxDelegate entity)
+    {
+      return new TrxDelegateList
+      {
+        CreatedDate = entity.CreatedDate,
+        Id = entity.Id,
+        JobNumber = entity.JobNumber,
+        ServiceName = entity.ServiceName
+      };
+    }
   }
 }

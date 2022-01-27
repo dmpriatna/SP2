@@ -411,5 +411,61 @@ namespace SP2.Controllers
         throw se;
       }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> ListDelegate(
+      [FromQuery] SP2Status status,
+      [FromQuery] string keyword
+    )
+    {
+      try
+      {
+        var request = new TrxDelegateRequest
+        {
+          Keyword = keyword,
+          Status = status
+        };
+        var result = await Service.GetTrxDelegates(request);
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DetailDelegate([FromQuery] Guid id)
+    {
+      try
+      {
+        var result = await Service.GetTrxDelegate(id);
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateStatusDelegate(
+      [FromQuery] Guid id,
+      [FromQuery] SP2Status status
+    )
+    {
+      try
+      {
+        var single = await Service.GetTrxDelegate(id);
+        single.PositionStatus = (int)status;
+        single.PositionStatusName = status.ToString();
+        var result = await Service.PutTrxDelegate(single);
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 }

@@ -40,6 +40,84 @@ namespace SP2.Data
         var now = System.DateTime.Now;
         var patern = System.DateTime.Now.ToString("yyyy-MM/INV/SP2/dd-");
 
+        var lastCode = InvoiceSet
+          .Where(w => w.CreatedDate.Date == now.Date)
+          .OrderBy(ob => ob.CreatedDate)
+          .LastOrDefault();
+
+        if (lastCode == null)
+          result = patern + suffix;
+        else
+        {
+          if (string.IsNullOrWhiteSpace(lastCode.InvoiceNumber))
+            result = patern + suffix;
+          else
+          {
+            var chunk = lastCode.InvoiceNumber.Split('-').Last();
+            if (int.TryParse(chunk, out int code))
+            {
+              code++;
+              result = patern + code.ToString("D6");
+            }
+            else
+              result = patern + now.ToString("HHmmss");
+          }
+        }
+        return result;
+      }
+    }
+
+    public string JobNumberD
+    {
+      get
+      {
+        int one = 1;
+        string suffix = one.ToString("D6");
+        string result = null;
+
+        var now = System.DateTime.Now;
+        var patern = string.Format("IMP/DO/DEL/{0}-",
+          now.ToString("MM-yyyy/dd"));
+
+        var lastCode = DeliveryOrderSet
+          .Where(w => w.CreatedDate.Date == now.Date)
+          .OrderBy(ob => ob.CreatedDate)
+          .LastOrDefault();
+
+        if (lastCode == null)
+          result = patern + suffix;
+        else
+        {
+          if (string.IsNullOrWhiteSpace(lastCode.JobNumber))
+            result = patern + suffix;
+          else
+          {
+            var chunk = lastCode.JobNumber.Split('-').Last();
+            if (int.TryParse(chunk, out int code))
+            {
+              code++;
+              result = patern + code.ToString("D6");
+            }
+            else
+              result = patern + now.ToString("HHmmss");
+          }
+        }
+        return result;
+      }
+    }
+
+    public string JobNumberS
+    {
+      get
+      {
+        int one = 1;
+        string suffix = one.ToString("D6");
+        string result = null;
+
+        var now = System.DateTime.Now;
+        var patern = string.Format("IMP/SP2/DEL/{0}-",
+          now.ToString("MM-yyyy/dd"));
+
         var lastCode = SP2
           .Where(w => w.CreatedDate.Date == now.Date)
           .OrderBy(ob => ob.CreatedDate)
