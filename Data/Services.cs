@@ -447,7 +447,7 @@ namespace SP2.Data
           {
             entity.Changes(dto);
             entity.JobNumber = jobNumber;
-            entity.ModifiedBy = "system";
+            entity.ModifiedBy = "";
             entity.ModifiedDate = DateTime.Now;
             entity.PositionStatus = dto.IsDraft ? 0 : 2;
             entity.RowStatus = dto.RowStatus ?? true;
@@ -477,7 +477,6 @@ namespace SP2.Data
           var entity = new SuratPenyerahanPetikemas();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
-          entity.CreatedBy = "system";
           entity.CreatedDate = DateTime.Now;
           entity.PositionStatus = dto.IsDraft ? 0 : 2;
           entity.RowStatus = true;
@@ -908,14 +907,14 @@ namespace SP2.Data
       }
     }
 
-    public async Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght)
+    public async Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght, string createdBy)
     {
       try
       {
         var result = new List<object>();
 
         var doList = await Context.DeliveryOrderSet
-        .Where(w => w.RowStatus == 0)
+        .Where(w => w.RowStatus == 0 && w.CreatedBy.ToLower() == createdBy.ToLower())
         .ToListAsync();
 
         result.AddRange(doList.Select(To));
@@ -1163,7 +1162,7 @@ namespace SP2.Data
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
-    Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght);
+    Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght, string createdBy);
     Task<Guid> PutContract(ContractDto dto);
     Task<Guid> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);

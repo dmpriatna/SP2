@@ -112,6 +112,8 @@ namespace SP2.Data
     public bool? RowStatus { get; set; }
     public ContainerDto[] Containers { get; set; }
     public NotifyDto[] Notifies { get; set; }
+
+    public string CreatedBy { get; set; }
   }
 
   public class ContainerDto

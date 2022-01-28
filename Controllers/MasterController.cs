@@ -380,12 +380,13 @@ namespace SP2.Controllers
     [HttpGet]
     public async Task<IActionResult> ListDoSp2(
       [FromQuery] int start,
-      [FromQuery] int lenght
+      [FromQuery] int lenght,
+      [FromQuery] string createdBy
     )
     {
       try
       {
-        var result = await Service.ListDoSp2(start, lenght);
+        var result = await Service.ListDoSp2(start, lenght, createdBy);
         return Ok(new
         {
           Data = result.Item1,
