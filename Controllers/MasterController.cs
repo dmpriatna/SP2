@@ -399,12 +399,14 @@ namespace SP2.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> SaveDelegate([FromBody] TrxDelegateDto dto)
+    public async Task<IActionResult> SaveDelegate([FromBody] DelegatePayload payload)
     {
       try
       {
-        var result = await Service.PutTrxDelegate(dto);
-        return Ok(result);
+        var result = await Service.PutTrxDelegate(payload);
+        return Ok(new {
+          JobNumber = result
+        });
       }
       catch (System.Exception se)
       {
@@ -459,7 +461,18 @@ namespace SP2.Controllers
         var single = await Service.GetTrxDelegate(id);
         single.PositionStatus = (int)status;
         single.PositionStatusName = status.ToString();
-        var result = await Service.PutTrxDelegate(single);
+        var result = await Service.PutTrxDelegate(new DelegatePayload
+        {
+          AttorneyLetter = single.AttorneyLetter,
+          BLDocument = single.BLDocument,
+          ContractNumber = single.ContractNumber,
+          FrieghtForwarderName = single.FrieghtForwarderName,
+          Id = single.Id,
+          LetterOfIndemnity = single.LetterOfIndemnity,
+          NotifyEmails = single.NotifyEmails,
+          SaveAsDraft = single.SaveAsDraft,
+          ServiceName = Enum.Parse<ServiceType>(single.ServiceName),
+        });
         return Ok(result);
       }
       catch (System.Exception se)

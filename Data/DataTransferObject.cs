@@ -137,6 +137,7 @@ namespace SP2.Data
     public int StatusPosition { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime? CompletedDate { get; set; }
+    public bool IsDelegate { get; set; }
   }
   
   public class SP2Detail

@@ -101,6 +101,21 @@ namespace SP2.Data
     public DateTime? ModifiedDate { get; set; }
     public bool RowStatus { get; set; }
 
+    [Column("IsDraft")]
+    public bool SaveAsDraft { get; set; }
+    public string ServiceName { get; set; }
+    public string ContractNumber { get; set; }
+    public string FrieghtForwarderName { get; set; }
+    [Column("BillOfLadingFile")]
+    public string BLDocument { get; set; }
+    [Column("LetterOfIndemnityFile")]
+    public string LetterOfIndemnity { get; set; }
+    [Column("AttorneyLetterFile")]
+    public string AttorneyLetter { get; set; }
+    public string PositionStatusName { get; set; }
+    [Column("NoticeEmail")]
+    public string NotifyEmails { get; set; }
+
     public virtual IEnumerable<Container> Containers { get; set; }
     public virtual IEnumerable<Log> Logs { get; set; }
     public virtual IEnumerable<Notify> Notifies { get; set; }
@@ -413,6 +428,21 @@ namespace SP2.Data
     public string ModifiedBy { get; set; }
 
     public DateTime? ModifiedDate { get; set; }
+
+    [Column("IsDraft")]
+    public bool SaveAsDraft { get; set; }
+    public string ServiceName { get; set; }
+    public string ContractNumber { get; set; }
+    public string FrieghtForwarderName { get; set; }
+    [Column("BillOfLadingFile")]
+    public string BLDocument { get; set; }
+    [Column("LetterOfIndemnityFile")]
+    public string LetterOfIndemnity { get; set; }
+    [Column("AttorneyLetterFile")]
+    public string AttorneyLetter { get; set; }
+    public string PositionStatusName { get; set; }
+    [Column("NoticeEmail")]
+    public string NotifyEmails { get; set; }
   }
 
   [Table("Invoices")]

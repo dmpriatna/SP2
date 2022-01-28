@@ -945,54 +945,14 @@ namespace SP2.Data
       }
     }
 
-    public async Task<bool> PutTrxDelegate(TrxDelegateDto dto)
+    public async Task<string> PutTrxDelegate(DelegatePayload payload)
     {
       try
       {
-        string JobNumber = "";
-
-        if (!string.IsNullOrWhiteSpace(dto.ServiceName))
-        {
-          JobNumber = dto.SaveAsDraft ? "" :
-            dto.ServiceName.ToLower() == "delivery order" ? Context.JobNumberD :
-              Context.JobNumberS;
-        }
-
-        if (dto.Id.HasValue)
-        {
-          var entity = await Context.TrxDelegateSet
-            .Where(w => w.Id == dto.Id && w.RowStatus == 0)
-            .SingleOrDefaultAsync();
-          if (entity != null)
-          {
-            entity.Changes(dto);
-            entity.JobNumber = JobNumber;
-            entity.ModifiedBy = "system";
-            entity.ModifiedDate = DateTime.Now;
-            entity.NotifyEmails = string.Join(";", dto.NotifyEmails);
-            entity.PositionStatus = dto.SaveAsDraft ? 1 : 0;
-            entity.PositionStatusName = dto.SaveAsDraft ?
-              SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
-          }
-        }
+        if (payload.ServiceName == ServiceType.DO)
+          return await PutDODelegate(payload);
         else
-        {
-          var entity = new TrxDelegate();
-          entity.Changes(dto);
-          entity.Id = Guid.NewGuid();
-          entity.CreatedBy = "system";
-          entity.CreatedDate = DateTime.Now;
-          entity.JobNumber = JobNumber;
-          entity.ModifiedBy = null;
-          entity.NotifyEmails = string.Join(";", dto.NotifyEmails);
-          entity.PositionStatus = dto.SaveAsDraft ? 1 : 0;
-          entity.PositionStatusName = dto.SaveAsDraft ?
-            SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
-          entity.RowStatus = 0;
-          await Context.AddAsync(entity);
-        }
-        var entryState = await Context.SaveChangesAsync();
-        return entryState > 0;
+          return await PutSP2Delegate(payload);
       }
       catch (System.Exception se)
       {
@@ -1000,23 +960,140 @@ namespace SP2.Data
       }
     }
 
+    private async Task<string> PutDODelegate(DelegatePayload payload)
+    {
+      string Emails = string.Join(";", payload.NotifyEmails);
+      string JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberS;
+      string StatusName = payload.SaveAsDraft ?
+        SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
+      int Status = payload.SaveAsDraft ? 1 : 0;
+
+      if (payload.Id.HasValue)
+      {
+        var entity = await Context.DeliveryOrderSet
+        .Where(w => w.Id == payload.Id && w.RowStatus == 1)
+        .SingleOrDefaultAsync();
+        if (entity != null)
+        {
+          if (!entity.SaveAsDraft && payload.SaveAsDraft)
+            entity.JobNumber = JobNumber;
+          entity.AttorneyLetter = payload.AttorneyLetter;
+          entity.BLDocument = payload.BLDocument;
+          entity.ContractNumber = payload.ContractNumber;
+          entity.FrieghtForwarderName = payload.FrieghtForwarderName;
+          entity.LetterOfIndemnity = payload.LetterOfIndemnity;
+          entity.ModifiedBy = "";
+          entity.ModifiedDate = DateTime.Now;
+          entity.NotifyEmails = Emails;
+          entity.PositionStatus = Status;
+          entity.PositionStatusName = StatusName;
+          entity.SaveAsDraft = payload.SaveAsDraft;
+          entity.ServiceName = payload.ServiceName.ToString();
+        }
+      }
+      else
+      {
+        var newEntity = new DeliveryOrder
+        {
+          AttorneyLetter = payload.AttorneyLetter,
+          BLDocument = payload.BLDocument,
+          CreatedBy = "",
+          CreatedDate = DateTime.Now,
+          ContractNumber = payload.ContractNumber,
+          FrieghtForwarderName = payload.FrieghtForwarderName,
+          Id = Guid.NewGuid(),
+          JobNumber = JobNumber,
+          LetterOfIndemnity = payload.LetterOfIndemnity,
+          ModifiedBy = "",
+          ModifiedDate = DateTime.Now,
+          NotifyEmails = Emails,
+          PositionStatus = Status,
+          PositionStatusName = StatusName,
+          SaveAsDraft = payload.SaveAsDraft,
+          ServiceName = payload.ServiceName.ToString()
+        };
+        await Context.AddAsync(newEntity);
+      }
+      await Context.SaveChangesAsync();
+      return JobNumber;
+    }
+
+    private async Task<string> PutSP2Delegate(DelegatePayload payload)
+    {
+      string Emails = string.Join(";", payload.NotifyEmails);
+      string JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberS;
+      string StatusName = payload.SaveAsDraft ?
+        SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
+      int Status = payload.SaveAsDraft ? 1 : 0;
+
+      if (payload.Id.HasValue)
+      {
+        var entity = await Context.SP2
+        .Where(w => w.Id == payload.Id && w.RowStatus)
+        .SingleOrDefaultAsync();
+        if (entity != null)
+        {
+          if (!entity.SaveAsDraft && payload.SaveAsDraft)
+            entity.JobNumber = JobNumber;
+          entity.AttorneyLetter = payload.AttorneyLetter;
+          entity.BLDocument = payload.BLDocument;
+          entity.ContractNumber = payload.ContractNumber;
+          entity.FrieghtForwarderName = payload.FrieghtForwarderName;
+          entity.LetterOfIndemnity = payload.LetterOfIndemnity;
+          entity.ModifiedBy = "";
+          entity.ModifiedDate = DateTime.Now;
+          entity.NotifyEmails = Emails;
+          entity.PositionStatus = Status;
+          entity.PositionStatusName = StatusName;
+          entity.SaveAsDraft = payload.SaveAsDraft;
+          entity.ServiceName = payload.ServiceName.ToString();
+        }
+      }
+      else
+      {
+        var newEntity = new SuratPenyerahanPetikemas
+        {
+          AttorneyLetter = payload.AttorneyLetter,
+          BLDocument = payload.BLDocument,
+          CreatedBy = "",
+          CreatedDate = DateTime.Now,
+          ContractNumber = payload.ContractNumber,
+          DueDate = DateTime.Now,
+          FrieghtForwarderName = payload.FrieghtForwarderName,
+          Id = Guid.NewGuid(),
+          JobNumber = JobNumber,
+          LetterOfIndemnity = payload.LetterOfIndemnity,
+          ModifiedBy = "",
+          ModifiedDate = DateTime.Now,
+          NotifyEmails = Emails,
+          PositionStatus = Status,
+          PositionStatusName = StatusName,
+          SaveAsDraft = payload.SaveAsDraft,
+          ServiceName = payload.ServiceName.ToString()
+        };
+        await Context.AddAsync(newEntity);
+      }
+      await Context.SaveChangesAsync();
+      return JobNumber;
+    }
+
     public async Task<TrxDelegateDto> GetTrxDelegate(Guid Id)
     {
       try
       {
-        var entity = await Context.TrxDelegateSet
-          .Where(w => w.Id == Id && w.RowStatus == 0)
+        var dorder = await Context.DeliveryOrderSet
+          .Where(w => w.Id == Id && w.RowStatus == 1)
           .SingleOrDefaultAsync();
         
-        if (entity == null) return new TrxDelegateDto();
+        if (dorder == null)
+        {
+          var sp2 = await Context.SP2
+          .Where(w => w.Id == Id && w.RowStatus)
+          .SingleOrDefaultAsync();
+          return ToDelegate(sp2);
+        }
 
-        var notifies = await Context.SP2Notify
-        .Where(w => w.SuratPenyerahanPetikemasId == entity.Id)
-        .ToListAsync();
-
-        var result = To(entity);
-        
-        return result;
+        return ToDelegate(dorder);
       }
       catch (System.Exception se)
       {
@@ -1029,20 +1106,43 @@ namespace SP2.Data
       try
       {
         var status = (int)request.Status;
-        var key = request.Keyword.ToLower();
-        var query = Context.TrxDelegateSet;
-        List<TrxDelegate> entities;
+        var key = request.Keyword?.ToLower();
+        
+        var queryDo = Context.DeliveryOrderSet;
+        List<DeliveryOrder> doEntities;
         if (string.IsNullOrWhiteSpace(key))
-        entities = await query.Where(w => w.PositionStatus == status && w.RowStatus == 0)
+        doEntities = await queryDo.Where(w => w.PositionStatus == status &&
+        w.RowStatus == 0 && w.ServiceName == ServiceType.DO.ToString())
         .ToListAsync();
         else
-        entities = await query.Where(w => (w.PositionStatus == status ||
+        doEntities = await queryDo.Where(w => (w.PositionStatus == status ||
         w.ContractNumber.ToLower().Contains(key) ||
         w.FrieghtForwarderName.ToLower().Contains(key) ||
-        w.ServiceName.ToLower().Contains(key)) && w.RowStatus == 0)
+        w.ServiceName.ToLower().Contains(key)) && w.RowStatus == 0 &&
+        w.ServiceName == ServiceType.SP2.ToString())
         .ToListAsync();
 
-        return entities.Select(ToList);
+        var querySp2 = Context.SP2;
+        List<SuratPenyerahanPetikemas> sp2Entities;
+        if (string.IsNullOrWhiteSpace(key))
+        sp2Entities = await querySp2.Where(w => w.PositionStatus == status &&
+        w.RowStatus && w.ServiceName == ServiceType.SP2.ToString())
+        .ToListAsync();
+        else
+        sp2Entities = await querySp2.Where(w => (w.PositionStatus == status ||
+        w.ContractNumber.ToLower().Contains(key) ||
+        w.FrieghtForwarderName.ToLower().Contains(key) ||
+        w.ServiceName.ToLower().Contains(key)) && w.RowStatus &&
+        w.ServiceName == ServiceType.SP2.ToString())
+        .ToListAsync();
+
+        var def = new List<TrxDelegateList>();
+        var resultDo = doEntities == null ? def : doEntities.Select(DelegateList);
+        def.AddRange(resultDo);
+        var resultSp2 = sp2Entities == null ? def : sp2Entities.Select(DelegateList);
+        def.AddRange(resultSp2);
+
+        return def;
       }
       catch (System.Exception se)
       {
@@ -1074,7 +1174,7 @@ namespace SP2.Data
     Task<bool> PutTransactionType(TransactionTypeDto dto);
     Task SendMail(EmailDto oContent);
     Task<int> UpdateStatus(SP2StatusRequest request);
-    Task<bool> PutTrxDelegate(TrxDelegateDto dto);
+    Task<string> PutTrxDelegate(DelegatePayload payload);
     Task<TrxDelegateDto> GetTrxDelegate(Guid Id);
     Task<IEnumerable<TrxDelegateList>> GetTrxDelegates(TrxDelegateRequest request);
   }

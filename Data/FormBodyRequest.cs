@@ -143,4 +143,24 @@ namespace SP2.Data
     public SP2Status Status { get; set; }
     public string Keyword { get; set; }
   }
+
+  public class DelegatePayload
+  {
+    public Guid? Id { get; set; }
+    public bool SaveAsDraft { get; set; }
+    public ServiceType ServiceName { get; set; }
+    public string ContractNumber { get; set; }
+    public string FrieghtForwarderName { get; set; }
+    public string BLDocument { get; set; }
+    public string LetterOfIndemnity { get; set; }
+    public string AttorneyLetter { get; set; }
+    public string[] NotifyEmails { get; set; }
+  }
+
+  [JsonConverter(typeof(StringEnumConverter))]
+  public enum ServiceType
+  {
+    [EnumMember(Value = "DO")] DO,
+    [EnumMember(Value = "SP2")] SP2
+  }
 }
