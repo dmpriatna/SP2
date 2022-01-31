@@ -415,21 +415,47 @@ namespace SP2.Controllers
       }
     }
 
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> ListDelegate(
-      [FromQuery] SP2Status status,
-      [FromQuery] string keyword
+      [FromQuery] int start,
+      [FromQuery] int length,
+      // [FromQuery] int positionStatus,
+      // [FromQuery] string positionStatusName,
+      [FromQuery] string jobNumber,
+      [FromQuery] string createdBy,
+      [FromQuery] bool? isCreatedDateDesc
+      // [FromQuery] bool? isJobNumberDesc,
+      // [FromQuery] bool? isCompleteDateDesc
     )
     {
       try
       {
         var request = new TrxDelegateRequest
         {
-          Keyword = keyword,
-          Status = status
+          CreatedBy = createdBy,
+          JobNumber = jobNumber,
+          Length = length,
+          // PositionStatus = positionStatus,
+          // PositionStatusName = positionStatusName,
+          Start = start,
+          Orders = new string[] {
+            isCreatedDateDesc.HasValue ?
+              (isCreatedDateDesc.Value ? "CreatedDate Desc" : "CreatedDate Asc")
+                : null,
+            // isJobNumberDesc.HasValue ?
+            //   (isJobNumberDesc.Value ? "JobNumber Desc" : "JobNumber Asc")
+            //     : null,
+            // isCompleteDateDesc.HasValue ?
+            //   (isCompleteDateDesc.Value ? "ModifiedDate Desc" : "ModifiedDate Asc")
+            //     : null,
+          }
         };
         var result = await Service.GetTrxDelegates(request);
-        return Ok(result);
+        return Ok(new
+        {
+          Data = result.Item1,
+          Total = result.Item2
+        });
       }
       catch (System.Exception se)
       {
@@ -454,23 +480,26 @@ namespace SP2.Controllers
     [HttpPost]
     public async Task<IActionResult> UpdateStatusDelegate(
       [FromQuery] Guid id,
-      [FromQuery] SP2Status status
+      [FromQuery] int positionStatus,
+      [FromQuery] string positionStatusName,
+      [FromQuery] string createdBy = ""
     )
     {
       try
       {
         var single = await Service.GetTrxDelegate(id);
-        single.PositionStatus = (int)status;
-        single.PositionStatusName = status.ToString();
         var result = await Service.PutTrxDelegate(new DelegatePayload
         {
           AttorneyLetter = single.AttorneyLetter,
           BLDocument = single.BLDocument,
           ContractNumber = single.ContractNumber,
+          CreatedBy = string.IsNullOrWhiteSpace(createdBy) ? single.CreatedBy : createdBy,
           FrieghtForwarderName = single.FrieghtForwarderName,
           Id = single.Id,
           LetterOfIndemnity = single.LetterOfIndemnity,
           NotifyEmails = single.NotifyEmails,
+          PositionStatus = positionStatus,
+          PositionStatusName = positionStatusName,
           SaveAsDraft = single.SaveAsDraft,
           ServiceName = Enum.Parse<ServiceType>(single.ServiceName),
         });

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -140,8 +141,13 @@ namespace SP2.Data
 
   public class TrxDelegateRequest
   {
-    public SP2Status Status { get; set; }
-    public string Keyword { get; set; }
+    public int Start { get; set; }
+    public int Length { get; set; }
+    // public int PositionStatus { get; set; }
+    // public string PositionStatusName { get; set; }
+    public string JobNumber { get; set; }
+    public string CreatedBy { get; set; }
+    public string[] Orders { get; set; }
   }
 
   public class DelegatePayload
@@ -155,6 +161,9 @@ namespace SP2.Data
     public string LetterOfIndemnity { get; set; }
     public string AttorneyLetter { get; set; }
     public string[] NotifyEmails { get; set; }
+    public int PositionStatus { get; set; }
+    public string PositionStatusName { get; set; }
+    [Required] public string CreatedBy { get; set; }
   }
 
   [JsonConverter(typeof(StringEnumConverter))]

@@ -437,7 +437,7 @@ namespace SP2.Data
     {
       try
       {
-        string jobNumber = dto.IsDraft ? null : Context.JobNumber;
+        string jobNumber = dto.IsDraft ? null : Context.JobNumberS;
         if (dto.Id.HasValue)
         {
           var entity = await Context.SP2
@@ -447,7 +447,7 @@ namespace SP2.Data
           {
             entity.Changes(dto);
             entity.JobNumber = jobNumber;
-            entity.ModifiedBy = "";
+            entity.ModifiedBy = entity.CreatedBy;
             entity.ModifiedDate = DateTime.Now;
             entity.PositionStatus = dto.IsDraft ? 0 : 2;
             entity.RowStatus = dto.RowStatus ?? true;
@@ -911,20 +911,33 @@ namespace SP2.Data
     {
       try
       {
+        var count = 0;
         var result = new List<object>();
 
-        var doList = await Context.DeliveryOrderSet
-        .Where(w => w.RowStatus == 0 && w.CreatedBy.ToLower() == createdBy.ToLower())
+        var doQuery = Context.DeliveryOrderSet
+        .Where(w => w.RowStatus == 1);
+
+        if (!string.IsNullOrWhiteSpace(createdBy))
+        doQuery = doQuery
+        .Where(w => w.CreatedBy.ToLower() == createdBy.ToLower());
+
+        var doList = await doQuery
         .ToListAsync();
 
         result.AddRange(doList.Select(To));
 
-        var sp2List = await Context.SP2
-        .Where(w => w.RowStatus)
+        var sp2Query = Context.SP2
+        .Where(w => w.RowStatus);
+
+        if (!string.IsNullOrWhiteSpace(createdBy))
+        sp2Query = sp2Query
+        .Where(w => w.CreatedBy.ToLower() == createdBy.ToLower());
+
+        var sp2List = await sp2Query
         .ToListAsync();
 
         result.AddRange(sp2List.Select(To));
-        var count = result.Count;
+        count = result.Count;
 
         if (start > 0)
         {
@@ -962,30 +975,27 @@ namespace SP2.Data
     private async Task<string> PutDODelegate(DelegatePayload payload)
     {
       string Emails = string.Join(";", payload.NotifyEmails);
-      string JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberS;
-      string StatusName = payload.SaveAsDraft ?
-        SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
-      int Status = payload.SaveAsDraft ? 1 : 0;
+      string JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberD;
 
       if (payload.Id.HasValue)
       {
         var entity = await Context.DeliveryOrderSet
         .Where(w => w.Id == payload.Id && w.RowStatus == 1)
         .SingleOrDefaultAsync();
-        if (entity != null)
+        if (entity != null && entity.SaveAsDraft)
         {
-          if (!entity.SaveAsDraft && payload.SaveAsDraft)
+          if (!payload.SaveAsDraft)
             entity.JobNumber = JobNumber;
           entity.AttorneyLetter = payload.AttorneyLetter;
           entity.BLDocument = payload.BLDocument;
           entity.ContractNumber = payload.ContractNumber;
           entity.FrieghtForwarderName = payload.FrieghtForwarderName;
           entity.LetterOfIndemnity = payload.LetterOfIndemnity;
-          entity.ModifiedBy = "";
+          entity.ModifiedBy = payload.CreatedBy;
           entity.ModifiedDate = DateTime.Now;
           entity.NotifyEmails = Emails;
-          entity.PositionStatus = Status;
-          entity.PositionStatusName = StatusName;
+          entity.PositionStatus = payload.PositionStatus;
+          entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
         }
@@ -996,7 +1006,7 @@ namespace SP2.Data
         {
           AttorneyLetter = payload.AttorneyLetter,
           BLDocument = payload.BLDocument,
-          CreatedBy = "",
+          CreatedBy = payload.CreatedBy,
           CreatedDate = DateTime.Now,
           ContractNumber = payload.ContractNumber,
           FrieghtForwarderName = payload.FrieghtForwarderName,
@@ -1006,10 +1016,25 @@ namespace SP2.Data
           ModifiedBy = "",
           ModifiedDate = DateTime.Now,
           NotifyEmails = Emails,
-          PositionStatus = Status,
-          PositionStatusName = StatusName,
+          PositionStatus = payload.PositionStatus,
+          PositionStatusName = payload.PositionStatusName,
           SaveAsDraft = payload.SaveAsDraft,
-          ServiceName = payload.ServiceName.ToString()
+          ServiceName = payload.ServiceName.ToString(),
+
+          CustomerCode = "",
+          CustomerName = "",
+          Consignee = "",
+          BillOfLadingDate = DateTime.Now,
+          BillOfLadingNumber = "",
+          NotifyPartyAdress = "",
+          NotifyPartyName = "",
+          PortOfDelivery = "",
+          PortOfDischarge = "",
+          PortOfLoading = "",
+          ShippingLineName = "",
+          ShippingLineEmail = "",
+          Vessel = "",
+          VoyageNumber = ""
         };
         await Context.AddAsync(newEntity);
       }
@@ -1100,40 +1125,37 @@ namespace SP2.Data
       }
     }
 
-    public async Task<IEnumerable<TrxDelegateList>> GetTrxDelegates(TrxDelegateRequest request)
+    public async Task<Tuple<IEnumerable<TrxDelegateList>, int>> GetTrxDelegates(
+      TrxDelegateRequest request
+    )
     {
       try
       {
-        var status = (int)request.Status;
-        var key = request.Keyword?.ToLower();
-        
-        var queryDo = Context.DeliveryOrderSet;
+        var orders = string.Join(',',
+          request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
+        var queryDo = Context.DeliveryOrderSet
+        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.DO.ToString());
         List<DeliveryOrder> doEntities;
-        if (string.IsNullOrWhiteSpace(key))
-        doEntities = await queryDo.Where(w => w.PositionStatus == status &&
-        w.RowStatus == 0 && w.ServiceName == ServiceType.DO.ToString())
-        .ToListAsync();
-        else
-        doEntities = await queryDo.Where(w => (w.PositionStatus == status ||
-        w.ContractNumber.ToLower().Contains(key) ||
-        w.FrieghtForwarderName.ToLower().Contains(key) ||
-        w.ServiceName.ToLower().Contains(key)) && w.RowStatus == 0 &&
-        w.ServiceName == ServiceType.SP2.ToString())
-        .ToListAsync();
 
-        var querySp2 = Context.SP2;
+        if (string.IsNullOrWhiteSpace(request.CreatedBy))
+        queryDo = queryDo.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
+
+        if (string.IsNullOrWhiteSpace(request.JobNumber))
+        queryDo = queryDo.Where(w => w.JobNumber == request.JobNumber);
+
+        doEntities = await queryDo.ToListAsync();
+
+        var querySp2 = Context.SP2
+        .Where(w => w.RowStatus && w.ServiceName == ServiceType.SP2.ToString());
         List<SuratPenyerahanPetikemas> sp2Entities;
-        if (string.IsNullOrWhiteSpace(key))
-        sp2Entities = await querySp2.Where(w => w.PositionStatus == status &&
-        w.RowStatus && w.ServiceName == ServiceType.SP2.ToString())
-        .ToListAsync();
-        else
-        sp2Entities = await querySp2.Where(w => (w.PositionStatus == status ||
-        w.ContractNumber.ToLower().Contains(key) ||
-        w.FrieghtForwarderName.ToLower().Contains(key) ||
-        w.ServiceName.ToLower().Contains(key)) && w.RowStatus &&
-        w.ServiceName == ServiceType.SP2.ToString())
-        .ToListAsync();
+
+        if (string.IsNullOrWhiteSpace(request.CreatedBy))
+        querySp2 = querySp2.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
+
+        if (string.IsNullOrWhiteSpace(request.JobNumber))
+        querySp2 = querySp2.Where(w => w.JobNumber == request.JobNumber);
+
+        sp2Entities = await querySp2.ToListAsync();
 
         var def = new List<TrxDelegateList>();
         var resultDo = doEntities == null ? def : doEntities.Select(DelegateList);
@@ -1141,7 +1163,17 @@ namespace SP2.Data
         var resultSp2 = sp2Entities == null ? def : sp2Entities.Select(DelegateList);
         def.AddRange(resultSp2);
 
-        return def;
+        var count = def.Count;
+
+        if (!string.IsNullOrWhiteSpace(orders))
+        def = def.AsQueryable().OrderBy(orders).ToList();
+
+        if (request.Length > 0)
+        def = def.Take(request.Length).ToList();
+
+        def = def.Skip(request.Start).ToList();
+
+        return new Tuple<IEnumerable<TrxDelegateList>, int>(def, count);
       }
       catch (System.Exception se)
       {
@@ -1175,6 +1207,6 @@ namespace SP2.Data
     Task<int> UpdateStatus(SP2StatusRequest request);
     Task<string> PutTrxDelegate(DelegatePayload payload);
     Task<TrxDelegateDto> GetTrxDelegate(Guid Id);
-    Task<IEnumerable<TrxDelegateList>> GetTrxDelegates(TrxDelegateRequest request);
+    Task<Tuple<IEnumerable<TrxDelegateList>,int>> GetTrxDelegates(TrxDelegateRequest request);
   }
 }
