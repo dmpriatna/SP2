@@ -907,7 +907,11 @@ namespace SP2.Data
       }
     }
 
-    public async Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght, string createdBy)
+    public async Task<Tuple<IEnumerable<object>, int>> ListDoSp2(
+      int start,
+      int lenght,
+      string createdBy
+    )
     {
       try
       {
@@ -1018,6 +1022,7 @@ namespace SP2.Data
           NotifyEmails = Emails,
           PositionStatus = payload.PositionStatus,
           PositionStatusName = payload.PositionStatusName,
+          RowStatus = 1,
           SaveAsDraft = payload.SaveAsDraft,
           ServiceName = payload.ServiceName.ToString(),
 
@@ -1046,9 +1051,6 @@ namespace SP2.Data
     {
       string Emails = string.Join(";", payload.NotifyEmails);
       string JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberS;
-      string StatusName = payload.SaveAsDraft ?
-        SP2Status.Draft.ToString() : SP2Status.Actived.ToString();
-      int Status = payload.SaveAsDraft ? 1 : 0;
 
       if (payload.Id.HasValue)
       {
@@ -1064,11 +1066,11 @@ namespace SP2.Data
           entity.ContractNumber = payload.ContractNumber;
           entity.FrieghtForwarderName = payload.FrieghtForwarderName;
           entity.LetterOfIndemnity = payload.LetterOfIndemnity;
-          entity.ModifiedBy = "";
+          entity.ModifiedBy = payload.CreatedBy;
           entity.ModifiedDate = DateTime.Now;
           entity.NotifyEmails = Emails;
-          entity.PositionStatus = Status;
-          entity.PositionStatusName = StatusName;
+          entity.PositionStatus = payload.PositionStatus;
+          entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
         }
@@ -1079,7 +1081,7 @@ namespace SP2.Data
         {
           AttorneyLetter = payload.AttorneyLetter,
           BLDocument = payload.BLDocument,
-          CreatedBy = "",
+          CreatedBy = payload.CreatedBy,
           CreatedDate = DateTime.Now,
           ContractNumber = payload.ContractNumber,
           DueDate = DateTime.Now,
@@ -1090,8 +1092,9 @@ namespace SP2.Data
           ModifiedBy = "",
           ModifiedDate = DateTime.Now,
           NotifyEmails = Emails,
-          PositionStatus = Status,
-          PositionStatusName = StatusName,
+          PositionStatus = payload.PositionStatus,
+          PositionStatusName = payload.PositionStatusName,
+          RowStatus = true,
           SaveAsDraft = payload.SaveAsDraft,
           ServiceName = payload.ServiceName.ToString()
         };
@@ -1134,25 +1137,27 @@ namespace SP2.Data
         var orders = string.Join(',',
           request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
         var queryDo = Context.DeliveryOrderSet
-        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.DO.ToString());
+        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.DO.ToString() &&
+        request.Status.Contains(w.PositionStatus));
         List<DeliveryOrder> doEntities;
 
-        if (string.IsNullOrWhiteSpace(request.CreatedBy))
+        if (!string.IsNullOrWhiteSpace(request.CreatedBy))
         queryDo = queryDo.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
 
-        if (string.IsNullOrWhiteSpace(request.JobNumber))
+        if (!string.IsNullOrWhiteSpace(request.JobNumber))
         queryDo = queryDo.Where(w => w.JobNumber == request.JobNumber);
 
         doEntities = await queryDo.ToListAsync();
 
         var querySp2 = Context.SP2
-        .Where(w => w.RowStatus && w.ServiceName == ServiceType.SP2.ToString());
+        .Where(w => w.RowStatus && w.ServiceName == ServiceType.SP2.ToString() &&
+        request.Status.Contains(w.PositionStatus));
         List<SuratPenyerahanPetikemas> sp2Entities;
 
-        if (string.IsNullOrWhiteSpace(request.CreatedBy))
+        if (!string.IsNullOrWhiteSpace(request.CreatedBy))
         querySp2 = querySp2.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
 
-        if (string.IsNullOrWhiteSpace(request.JobNumber))
+        if (!string.IsNullOrWhiteSpace(request.JobNumber))
         querySp2 = querySp2.Where(w => w.JobNumber == request.JobNumber);
 
         sp2Entities = await querySp2.ToListAsync();

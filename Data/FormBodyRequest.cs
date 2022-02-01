@@ -111,8 +111,8 @@ namespace SP2.Data
   [JsonConverter(typeof(StringEnumConverter))]
   public enum SP2Status
   {
-    [EnumMember(Value = "Actived")] Actived,
     [EnumMember(Value = "Draft")] Draft,
+    [EnumMember(Value = "Actived")] Actived,
     [EnumMember(Value = "Completed")] Completed
   }
 
@@ -143,8 +143,7 @@ namespace SP2.Data
   {
     public int Start { get; set; }
     public int Length { get; set; }
-    // public int PositionStatus { get; set; }
-    // public string PositionStatusName { get; set; }
+    public int[] Status { get; set; }
     public string JobNumber { get; set; }
     public string CreatedBy { get; set; }
     public string[] Orders { get; set; }

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -10,15 +11,16 @@ using static System.Text.Encoding;
 
 using static Newtonsoft.Json.JsonConvert;
 using static Newtonsoft.Json.Formatting;
-using SP2.Data;
-using Microsoft.EntityFrameworkCore;
-using SP2.Models;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
+
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
+using Newtonsoft.Json.Linq;
+
+using SP2.Data;
+using SP2.Models;
 
 namespace SP2
 {
@@ -364,75 +366,6 @@ namespace SP2
             code++;
             result = patern + code.ToString("D6");
           }
-        }
-      }
-      return result;
-    }
-
-    public static async Task<string> JobNumber(this GoLogContext context,
-      string JobNumberFormat = "IMP/SP2/GOLOGS/{0}-")
-    {
-      int one = 1;
-      string suffix = one.ToString("D6");
-      string result = null;
-      var now = DateTime.Now;
-      var patern = string.Format(JobNumberFormat,
-        now.ToString("MM-yyyy/dd"));
-
-      var lastCode = await context.SP2
-        .Where(w => w.CreatedDate.Date == now.Date)
-        .OrderBy(ob => ob.CreatedDate)
-        .LastOrDefaultAsync();
-
-      if (lastCode == null)
-        result = patern + suffix;
-      else
-      {
-        if (string.IsNullOrWhiteSpace(lastCode.JobNumber))
-          result = patern + suffix;
-        else
-        {
-          var chunk = lastCode.JobNumber.Split('-').Last();
-          if (int.TryParse(chunk, out int code))
-          {
-            code++;
-            result = patern + code.ToString("D6");
-          }
-        }
-      }
-      return result;
-    }
-
-    public static async Task<string> InvNumber(this GoLogContext context)
-    {
-      int one = 1;
-      string suffix = one.ToString("D6");
-      string result = null;
-
-      var now = DateTime.Now;
-      var patern = DateTime.Now.ToString("yyyy-MM/INV/SP2/dd-");
-
-      var lastCode = await context.SP2
-        .Where(w => w.CreatedDate.Date == now.Date)
-        .OrderBy(ob => ob.CreatedDate)
-        .LastOrDefaultAsync();
-
-      if (lastCode == null)
-        result = patern + suffix;
-      else
-      {
-        if (string.IsNullOrWhiteSpace(lastCode.JobNumber))
-          result = patern + suffix;
-        else
-        {
-          var chunk = lastCode.JobNumber.Split('-').Last();
-          if (int.TryParse(chunk, out int code))
-          {
-            code++;
-            result = patern + code.ToString("D6");
-          }
-          else
-            result = patern + now.ToString("HHmmss");
         }
       }
       return result;

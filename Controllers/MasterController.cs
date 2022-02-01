@@ -419,8 +419,7 @@ namespace SP2.Controllers
     public async Task<IActionResult> ListDelegate(
       [FromQuery] int start,
       [FromQuery] int length,
-      // [FromQuery] int positionStatus,
-      // [FromQuery] string positionStatusName,
+      [FromQuery] SP2Status status,
       [FromQuery] string jobNumber,
       [FromQuery] string createdBy,
       [FromQuery] bool? isCreatedDateDesc
@@ -435,9 +434,10 @@ namespace SP2.Controllers
           CreatedBy = createdBy,
           JobNumber = jobNumber,
           Length = length,
-          // PositionStatus = positionStatus,
-          // PositionStatusName = positionStatusName,
           Start = start,
+          Status = status == SP2Status.Draft ?
+            new int[] { 0 } : status == SP2Status.Actived ?
+            new int[] { 1, 2, 3, 4, 5 } : new int[] { 6 },
           Orders = new string[] {
             isCreatedDateDesc.HasValue ?
               (isCreatedDateDesc.Value ? "CreatedDate Desc" : "CreatedDate Asc")
