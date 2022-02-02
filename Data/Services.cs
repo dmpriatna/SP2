@@ -728,8 +728,13 @@ namespace SP2.Data
       {
         var entities = new List<SuratPenyerahanPetikemas>();
         var orders = string.Join(',',
-            request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
+          request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
         var query = Context.SP2.Where(w => w.RowStatus);
+
+        if (!string.IsNullOrWhiteSpace(request.CreatedBy))
+        {
+          query = query.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
+        }
 
         if (request.Status == 0)
         {
@@ -1145,7 +1150,7 @@ namespace SP2.Data
         queryDo = queryDo.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
 
         if (!string.IsNullOrWhiteSpace(request.JobNumber))
-        queryDo = queryDo.Where(w => w.JobNumber == request.JobNumber);
+        queryDo = queryDo.Where(w => w.JobNumber.Contains(request.JobNumber));
 
         doEntities = await queryDo.ToListAsync();
 
@@ -1158,7 +1163,7 @@ namespace SP2.Data
         querySp2 = querySp2.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
 
         if (!string.IsNullOrWhiteSpace(request.JobNumber))
-        querySp2 = querySp2.Where(w => w.JobNumber == request.JobNumber);
+        querySp2 = querySp2.Where(w => w.JobNumber.Contains(request.JobNumber));
 
         sp2Entities = await querySp2.ToListAsync();
 

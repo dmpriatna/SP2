@@ -232,6 +232,7 @@ namespace SP2.Controllers
       [FromQuery] int Start, [FromQuery] int Length,
       [FromQuery] string Search,
       [FromQuery] string PaymentMethod,
+      [FromQuery] string CreatedBy,
       [FromQuery] SP2Status Status,
       [FromQuery] bool? IsJobNumberDesc,
       [FromQuery] bool? IsCreatedDateDesc,
@@ -242,6 +243,7 @@ namespace SP2.Controllers
       {
         var result = await Service.ListSP2(new ListSP2Request
         {
+          CreatedBy = CreatedBy,
           Length = Length,
           Start = Start,
           Search = Search,

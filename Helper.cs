@@ -370,6 +370,34 @@ namespace SP2
       }
       return result;
     }
+
+    public static bool EqualSafe(this string source, string comparer)
+    {
+      bool validSource = string.IsNullOrWhiteSpace(source);
+      bool validComparer = string.IsNullOrWhiteSpace(comparer);
+
+      if (validSource && validComparer) return true;
+      if (validSource || validComparer) return false;
+
+      string _source = source.ToLower();
+      string _comparer = comparer.ToLower();
+
+      return _source.Equals(_comparer);
+    }
+
+    public static bool ContainSafe(this string source, string comparer)
+    {
+      bool validSource = string.IsNullOrWhiteSpace(source);
+      bool validComparer = string.IsNullOrWhiteSpace(comparer);
+
+      if (validSource && validComparer) return true;
+      if (validSource || validComparer) return false;
+
+      string _source = source.ToLower();
+      string _comparer = comparer.ToLower();
+
+      return _source.Contains(_comparer);
+    }
   }
 
   public class XSI

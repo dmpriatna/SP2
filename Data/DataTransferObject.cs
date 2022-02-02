@@ -310,6 +310,7 @@ namespace SP2.Data
     public Guid Id { get; set; }
     public string JobNumber { get; set; }
     public string ServiceName { get; set; }
+    public int PositionStatus { get; set; }
     public DateTime CreatedDate { get; set; }
   }
 }
