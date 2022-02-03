@@ -729,7 +729,8 @@ namespace SP2.Data
         var entities = new List<SuratPenyerahanPetikemas>();
         var orders = string.Join(',',
           request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
-        var query = Context.SP2.Where(w => w.RowStatus);
+        var query = Context.SP2.Where(w => w.RowStatus &&
+          request.Status.Contains(w.PositionStatus));
 
         if (!string.IsNullOrWhiteSpace(request.CreatedBy))
         {
@@ -741,19 +742,6 @@ namespace SP2.Data
         {
           query = query.Where(w => w.FrieghtForwarderName.ToLower()
             == request.FreightForwarderName.ToLower());
-        }
-
-        if (request.Status == 0)
-        {
-          query = query.Where(w => w.PositionStatus > 0 && w.PositionStatus < 4);
-        }
-        else if (request.Status == 1)
-        {
-          query = query.Where(w => w.PositionStatus == 0);
-        }
-        else
-        {
-          query = query.Where(w => w.PositionStatus == 4);
         }
 
         if (!string.IsNullOrWhiteSpace(request.PaymentMethod))

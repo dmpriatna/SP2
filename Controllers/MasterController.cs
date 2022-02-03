@@ -250,7 +250,9 @@ namespace SP2.Controllers
           Search = Search,
           FreightForwarderName = FreightForwarderName,
           PaymentMethod = PaymentMethod,
-          Status = ((int)Status),
+          Status = Status == SP2Status.Draft ?
+            new int[] { 0 } : Status == SP2Status.Actived ?
+            new int[] { 1, 2, 3, 4, 5 } : new int[] { 6 },
           Orders = new string[] {
               IsCreatedDateDesc.HasValue ?
                   (IsCreatedDateDesc.Value ? "CreatedDate Desc" : "CreatedDate Asc")
