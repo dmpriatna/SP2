@@ -297,12 +297,20 @@ namespace SP2.Data
     public int PositionStatus { get; set; }
     public string PositionStatusName { get; set; }
     public string[] NotifyEmails { get; set; }
+    public DelegateLog[] Logs { get; set; }
     
     public byte RowStatus { get; set; }
     public string CreatedBy { get; set; }
     public DateTime CreatedDate { get; set; }
     public string ModifiedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
+  }
+
+  public class DelegateLog
+  {
+    public int PositionStatus { get; set; }
+    public string PositionStatusName { get; set; }
+    public DateTime CreatedDate { get; set; }
   }
 
   public class TrxDelegateList

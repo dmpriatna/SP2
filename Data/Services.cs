@@ -733,7 +733,14 @@ namespace SP2.Data
 
         if (!string.IsNullOrWhiteSpace(request.CreatedBy))
         {
-          query = query.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
+          query = query.Where(w => w.CreatedBy.ToLower()
+            == request.CreatedBy.ToLower());
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.FreightForwarderName))
+        {
+          query = query.Where(w => w.FrieghtForwarderName.ToLower()
+            == request.FreightForwarderName.ToLower());
         }
 
         if (request.Status == 0)
@@ -1007,6 +1014,23 @@ namespace SP2.Data
           entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
+          if (entity.PositionStatus != payload.PositionStatus ||
+            entity.PositionStatusName != payload.PositionStatusName)
+          {
+            var logEntity = new DLog
+            {
+              Activity = $"{payload.PositionStatus};{payload.PositionStatusName}",
+              BillOfLadingNumber = "",
+              CreatedBy = payload.CreatedBy,
+              CreatedDate = DateTime.Now,
+              Id = Guid.NewGuid(),
+              JobNumber = JobNumber,
+              ModifiedBy = "",
+              ModifiedDate = DateTime.Now,
+              RowStatus = 1
+            };
+            await Context.AddAsync(logEntity);
+          }
         }
       }
       else
@@ -1047,6 +1071,19 @@ namespace SP2.Data
           VoyageNumber = ""
         };
         await Context.AddAsync(newEntity);
+        var logEntity = new DLog
+        {
+          Activity = $"{payload.PositionStatus};{payload.PositionStatusName}",
+          BillOfLadingNumber = "",
+          CreatedBy = payload.CreatedBy,
+          CreatedDate = DateTime.Now,
+          Id = Guid.NewGuid(),
+          JobNumber = JobNumber,
+          ModifiedBy = "",
+          ModifiedDate = DateTime.Now,
+          RowStatus = 1
+        };
+        await Context.AddAsync(logEntity);
       }
       await Context.SaveChangesAsync();
       return JobNumber;
@@ -1078,6 +1115,23 @@ namespace SP2.Data
           entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
+          if (entity.PositionStatus != payload.PositionStatus ||
+            entity.PositionStatusName != payload.PositionStatusName)
+          {
+            var logEntity = new Log
+            {
+              CreatedBy = payload.CreatedBy,
+              CreatedDate = DateTime.Now,
+              Id = Guid.NewGuid(),
+              ModifiedBy = "",
+              ModifiedDate = DateTime.Now,
+              PositionName = payload.PositionStatusName,
+              PositionStatus = payload.PositionStatus,
+              RowStatus = true,
+              SuratPenyerahanPetikemasId = entity.Id
+            };
+            await Context.AddAsync(logEntity);
+          }
         }
       }
       else
@@ -1104,6 +1158,19 @@ namespace SP2.Data
           ServiceName = payload.ServiceName.ToString()
         };
         await Context.AddAsync(newEntity);
+        var logEntity = new Log
+        {
+          CreatedBy = payload.CreatedBy,
+          CreatedDate = DateTime.Now,
+          Id = Guid.NewGuid(),
+          ModifiedBy = "",
+          ModifiedDate = DateTime.Now,
+          PositionName = payload.PositionStatusName,
+          PositionStatus = payload.PositionStatus,
+          RowStatus = true,
+          SuratPenyerahanPetikemasId = newEntity.Id
+        };
+        await Context.AddAsync(logEntity);
       }
       await Context.SaveChangesAsync();
       return JobNumber;
@@ -1114,16 +1181,25 @@ namespace SP2.Data
       try
       {
         var dorder = await Context.DeliveryOrderSet
-          .Where(w => w.Id == Id && w.RowStatus == 1)
+          .Where(w => w.Id == Id && w.RowStatus == 1 &&
+          w.ServiceName == ServiceType.DO.ToString())
           .SingleOrDefaultAsync();
         
         if (dorder == null)
         {
           var sp2 = await Context.SP2
-          .Where(w => w.Id == Id && w.RowStatus)
+          .Where(w => w.Id == Id && w.RowStatus &&
+          w.ServiceName == ServiceType.SP2.ToString())
+          .Include(i => i.Logs)
           .SingleOrDefaultAsync();
           return ToDelegate(sp2);
         }
+
+        var dlog = await Context.DLogSet
+        .Where(w => w.JobNumber == dorder.JobNumber)
+        .ToListAsync();
+
+        dorder.Logs = dlog;
 
         return ToDelegate(dorder);
       }

@@ -284,6 +284,14 @@ namespace SP2.Data
       var notifies = entity.NotifyEmails == null ?
         new string[] {} :
           entity.NotifyEmails.Split(';');
+      var logs = entity.Logs == null ?
+        new DelegateLog[] {} :
+          entity.Logs.Select(s => new DelegateLog
+          {
+            CreatedDate = s.CreatedDate,
+            PositionStatus = PS(s.Activity),
+            PositionStatusName = PSN(s.Activity)
+          }).ToArray();
       return new TrxDelegateDto
       {
         AttorneyLetter = entity.AttorneyLetter,
@@ -295,6 +303,7 @@ namespace SP2.Data
         Id = entity.Id,
         JobNumber = entity.JobNumber,
         LetterOfIndemnity = entity.LetterOfIndemnity,
+        Logs = logs,
         ModifiedBy = entity.ModifiedBy,
         ModifiedDate = entity.ModifiedDate,
         NotifyEmails = notifies,
@@ -306,12 +315,33 @@ namespace SP2.Data
       };
     }
 
+    private int PS(string source)
+    {
+      var first = source.Split(';').First();
+      var tried = int.TryParse(first, out int result);
+      if (tried) return result;
+      return 0;
+    }
+
+    private string PSN(string source)
+    {
+      return source.Split(';').Last();
+    }
+
     public TrxDelegateDto ToDelegate(SuratPenyerahanPetikemas entity)
     {
       if (entity == null) return new TrxDelegateDto();
       var notifies = entity.NotifyEmails == null ?
         new string[] {} :
           entity.NotifyEmails.Split(';');
+      var logs = entity.Logs == null ?
+        new DelegateLog[] {} :
+          entity.Logs.Select(s => new DelegateLog
+          {
+            CreatedDate = s.CreatedDate,
+            PositionStatus = s.PositionStatus,
+            PositionStatusName = s.PositionName
+          }).ToArray();
       return new TrxDelegateDto
       {
         AttorneyLetter = entity.AttorneyLetter,
@@ -323,12 +353,13 @@ namespace SP2.Data
         Id = entity.Id,
         JobNumber = entity.JobNumber,
         LetterOfIndemnity = entity.LetterOfIndemnity,
+        Logs = logs,
         ModifiedBy = entity.ModifiedBy,
         ModifiedDate = entity.ModifiedDate,
         NotifyEmails = notifies,
         PositionStatus = entity.PositionStatus,
         PositionStatusName = entity.PositionStatusName,
-        RowStatus = (byte)(entity.RowStatus ? 0 : 1),
+        RowStatus = (byte)(entity.RowStatus ? 1 : 0),
         SaveAsDraft = entity.SaveAsDraft,
         ServiceName = entity.ServiceName
       };

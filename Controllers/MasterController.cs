@@ -233,6 +233,7 @@ namespace SP2.Controllers
       [FromQuery] string Search,
       [FromQuery] string PaymentMethod,
       [FromQuery] string CreatedBy,
+      [FromQuery] string FreightForwarderName,
       [FromQuery] SP2Status Status,
       [FromQuery] bool? IsJobNumberDesc,
       [FromQuery] bool? IsCreatedDateDesc,
@@ -247,6 +248,7 @@ namespace SP2.Controllers
           Length = Length,
           Start = Start,
           Search = Search,
+          FreightForwarderName = FreightForwarderName,
           PaymentMethod = PaymentMethod,
           Status = ((int)Status),
           Orders = new string[] {

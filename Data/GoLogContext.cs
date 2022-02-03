@@ -26,6 +26,7 @@ namespace SP2.Data
     public DbSet<InvoicePlatformFee> InvoiceSet { get; set; }
     public DbSet<InvoiceDetailPlatformFee> InvoiceDetailSet { get; set; }
 
+    public DbSet<DLog> DLogSet { get; set; }
     public DbSet<DeliveryOrder> DeliveryOrderSet { get; set; }
     public DbSet<TrxDelegate> TrxDelegateSet { get; set; }
 

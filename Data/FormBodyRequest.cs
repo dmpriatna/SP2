@@ -106,6 +106,7 @@ namespace SP2.Data
     public int Status { get; set; }
     public string PaymentMethod { get; set; }
     public string CreatedBy { get; set; }
+    public string FreightForwarderName { get; set; }
     public string[] Orders { get; set; }
   }
 

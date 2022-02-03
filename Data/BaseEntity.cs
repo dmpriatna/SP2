@@ -443,6 +443,8 @@ namespace SP2.Data
     public string PositionStatusName { get; set; }
     [Column("NoticeEmail")]
     public string NotifyEmails { get; set; }
+
+    public virtual IEnumerable<DLog> Logs { get; set; }
   }
 
   [Table("Invoices")]
@@ -505,5 +507,19 @@ namespace SP2.Data
     public DateTime CreatedDate { get; set; }
     public string ModifiedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
+  }
+
+  [Table("DeliveryOrderLogs")]
+  public class DLog
+  {
+    [Key] public Guid Id { get; set; }
+    [StringLength(256)] public string JobNumber { get; set; }
+    [Required, StringLength(64)] public string BillOfLadingNumber { get; set; }
+    [StringLength(64)] public string Activity { get; set; }
+    [Required, StringLength(128)] public string CreatedBy { get; set; }
+    public DateTime CreatedDate { get; set; }
+    [StringLength(128)] public string ModifiedBy { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+    public byte RowStatus { get; set; }
   }
 }
