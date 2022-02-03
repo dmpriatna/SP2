@@ -478,6 +478,7 @@ namespace SP2.Data
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
           entity.CreatedDate = DateTime.Now;
+          entity.JobNumber = jobNumber;
           entity.PositionStatus = dto.IsDraft ? 0 : 2;
           entity.RowStatus = true;
           await Context.AddAsync(entity);
@@ -1187,9 +1188,18 @@ namespace SP2.Data
         .Where(w => w.JobNumber == dorder.JobNumber)
         .ToListAsync();
 
-        dorder.Logs = dlog;
+        var logs = dlog == null ?
+          new DelegateLog[] {} :
+            dlog.Select(s => new DelegateLog
+            {
+              CreatedDate = s.CreatedDate,
+              PositionStatus = PS(s.Activity),
+              PositionStatusName = PSN(s.Activity)
+            }).ToArray();
+        var result = ToDelegate(dorder);
+        result.Logs = logs;
 
-        return ToDelegate(dorder);
+        return result;
       }
       catch (System.Exception se)
       {

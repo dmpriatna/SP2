@@ -443,8 +443,6 @@ namespace SP2.Data
     public string PositionStatusName { get; set; }
     [Column("NoticeEmail")]
     public string NotifyEmails { get; set; }
-
-    public virtual IEnumerable<DLog> Logs { get; set; }
   }
 
   [Table("Invoices")]

@@ -284,14 +284,6 @@ namespace SP2.Data
       var notifies = entity.NotifyEmails == null ?
         new string[] {} :
           entity.NotifyEmails.Split(';');
-      var logs = entity.Logs == null ?
-        new DelegateLog[] {} :
-          entity.Logs.Select(s => new DelegateLog
-          {
-            CreatedDate = s.CreatedDate,
-            PositionStatus = PS(s.Activity),
-            PositionStatusName = PSN(s.Activity)
-          }).ToArray();
       return new TrxDelegateDto
       {
         AttorneyLetter = entity.AttorneyLetter,
@@ -303,7 +295,6 @@ namespace SP2.Data
         Id = entity.Id,
         JobNumber = entity.JobNumber,
         LetterOfIndemnity = entity.LetterOfIndemnity,
-        Logs = logs,
         ModifiedBy = entity.ModifiedBy,
         ModifiedDate = entity.ModifiedDate,
         NotifyEmails = notifies,
@@ -315,7 +306,7 @@ namespace SP2.Data
       };
     }
 
-    private int PS(string source)
+    public int PS(string source)
     {
       var first = source.Split(';').First();
       var tried = int.TryParse(first, out int result);
@@ -323,7 +314,7 @@ namespace SP2.Data
       return 0;
     }
 
-    private string PSN(string source)
+    public string PSN(string source)
     {
       return source.Split(';').Last();
     }
