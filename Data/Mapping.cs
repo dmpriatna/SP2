@@ -144,7 +144,7 @@ namespace SP2.Data
         PaymentMethod = entity.PaymentMethod,
         PlatformFee = entity.PlatformFee,
         ProformaInvoiceNo = entity.ProformaInvoiceNo,
-        ProformaInvoiceUrl = entity.ProformaInvoiceNo,
+        ProformaInvoiceUrl = entity.ProformaInvoiceUrl,
         StatusPosition = entity.PositionStatus,
         SubTotalByThirdParty = entity.SubTotalByThirdParty,
         Vat = entity.Vat
@@ -387,6 +387,7 @@ namespace SP2.Data
         CreatedDate = entity.CreatedDate,
         Id = entity.Id,
         JobNumber = entity.JobNumber,
+        PositionStatus = entity.PositionStatus,
         ServiceName = entity.ServiceName
       };
     }
