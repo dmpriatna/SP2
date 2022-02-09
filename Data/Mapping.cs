@@ -147,7 +147,9 @@ namespace SP2.Data
         ProformaInvoiceUrl = entity.ProformaInvoiceUrl,
         StatusPosition = entity.PositionStatus,
         SubTotalByThirdParty = entity.SubTotalByThirdParty,
-        Vat = entity.Vat
+        Vat = entity.Vat,
+
+        CreatedBy = entity.CreatedBy
       };
     }
 

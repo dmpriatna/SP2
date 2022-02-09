@@ -733,6 +733,14 @@ namespace SP2.Data
         var query = Context.SP2.Where(w => w.RowStatus &&
           request.Status.Contains(w.PositionStatus));
 
+        if (request.IsDelegate.HasValue)
+        {
+          if (request.IsDelegate.Value)
+            query = query.Where(w => w.ServiceName != null);
+          else
+            query = query.Where(w => w.ServiceName == null);
+        }
+
         if (!string.IsNullOrWhiteSpace(request.CreatedBy))
         {
           query = query.Where(w => w.CreatedBy.ToLower()
@@ -911,7 +919,9 @@ namespace SP2.Data
     public async Task<Tuple<IEnumerable<object>, int>> ListDoSp2(
       int start,
       int lenght,
-      string createdBy
+      string createdBy,
+      string forwarderName,
+      bool? isDelegate
     )
     {
       try
@@ -926,6 +936,18 @@ namespace SP2.Data
         doQuery = doQuery
         .Where(w => w.CreatedBy.ToLower() == createdBy.ToLower());
 
+        if (!string.IsNullOrWhiteSpace(forwarderName))
+        doQuery = doQuery
+        .Where(w => w.FrieghtForwarderName.ToLower() == forwarderName.ToLower());
+
+        if (isDelegate.HasValue)
+        {
+          if (isDelegate.Value)
+            doQuery = doQuery.Where(w => w.ServiceName != null);
+          else
+            doQuery = doQuery.Where(w => w.ServiceName != null);
+        }
+
         var doList = await doQuery
         .ToListAsync();
 
@@ -937,6 +959,18 @@ namespace SP2.Data
         if (!string.IsNullOrWhiteSpace(createdBy))
         sp2Query = sp2Query
         .Where(w => w.CreatedBy.ToLower() == createdBy.ToLower());
+
+        if (!string.IsNullOrWhiteSpace(forwarderName))
+        sp2Query = sp2Query
+        .Where(w => w.FrieghtForwarderName.ToLower() == forwarderName.ToLower());
+
+        if (isDelegate.HasValue)
+        {
+          if (isDelegate.Value)
+            sp2Query = sp2Query.Where(w => w.ServiceName != null);
+          else
+            sp2Query = sp2Query.Where(w => w.ServiceName != null);
+        }
 
         var sp2List = await sp2Query
         .ToListAsync();
@@ -1278,7 +1312,8 @@ namespace SP2.Data
     Task<IEnumerable<TransactionDto>> GetTransactions();
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
-    Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght, string createdBy);
+    Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght,
+      string createdBy, string forwarderName, bool? isDelegate);
     Task<Guid> PutContract(ContractDto dto);
     Task<Guid> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);

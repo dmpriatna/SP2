@@ -235,6 +235,7 @@ namespace SP2.Controllers
       [FromQuery] string CreatedBy,
       [FromQuery] string FreightForwarderName,
       [FromQuery] SP2Status Status,
+      [FromQuery] bool? IsDelegate,
       [FromQuery] bool? IsJobNumberDesc,
       [FromQuery] bool? IsCreatedDateDesc,
       [FromQuery] bool? IsCompleteDateDesc
@@ -242,6 +243,8 @@ namespace SP2.Controllers
     {
       try
       {
+        var active = IsDelegate.HasValue && IsDelegate.Value ? new[] { 1, 2, 3, 4 } : new[] { 1, 2, 3 };
+        var complete = IsDelegate.HasValue && IsDelegate.Value ? new[] { 5 } : new[] { 4 };
         var result = await Service.ListSP2(new ListSP2Request
         {
           CreatedBy = CreatedBy,
@@ -249,10 +252,11 @@ namespace SP2.Controllers
           Start = Start,
           Search = Search,
           FreightForwarderName = FreightForwarderName,
+          IsDelegate = IsDelegate,
           PaymentMethod = PaymentMethod,
           Status = Status == SP2Status.Draft ?
             new int[] { 0 } : Status == SP2Status.Actived ?
-            new int[] { 1, 2, 3, 4, 5 } : new int[] { 6 },
+            active : complete,
           Orders = new string[] {
               IsCreatedDateDesc.HasValue ?
                   (IsCreatedDateDesc.Value ? "CreatedDate Desc" : "CreatedDate Asc")
@@ -387,12 +391,15 @@ namespace SP2.Controllers
     public async Task<IActionResult> ListDoSp2(
       [FromQuery] int start,
       [FromQuery] int lenght,
-      [FromQuery] string createdBy
+      [FromQuery] string createdBy,
+      [FromQuery] string forwarderName,
+      [FromQuery] bool? isDelegate
     )
     {
       try
       {
-        var result = await Service.ListDoSp2(start, lenght, createdBy);
+        var result = await Service.ListDoSp2(start, lenght,
+          createdBy, forwarderName, isDelegate);
         return Ok(new
         {
           Data = result.Item1,

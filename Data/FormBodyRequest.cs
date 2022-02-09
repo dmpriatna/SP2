@@ -102,6 +102,7 @@ namespace SP2.Data
     public int Start { get; set; }
     public int Length { get; set; }
     public bool? IsDraft { get; set; }
+    public bool? IsDelegate { get; set; }
     public string Search { get; set; }
     public int[] Status { get; set; }
     public string PaymentMethod { get; set; }
