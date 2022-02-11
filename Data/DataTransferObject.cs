@@ -236,6 +236,7 @@ namespace SP2.Data
   {
     public Guid? Id { get; set; }
     public Guid CompanyId { get; set; }
+    public string EmailPPJK { get; set; }
     public string ContractNumber { get; set; }
     public string FirstParty { get; set; }
     public string SecondParty { get; set; }

@@ -848,6 +848,9 @@ namespace SP2.Data
       {
         if (await ValidateCompany(dto.CompanyId))
         throw new Exception($"field name {nameof(dto.CompanyId)} is not FOREIGN KEY in table Companies");
+        if (string.IsNullOrWhiteSpace(dto.EmailPPJK))
+        throw new Exception($"field name {nameof(dto.EmailPPJK)} cannot be empty");
+
         Guid result;
         if (dto.Id.HasValue)
         {
@@ -864,7 +867,7 @@ namespace SP2.Data
         }
         else
         {
-          var entity = new InvoicePlatformFee();
+          var entity = new Contract();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
           entity.CreatedBy = "system";
