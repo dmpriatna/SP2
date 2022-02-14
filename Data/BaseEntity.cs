@@ -99,7 +99,7 @@ namespace SP2.Data
     public DateTime CreatedDate { get; set; }
     public string ModifiedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
-    public bool RowStatus { get; set; }
+    public byte RowStatus { get; set; }
 
     [Column("IsDraft")]
     public bool SaveAsDraft { get; set; }

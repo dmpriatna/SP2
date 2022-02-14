@@ -234,7 +234,7 @@ namespace SP2.Controllers
       [FromQuery] string PaymentMethod,
       [FromQuery] string CreatedBy,
       [FromQuery] string FreightForwarderName,
-      [FromQuery] SP2Status Status,
+      [FromQuery] SP2Status? Status,
       [FromQuery] bool? IsDelegate,
       [FromQuery] bool? IsJobNumberDesc,
       [FromQuery] bool? IsCreatedDateDesc,
@@ -245,6 +245,9 @@ namespace SP2.Controllers
       {
         var active = IsDelegate.HasValue && IsDelegate.Value ? new[] { 1, 2, 3, 4 } : new[] { 1, 2, 3 };
         var complete = IsDelegate.HasValue && IsDelegate.Value ? new[] { 5 } : new[] { 4 };
+        var stat = Status.HasValue ? (Status == SP2Status.Draft ?
+            new int[] { 0 } : (Status == SP2Status.Actived ?
+            active : complete)) : new int[]{};
         var result = await Service.ListSP2(new ListSP2Request
         {
           CreatedBy = CreatedBy,
@@ -254,9 +257,7 @@ namespace SP2.Controllers
           FreightForwarderName = FreightForwarderName,
           IsDelegate = IsDelegate,
           PaymentMethod = PaymentMethod,
-          Status = Status == SP2Status.Draft ?
-            new int[] { 0 } : Status == SP2Status.Actived ?
-            active : complete,
+          Status = stat,
           Orders = new string[] {
               IsCreatedDateDesc.HasValue ?
                   (IsCreatedDateDesc.Value ? "CreatedDate Desc" : "CreatedDate Asc")

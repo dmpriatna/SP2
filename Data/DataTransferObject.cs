@@ -109,7 +109,7 @@ namespace SP2.Data
     public double PlatformFee { get; set; }
     public double Vat { get; set; }
     public double GrandTotal { get; set; }
-    public bool? RowStatus { get; set; }
+    public byte RowStatus { get; set; }
     public ContainerDto[] Containers { get; set; }
     public NotifyDto[] Notifies { get; set; }
 
@@ -171,7 +171,7 @@ namespace SP2.Data
     public double PlatformFee { get; set; }
     public double Vat { get; set; }
     public double GrandTotal { get; set; }
-    public bool RowStatus { get; set; }
+    public byte RowStatus { get; set; }
     public string CreatedBy { get; set; }
     public DateTime? CreatedDate { get; set; }
     public ContainerDto[] Containers { get; set; }

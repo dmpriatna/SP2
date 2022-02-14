@@ -352,7 +352,7 @@ namespace SP2.Data
         NotifyEmails = notifies,
         PositionStatus = entity.PositionStatus,
         PositionStatusName = entity.PositionStatusName,
-        RowStatus = (byte)(entity.RowStatus ? 1 : 0),
+        RowStatus = entity.RowStatus,
         SaveAsDraft = entity.SaveAsDraft,
         ServiceName = entity.ServiceName
       };

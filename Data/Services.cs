@@ -450,7 +450,7 @@ namespace SP2.Data
             entity.ModifiedBy = entity.CreatedBy;
             entity.ModifiedDate = DateTime.Now;
             entity.PositionStatus = dto.IsDraft ? 0 : 2;
-            entity.RowStatus = dto.RowStatus ?? true;
+            entity.RowStatus = 1;
 
             await SP2Container(dto.Containers, entity.Id);
             await SP2Notify(dto.Notifies, entity.Id);
@@ -480,7 +480,7 @@ namespace SP2.Data
           entity.CreatedDate = DateTime.Now;
           entity.JobNumber = jobNumber;
           entity.PositionStatus = dto.IsDraft ? 0 : 2;
-          entity.RowStatus = true;
+          entity.RowStatus = 1;
           await Context.AddAsync(entity);
 
           await SP2Container(dto.Containers, entity.Id);
@@ -713,7 +713,7 @@ namespace SP2.Data
       try
       {
         var entity = await Context.SP2
-        .Where(w => w.Id == SP2Id && w.RowStatus)
+        .Where(w => w.Id == SP2Id && w.RowStatus == 1)
         .SingleOrDefaultAsync();
         return entity == null;
       }
@@ -730,8 +730,12 @@ namespace SP2.Data
         var entities = new List<SuratPenyerahanPetikemas>();
         var orders = string.Join(',',
           request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
-        var query = Context.SP2.Where(w => w.RowStatus &&
-          request.Status.Contains(w.PositionStatus));
+        var query = Context.SP2.Where(w => w.RowStatus == 1);
+
+        if (request.Status.Any())
+        {
+          query = query.Where(w => request.Status.Contains(w.PositionStatus));
+        }
 
         if (request.IsDelegate.HasValue)
         {
@@ -799,7 +803,7 @@ namespace SP2.Data
       try
       {
         var result = await Context.SP2
-        .Where(w => w.RowStatus && w.Id == Id)
+        .Where(w => w.RowStatus == 1 && w.Id == Id)
         .Include(i => i.Containers)
         .Include(i => i.Logs)
         .Include(i => i.Notifies)
@@ -890,14 +894,14 @@ namespace SP2.Data
       try
       {
         var sp2 = await Context.SP2
-          .Where(w => w.Id == Id && w.RowStatus)
+          .Where(w => w.Id == Id && w.RowStatus == 1)
           .SingleOrDefaultAsync();
         if (sp2 != null)
         {
           sp2.CancelReason = Reason;
           sp2.ModifiedBy = "system";
           sp2.ModifiedDate = DateTime.Now;
-          sp2.RowStatus = false;
+          sp2.RowStatus = 0;
         }
 
         var trx = await Context.TransactionSet
@@ -957,7 +961,7 @@ namespace SP2.Data
         result.AddRange(doList.Select(To));
 
         var sp2Query = Context.SP2
-        .Where(w => w.RowStatus);
+        .Where(w => w.RowStatus == 1);
 
         if (!string.IsNullOrWhiteSpace(createdBy))
         sp2Query = sp2Query
@@ -1123,7 +1127,7 @@ namespace SP2.Data
       if (payload.Id.HasValue)
       {
         var entity = await Context.SP2
-        .Where(w => w.Id == payload.Id && w.RowStatus)
+        .Where(w => w.Id == payload.Id && w.RowStatus == 1)
         .SingleOrDefaultAsync();
         if (entity != null)
         {
@@ -1179,7 +1183,7 @@ namespace SP2.Data
           NotifyEmails = Emails,
           PositionStatus = payload.PositionStatus,
           PositionStatusName = payload.PositionStatusName,
-          RowStatus = true,
+          RowStatus = 1,
           SaveAsDraft = payload.SaveAsDraft,
           ServiceName = payload.ServiceName.ToString()
         };
@@ -1214,11 +1218,26 @@ namespace SP2.Data
         if (dorder == null)
         {
           var sp2 = await Context.SP2
-          .Where(w => w.Id == Id && w.RowStatus &&
+          .Where(w => w.Id == Id && w.RowStatus == 1 &&
           w.ServiceName == ServiceType.SP2.ToString())
           .Include(i => i.Logs)
           .SingleOrDefaultAsync();
-          return ToDelegate(sp2);
+
+          var slog = await Context.DLogSet
+          .Where(w => w.JobNumber == dorder.JobNumber)
+          .ToListAsync();
+
+          var logSp2 = slog == null ?
+            new DelegateLog[] {} :
+              slog.Select(s => new DelegateLog
+              {
+                CreatedDate = s.CreatedDate,
+                PositionStatus = PS(s.Activity),
+                PositionStatusName = PSN(s.Activity)
+              }).ToArray();
+          var resultSp2 = ToDelegate(sp2);
+          resultSp2.Logs = logSp2;
+          return resultSp2;
         }
 
         var dlog = await Context.DLogSet
@@ -1266,7 +1285,7 @@ namespace SP2.Data
         doEntities = await queryDo.ToListAsync();
 
         var querySp2 = Context.SP2
-        .Where(w => w.RowStatus && w.ServiceName == ServiceType.SP2.ToString() &&
+        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.SP2.ToString() &&
         request.Status.Contains(w.PositionStatus));
         List<SuratPenyerahanPetikemas> sp2Entities;
 
