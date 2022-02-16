@@ -732,9 +732,24 @@ namespace SP2.Data
           request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
         var query = Context.SP2.Where(w => w.RowStatus == 1);
 
-        if (request.Status.Any())
+        if (request.Status.HasValue)
         {
-          query = query.Where(w => request.Status.Contains(w.PositionStatus));
+          if (request.Status.Value == SP2StatusIn.Delegate)
+          {
+            query = query.Where(w => w.PositionStatusName.ToLower() == "delegate");
+          }
+          else
+          {
+            var IsDelegate = request.IsDelegate;
+            var Status = request.Status.Value;
+            var active = IsDelegate.HasValue && IsDelegate.Value ? new[] { 1, 2, 3, 4 } : new[] { 1, 2, 3 };
+            var complete = IsDelegate.HasValue && IsDelegate.Value ? new[] { 5 } : new[] { 4 };
+            var status = Status == SP2StatusIn.Draft ?
+              new int[] { 0 } : (Status == SP2StatusIn.Actived ?
+              active : complete);
+
+            query = query.Where(w => status.Contains(w.PositionStatus));
+          }
         }
 
         if (request.IsDelegate.HasValue)
@@ -1021,17 +1036,28 @@ namespace SP2.Data
     private async Task<string> PutDODelegate(DelegatePayload payload)
     {
       string Emails = string.Join(";", payload.NotifyEmails);
-      string JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberD;
+      string JobNumber = "";
 
       if (payload.Id.HasValue)
       {
         var entity = await Context.DeliveryOrderSet
         .Where(w => w.Id == payload.Id && w.RowStatus == 1)
         .SingleOrDefaultAsync();
-        if (entity != null && entity.SaveAsDraft)
+        if (entity != null)
         {
-          if (!payload.SaveAsDraft)
+          var ps = entity.PositionStatus;
+          var psn = entity.PositionStatusName;
+
+          if (entity.PositionStatus == 0 && !payload.SaveAsDraft)
+          {
+            JobNumber = Context.JobNumberD;
             entity.JobNumber = JobNumber;
+          }
+          else
+          {
+            JobNumber = entity.JobNumber;
+          }
+
           entity.AttorneyLetter = payload.AttorneyLetter;
           entity.BLDocument = payload.BLDocument;
           entity.ContractNumber = payload.ContractNumber;
@@ -1044,8 +1070,9 @@ namespace SP2.Data
           entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
-          if (entity.PositionStatus != payload.PositionStatus ||
-            entity.PositionStatusName != payload.PositionStatusName)
+
+          if (ps != payload.PositionStatus ||
+            psn != payload.PositionStatusName)
           {
             var logEntity = new DLog
             {
@@ -1054,7 +1081,7 @@ namespace SP2.Data
               CreatedBy = payload.CreatedBy,
               CreatedDate = DateTime.Now,
               Id = Guid.NewGuid(),
-              JobNumber = JobNumber,
+              JobNumber = entity.JobNumber,
               ModifiedBy = "",
               ModifiedDate = DateTime.Now,
               RowStatus = 1
@@ -1065,6 +1092,7 @@ namespace SP2.Data
       }
       else
       {
+        JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberD;
         var newEntity = new DeliveryOrder
         {
           AttorneyLetter = payload.AttorneyLetter,
@@ -1088,6 +1116,7 @@ namespace SP2.Data
           CustomerCode = "",
           CustomerName = "",
           Consignee = "",
+          DeliveryOrderType = "DELEGATE",
           BillOfLadingDate = DateTime.Now,
           BillOfLadingNumber = "",
           NotifyPartyAdress = "",
@@ -1122,7 +1151,7 @@ namespace SP2.Data
     private async Task<string> PutSP2Delegate(DelegatePayload payload)
     {
       string Emails = string.Join(";", payload.NotifyEmails);
-      string JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberS;
+      string JobNumber = "";
 
       if (payload.Id.HasValue)
       {
@@ -1131,8 +1160,19 @@ namespace SP2.Data
         .SingleOrDefaultAsync();
         if (entity != null)
         {
-          if (!entity.SaveAsDraft && payload.SaveAsDraft)
+          var ps = entity.PositionStatus;
+          var psn = entity.PositionStatusName;
+
+          if (entity.PositionStatus == 0 && !payload.SaveAsDraft)
+          {
+            JobNumber = Context.JobNumberS;
             entity.JobNumber = JobNumber;
+          }
+          else
+          {
+            JobNumber = entity.JobNumber;
+          }
+
           entity.AttorneyLetter = payload.AttorneyLetter;
           entity.BLDocument = payload.BLDocument;
           entity.ContractNumber = payload.ContractNumber;
@@ -1145,8 +1185,9 @@ namespace SP2.Data
           entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
-          if (entity.PositionStatus != payload.PositionStatus ||
-            entity.PositionStatusName != payload.PositionStatusName)
+
+          if (ps != payload.PositionStatus ||
+            psn != payload.PositionStatusName)
           {
             var logEntity = new Log
             {
@@ -1166,6 +1207,7 @@ namespace SP2.Data
       }
       else
       {
+        JobNumber = payload.SaveAsDraft ? "" : Context.JobNumberS;
         var newEntity = new SuratPenyerahanPetikemas
         {
           AttorneyLetter = payload.AttorneyLetter,
@@ -1223,8 +1265,9 @@ namespace SP2.Data
           .Include(i => i.Logs)
           .SingleOrDefaultAsync();
 
-          var slog = await Context.DLogSet
-          .Where(w => w.JobNumber == dorder.JobNumber)
+          var slog = await Context.SP2Log
+          .Where(w => w.SuratPenyerahanPetikemasId == sp2.Id &&
+          w.RowStatus)
           .ToListAsync();
 
           var logSp2 = slog == null ?
@@ -1232,8 +1275,8 @@ namespace SP2.Data
               slog.Select(s => new DelegateLog
               {
                 CreatedDate = s.CreatedDate,
-                PositionStatus = PS(s.Activity),
-                PositionStatusName = PSN(s.Activity)
+                PositionStatus = s.PositionStatus,
+                PositionStatusName = s.PositionName
               }).ToArray();
           var resultSp2 = ToDelegate(sp2);
           resultSp2.Logs = logSp2;
@@ -1241,7 +1284,8 @@ namespace SP2.Data
         }
 
         var dlog = await Context.DLogSet
-        .Where(w => w.JobNumber == dorder.JobNumber)
+        .Where(w => w.JobNumber == dorder.JobNumber &&
+        w.RowStatus == 1)
         .ToListAsync();
 
         var logs = dlog == null ?

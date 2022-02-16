@@ -190,14 +190,21 @@ namespace SP2.Data
 
     public SP2List ToList(SuratPenyerahanPetikemas entity)
     {
-      string positionName;
-      switch (entity.PositionStatus)
+      string positionName = "Draft";
+      if (string.IsNullOrWhiteSpace(entity.ServiceName))
       {
-        case 1: positionName = "Request Form"; break;
-        case 2: positionName = "Proforma Invoice"; break;
-        case 3: positionName = "Payment & Confirmation"; break;
-        case 4: positionName = "SP2 & Invoice Release"; break;
-        default: positionName = "Draft"; break;
+        switch (entity.PositionStatus)
+        {
+          case 1: positionName = "Request Form"; break;
+          case 2: positionName = "Proforma Invoice"; break;
+          case 3: positionName = "Payment & Confirmation"; break;
+          case 4: positionName = "SP2 & Invoice Release"; break;
+          default: positionName = "Draft"; break;
+        }
+      }
+      else
+      {
+        positionName = entity.PositionStatusName;
       }
 
       return new SP2List

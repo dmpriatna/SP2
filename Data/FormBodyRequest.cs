@@ -104,11 +104,20 @@ namespace SP2.Data
     public bool? IsDraft { get; set; }
     public bool? IsDelegate { get; set; }
     public string Search { get; set; }
-    public int[] Status { get; set; }
+    public SP2StatusIn? Status { get; set; }
     public string PaymentMethod { get; set; }
     public string CreatedBy { get; set; }
     public string FreightForwarderName { get; set; }
     public string[] Orders { get; set; }
+  }
+
+  [JsonConverter(typeof(StringEnumConverter))]
+  public enum SP2StatusIn
+  {
+    [EnumMember(Value = nameof(Draft))] Draft,
+    [EnumMember(Value = nameof(Actived))] Actived,
+    [EnumMember(Value = nameof(Completed))] Completed,
+    [EnumMember(Value = nameof(Delegate))] Delegate
   }
 
   [JsonConverter(typeof(StringEnumConverter))]
