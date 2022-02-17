@@ -888,8 +888,10 @@ namespace SP2.Data
     {
       try
       {
-        if (await ValidateCompany(dto.CompanyId))
+        if (dto.CompanyId.HasValue && await ValidateCompany(dto.CompanyId.Value))
         throw new Exception($"field name {nameof(dto.CompanyId)} is not FOREIGN KEY in table Companies");
+        if (dto.CargoOwnerId.HasValue && await ValidateCompany(dto.CargoOwnerId.Value))
+        throw new Exception($"field name {nameof(dto.CargoOwnerId)} is not FOREIGN KEY in table Companies");
         if (string.IsNullOrWhiteSpace(dto.EmailPPJK))
         throw new Exception($"field name {nameof(dto.EmailPPJK)} cannot be empty");
 

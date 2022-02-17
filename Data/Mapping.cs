@@ -9,8 +9,10 @@ namespace SP2.Data
       return new ContractDto
       {
         BillingPeriod = entity.BillingPeriod,
+        CargoOwnerId = entity.CargoOwnerId,
         CompanyId = entity.CompanyId,
         ContractNumber = entity.ContractNumber,
+        EmailPPJK = entity.EmailPPJK,
         EndDate = entity.EndDate,
         FirstParty = entity.FirstParty,
         Id = entity.Id,
