@@ -349,6 +349,29 @@ namespace SP2.Data
       }
     }
 
+    public async Task<ContractDto> Contract(Guid Id)
+    {
+      var entity = await Context.ContractSet
+      .Where(w => w.Id == Id)
+      .SingleOrDefaultAsync();
+
+      return new ContractDto
+      {
+        BillingPeriod = entity.BillingPeriod,
+        CompanyId = entity.CompanyId,
+        ContractNumber = entity.ContractNumber,
+        EmailPPJK = entity.EmailPPJK,
+        EndDate = entity.EndDate,
+        FirstParty = entity.FirstParty,
+        Id = entity.Id,
+        PriceRate = entity.PriceRate,
+        RowStatus = entity.RowStatus,
+        SecondParty = entity.SecondParty,
+        Services = entity.Services,
+        StartDate = entity.StartDate
+      };
+    }
+
     private async Task Contract(Transaction t)
     {
       try
@@ -1393,5 +1416,6 @@ namespace SP2.Data
     Task<string> PutTrxDelegate(DelegatePayload payload);
     Task<TrxDelegateDto> GetTrxDelegate(Guid Id);
     Task<Tuple<IEnumerable<TrxDelegateList>,int>> GetTrxDelegates(TrxDelegateRequest request);
+    Task<ContractDto> Contract(Guid Id);
   }
 }

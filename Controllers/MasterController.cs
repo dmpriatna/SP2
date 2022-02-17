@@ -214,6 +214,20 @@ namespace SP2.Controllers
     }
 
     [HttpGet]
+    public async Task<IActionResult> DetailContract([FromQuery] Guid Id)
+    {
+      try
+      {
+        var result = await Service.Contract(Id);
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpGet]
     public async Task<IActionResult> ListTransactionType()
     {
       try

@@ -149,7 +149,8 @@ namespace SP2.Data
         SubTotalByThirdParty = entity.SubTotalByThirdParty,
         Vat = entity.Vat,
 
-        CreatedBy = entity.CreatedBy
+        CreatedBy = entity.CreatedBy,
+        IsDelegate = !string.IsNullOrWhiteSpace(entity.ServiceName)
       };
     }
 
@@ -255,7 +256,9 @@ namespace SP2.Data
         ShippingLineEmail = entity.ShippingLineEmail,
         ShippingLineName = entity.ShippingLineName,
         Vessel = entity.Vessel,
-        VoyageNumber = entity.VoyageNumber
+        VoyageNumber = entity.VoyageNumber,
+
+        IsDelegate = !string.IsNullOrWhiteSpace(entity.ServiceName)
       };
     }
 

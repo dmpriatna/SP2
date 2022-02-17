@@ -163,6 +163,7 @@ namespace SP2.Data
     public DateTime? DODate { get; set; }
     public string DONumber { get; set; }
     public DateTime? DueDate { get; set; }
+    public bool IsDelegate { get; set; }
     public bool IsDraft { get; set; }
     public string PaymentMethod { get; set; }
     public string ProformaInvoiceNo { get; set; }
@@ -283,6 +284,8 @@ namespace SP2.Data
     public DateTime CreatedDate { get; set; }
     public string ModifiedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
+
+    public bool IsDelegate { get; set; }
   }
 
   public class TrxDelegateDto
