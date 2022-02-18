@@ -155,7 +155,7 @@ namespace SP2.Data
   {
     public int Start { get; set; }
     public int Length { get; set; }
-    public int[] Status { get; set; }
+    public SP2Status? Status { get; set; }
     public string JobNumber { get; set; }
     public string CreatedBy { get; set; }
     public string[] Orders { get; set; }

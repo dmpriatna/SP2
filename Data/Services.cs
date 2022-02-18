@@ -1341,9 +1341,18 @@ namespace SP2.Data
         var orders = string.Join(',',
           request.Orders.Where(w => !string.IsNullOrWhiteSpace(w)));
         var queryDo = Context.DeliveryOrderSet
-        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.DO.ToString() &&
-        request.Status.Contains(w.PositionStatus));
+        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.DO.ToString());
         List<DeliveryOrder> doEntities;
+
+        if (request.Status.HasValue)
+        {
+          int[] posStat = new int[] { 0 };
+          if (request.Status == SP2Status.Actived)
+          posStat = new int[] { 1, 2, 3, 4, 5 };
+          if (request.Status == SP2Status.Completed)
+          posStat = new int[] { 6 };
+          queryDo = queryDo.Where(w => posStat.Contains(w.PositionStatus));
+        }
 
         if (!string.IsNullOrWhiteSpace(request.CreatedBy))
         queryDo = queryDo.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());
@@ -1354,9 +1363,18 @@ namespace SP2.Data
         doEntities = await queryDo.ToListAsync();
 
         var querySp2 = Context.SP2
-        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.SP2.ToString() &&
-        request.Status.Contains(w.PositionStatus));
+        .Where(w => w.RowStatus == 1 && w.ServiceName == ServiceType.SP2.ToString());
         List<SuratPenyerahanPetikemas> sp2Entities;
+
+        if (request.Status.HasValue)
+        {
+          int[] posStat = new int[] { 0 };
+          if (request.Status == SP2Status.Actived)
+          posStat = new int[] { 1, 2, 3, 4 };
+          if (request.Status == SP2Status.Completed)
+          posStat = new int[] { 5 };
+          querySp2 = querySp2.Where(w => posStat.Contains(w.PositionStatus));
+        }
 
         if (!string.IsNullOrWhiteSpace(request.CreatedBy))
         querySp2 = querySp2.Where(w => w.CreatedBy.ToLower() == request.CreatedBy.ToLower());

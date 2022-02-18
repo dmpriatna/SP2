@@ -26,6 +26,8 @@ namespace SP2.Data
     public DateTime CreatedDate { get; set; }
     public string ModifiedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
+    public string Request { get; set; }
+    public string Response { get; set; }
   }
 
   [Table("DummyDocument")]

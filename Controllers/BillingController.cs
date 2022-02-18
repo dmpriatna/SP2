@@ -55,7 +55,7 @@ namespace SP2.Controllers
         var res = DeserializeObject<BaseResponse>(xer.Value);
         if (res.Status)
         {
-          var ci = await Context.SetKoja("billing_confirmtransaction_true", xer.Value, false);
+          var ci = await Context.SetKoja("billing_confirmtransaction_true", xer.Value, false, xml, source);
           await Service.PutTransaction(new TransactionDto
           {
             CompanyId = Guid.Parse("831ac973-af04-4406-8a90-c06dd025989d"),
@@ -65,7 +65,7 @@ namespace SP2.Controllers
           });
         }
         else
-          await Context.SetKoja("billing_confirmtransaction_false", xer.Value);
+          await Context.SetKoja("billing_confirmtransaction_false", xer.Value, false, xml, source);
       }
 
       return Ok(xer.Beautify());
@@ -92,10 +92,7 @@ namespace SP2.Controllers
       if (!xer.IsEmpty)
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
-        if (res.Status)
-          await Context.SetKoja($"billing_getbilling_{request.Request.TransactionId}_true", xer.Value, false);
-        else
-          await Context.SetKoja("billing_getbilling_false", xer.Value);
+        await Context.SetKoja($"billing_getbilling_{request.Request.TransactionId}_{res.Status.ToString()}", xer.Value, false, xml, source);
       }
 
       return Ok(xer.Beautify());
@@ -122,10 +119,7 @@ namespace SP2.Controllers
       if (!xer.IsEmpty)
       {
         var res = DeserializeObject<BaseResponse>(xer.Value);
-        if (res.Status)
-          await Context.SetKoja("billing_getproforma_true", xer.Value, false);
-        else
-          await Context.SetKoja("billing_getproforma_false", xer.Value);
+        await Context.SetKoja($"billing_getproforma_{request.Request.TransactionId}_{res.Status.ToString()}", xer.Value, false, xml, source);
       }
 
       return Ok(xer.Beautify());
@@ -156,7 +150,7 @@ namespace SP2.Controllers
         {
           var bdnumber = string.IsNullOrWhiteSpace(request.Request.ProformaInvoiceNo) ?
             request.Request.InvoiceNo : request.Request.ProformaInvoiceNo;
-          await Context.SetKoja($"billing_getbillingdetail_{request.Request.ProformaInvoiceNo}_true", xer.Value, false);
+          await Context.SetKoja($"billing_getbillingdetail_{request.Request.ProformaInvoiceNo}_true", xer.Value, false, xml, source);
           var br = DeserializeObject<BillingResponse>(xer.Value);
           if (br.DetailBilling.Status)
           await Service.SendMail(new EmailDto {
@@ -168,7 +162,7 @@ namespace SP2.Controllers
           });
         }
         else
-          await Context.SetKoja("billing_getbillingdetail_false", xer.Value);
+          await Context.SetKoja($"billing_getbillingdetail_{request.Request.ProformaInvoiceNo}_false", xer.Value, false, xml, source);
       }
 
       return Ok(xer.Beautify());

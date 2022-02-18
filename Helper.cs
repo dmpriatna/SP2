@@ -225,7 +225,9 @@ namespace SP2
       return entity.Information;
     }
 
-    public static async Task<Guid> SetKoja(this GoLogContext source, string KeyName, string Information, bool replace = true)
+    public static async Task<Guid> SetKoja(this GoLogContext source,
+    string KeyName, string Information, bool replace = true,
+    string request = null, string response = null)
     {
       System.Diagnostics.Debug.WriteLine("\n");
       System.Diagnostics.Debug.WriteLine(Information);
@@ -247,7 +249,9 @@ namespace SP2
           Information = Information,
           KeyName = KeyName.ToUpper(),
           ModifiedBy = "System",
-          ModifiedDate = now
+          ModifiedDate = now,
+          Request = request,
+          Response = response
         });
       }
       else
@@ -268,7 +272,9 @@ namespace SP2
           Information = Information,
           KeyName = prefix + KeyName.ToUpper(),
           ModifiedBy = "System",
-          ModifiedDate = now
+          ModifiedDate = now,
+          Request = request,
+          Response = response
         });
       }
       return createdId;
@@ -286,6 +292,8 @@ namespace SP2
       {
         entity.Information = record.Information;
         entity.ModifiedDate = record.ModifiedDate;
+        entity.Request = record.Request;
+        entity.Response = record.Response;
         result = entity.Id;
       }
       await context.SaveChangesAsync();

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using SP2.Data;
 using static SP2.Helper;
 
 namespace SP2.Controllers
@@ -9,12 +10,14 @@ namespace SP2.Controllers
   [Route("[controller]/[action]")]
   public class PaymentController : ControllerBase
   {
-    public PaymentController(IConfiguration _config)
+    public PaymentController(IConfiguration _config,
+    GoLogContext _context)
     {
       BillService = _config["BillService"];
     }
 
     string BillService { get; }
+    GoLogContext Context { get; }
 
     [HttpGet]
     public async Task<IActionResult> Inquiry([FromQuery] string trxDate,
@@ -47,12 +50,21 @@ namespace SP2.Controllers
       
       System.Diagnostics.Debug.WriteLine(xml);
       
-      var message = await PostXmlRequest(BillService, xml);
-      var result = await message.Content.ReadAsStringAsync();
+      try
+      {
+         var message = await PostXmlRequest(BillService, xml);
+         var result = await message.Content.ReadAsStringAsync();
 
-      System.Diagnostics.Debug.WriteLine(result);
+         System.Diagnostics.Debug.WriteLine(result);
+         await Context.SetKoja($"PAYMENT_INQUIRY_{billKey}", "SUCCESS", false, xml, result);
 
-      return Ok(result);
+         return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+         await Context.SetKoja($"PAYMENT_INQUIRY_{billKey}", "ERROR", false, xml, se.Message);
+         throw se;
+      }
     }
 
     [HttpGet]
@@ -96,12 +108,21 @@ namespace SP2.Controllers
       
       System.Diagnostics.Debug.WriteLine(xml);
 
-      var message = await PostXmlRequest(BillService, xml);
-      var result = await message.Content.ReadAsStringAsync();
+      try
+      {
+         var message = await PostXmlRequest(BillService, xml);
+         var result = await message.Content.ReadAsStringAsync();
 
-      System.Diagnostics.Debug.WriteLine(result);
+         System.Diagnostics.Debug.WriteLine(result);
+         await Context.SetKoja($"PAYMENT_{billKey}", "SUCCESS", false, xml, result);
 
-      return Ok(result);
+         return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+         await Context.SetKoja($"PAYMENT_{billKey}", "ERROR", false, xml, se.Message);
+         throw se;
+      }
     }
   }
 }
