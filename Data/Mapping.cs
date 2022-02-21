@@ -143,6 +143,7 @@ namespace SP2.Data
         IsDraft = entity.PositionStatus == 0,
         Logs = logs,
         Notifies = notifies,
+        ModifiedDate = entity.ModifiedDate,
         PaymentMethod = entity.PaymentMethod,
         PlatformFee = entity.PlatformFee,
         ProformaInvoiceNo = entity.ProformaInvoiceNo,
@@ -225,7 +226,7 @@ namespace SP2.Data
       };
     }
 
-    public object To(DeliveryOrder entity)
+    public DoSp2Dto To(DeliveryOrder entity)
     {
       return new DoSp2Dto
       {
@@ -261,34 +262,6 @@ namespace SP2.Data
         VoyageNumber = entity.VoyageNumber,
 
         IsDelegate = !string.IsNullOrWhiteSpace(entity.ServiceName)
-      };
-    }
-
-    public TrxDelegateDto To(TrxDelegate entity)
-    {
-      if (entity == null) return new TrxDelegateDto();
-      var notifies = entity.NotifyEmails == null ?
-        new string[] {} :
-          entity.NotifyEmails.Split(';');
-      return new TrxDelegateDto
-      {
-        AttorneyLetter = entity.AttorneyLetter,
-        BLDocument = entity.BLDocument,
-        ContractNumber = entity.ContractNumber,
-        CreatedBy = entity.CreatedBy,
-        CreatedDate = entity.CreatedDate,
-        FrieghtForwarderName = entity.FrieghtForwarderName,
-        Id = entity.Id,
-        JobNumber = entity.JobNumber,
-        LetterOfIndemnity = entity.LetterOfIndemnity,
-        ModifiedBy = entity.ModifiedBy,
-        ModifiedDate = entity.ModifiedDate,
-        NotifyEmails = notifies,
-        PositionStatus = entity.PositionStatus,
-        PositionStatusName = entity.PositionStatusName,
-        RowStatus = entity.RowStatus,
-        SaveAsDraft = entity.SaveAsDraft,
-        ServiceName = entity.ServiceName
       };
     }
 
@@ -370,23 +343,11 @@ namespace SP2.Data
       };
     }
 
-    public TrxDelegateList ToList(TrxDelegate entity)
-    {
-      return new TrxDelegateList
-      {
-        CreatedDate = entity.CreatedDate,
-        Id = entity.Id,
-        JobNumber = entity.JobNumber,
-        PositionStatus = entity.PositionStatus,
-        ServiceName = entity.ServiceName
-      };
-    }
-
     public TrxDelegateList DelegateList(DeliveryOrder entity)
     {
       return new TrxDelegateList
       {
-        CreatedDate = entity.CreatedDate,
+        CreatedDate = entity.ModifiedDate.HasValue ? entity.ModifiedDate.Value : entity.CreatedDate,
         Id = entity.Id,
         JobNumber = entity.JobNumber,
         PositionStatus = entity.PositionStatus,
@@ -398,7 +359,7 @@ namespace SP2.Data
     {
       return new TrxDelegateList
       {
-        CreatedDate = entity.CreatedDate,
+        CreatedDate = entity.ModifiedDate.HasValue ? entity.ModifiedDate.Value : entity.CreatedDate,
         Id = entity.Id,
         JobNumber = entity.JobNumber,
         PositionStatus = entity.PositionStatus,

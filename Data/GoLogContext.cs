@@ -28,7 +28,7 @@ namespace SP2.Data
 
     public DbSet<DLog> DLogSet { get; set; }
     public DbSet<DeliveryOrder> DeliveryOrderSet { get; set; }
-    public DbSet<TrxDelegate> TrxDelegateSet { get; set; }
+    public DbSet<DeliveryOrderContainer> DOContainerSet { get; set; }
 
     public string InvoiceNumber
     {

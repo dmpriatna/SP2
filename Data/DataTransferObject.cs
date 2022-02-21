@@ -2,6 +2,12 @@ using System;
 
 namespace SP2.Data
 {
+  public interface IDataTransferObject
+  {
+    DateTime CreatedDate { get; set; }
+    DateTime? ModifiedDate { get; set; }
+  }
+
   public class EmailDto
   {
     public string CustName { get; set; }
@@ -142,7 +148,7 @@ namespace SP2.Data
     public bool IsDelegate { get; set; }
   }
   
-  public class SP2Detail
+  public class SP2Detail : IDataTransferObject
   {
     public Guid? Id { get; set; }
     public string CargoOwnerTaxId { get; set; }
@@ -174,7 +180,8 @@ namespace SP2.Data
     public double GrandTotal { get; set; }
     public byte RowStatus { get; set; }
     public string CreatedBy { get; set; }
-    public DateTime? CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime? ModifiedDate { get; set; }
     public ContainerDto[] Containers { get; set; }
     public NotifyDto[] Notifies { get; set; }
     public LogDto[] Logs { get; set; }
@@ -250,7 +257,7 @@ namespace SP2.Data
     public bool RowStatus { get; set; }
   }
 
-  public class DoSp2Dto
+  public class DoSp2Dto : IDataTransferObject
   {
     public Guid Id { get; set; }
 
@@ -326,5 +333,28 @@ namespace SP2.Data
     public string ServiceName { get; set; }
     public int PositionStatus { get; set; }
     public DateTime CreatedDate { get; set; }
+  }
+
+  public class DelegateContainerInput
+  {
+    // both Delegate have
+    public Guid? Id { get; set; }
+    public string ContainerNumber { get; set; }
+    public string ContainerSize { get; set; }
+    public string ContainerType { get; set; }
+    public string CreatedBy { get; set; }
+
+    // Delegate Delivery Order
+    public string SealNumber { get; set; }
+    public decimal? GrossWeight { get; set; }
+    public string DepoName { get; set; }
+    public string PhoneNumber { get; set; }
+    public string LoadType { get; set; }
+
+    // Delegate Surat Penyerahan Petikemas
+    public string BLNumber { get; set; }
+    public string VesselName { get; set; }
+    public string VesselNumber { get; set; }
+    public string VoyageNumber { get; set; }    
   }
 }

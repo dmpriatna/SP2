@@ -169,12 +169,14 @@ namespace SP2.Data
     public string ContractNumber { get; set; }
     public string FrieghtForwarderName { get; set; }
     public string BLDocument { get; set; }
+    public string BLNumber { get; set; }
     public string LetterOfIndemnity { get; set; }
     public string AttorneyLetter { get; set; }
     public string[] NotifyEmails { get; set; }
     public int PositionStatus { get; set; }
     public string PositionStatusName { get; set; }
     [Required] public string CreatedBy { get; set; }
+    public DelegateContainerInput[] Containers { get; set; }
   }
 
   [JsonConverter(typeof(StringEnumConverter))]

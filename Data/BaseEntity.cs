@@ -483,34 +483,6 @@ namespace SP2.Data
     public DateTime? ModifiedDate { get; set; }
   }
 
-  [Table("TransactionDelegate")]
-  public class TrxDelegate
-  {
-    [Key]
-    public Guid Id { get; set; }
-    [Column("IsDraft")]
-    public bool SaveAsDraft { get; set; }
-    public string ServiceName { get; set; }
-    public string ContractNumber { get; set; }
-    public string JobNumber { get; set; }
-    public string FrieghtForwarderName { get; set; }
-    [Column("BillOfLadingFile")]
-    public string BLDocument { get; set; }
-    [Column("LetterOfIndemnityFile")]
-    public string LetterOfIndemnity { get; set; }
-    [Column("AttorneyLetterFile")]
-    public string AttorneyLetter { get; set; }
-    public int PositionStatus { get; set; }
-    public string PositionStatusName { get; set; }
-    public string NotifyEmails { get; set; }
-    
-    public byte RowStatus { get; set; }
-    public string CreatedBy { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public string ModifiedBy { get; set; }
-    public DateTime? ModifiedDate { get; set; }
-  }
-
   [Table("DeliveryOrderLogs")]
   public class DLog
   {
@@ -523,5 +495,26 @@ namespace SP2.Data
     [StringLength(128)] public string ModifiedBy { get; set; }
     public DateTime? ModifiedDate { get; set; }
     public byte RowStatus { get; set; }
+  }
+
+  [Table("DeliveryOrderContainers")]
+  public class DeliveryOrderContainer
+  {
+    [Key] public Guid Id { get; set; }
+    public Guid DeliveryOrderId { get; set; }
+    [Required, StringLength(64)] public string ContainerType { get; set; }
+    [Required, StringLength(64)] public string ContainerNo { get; set; }
+    [Required, StringLength(64)] public string SealNo { get; set; }
+    public string ContainerSize { get; set; }
+    public decimal? GrossWeight { get; set; }
+    [StringLength(256)] public string DepoName { get; set; }
+    [StringLength(64)] public string PhoneNumber { get; set; }
+    public string LoadType { get; set; }
+
+    public byte RowStatus { get; set; }
+    [Required, StringLength(128)] public string CreatedBy { get; set; }
+    public DateTime CreatedDate { get; set; }
+    [StringLength(128)] public string ModifiedBy { get; set; }
+    public DateTime? ModifiedDate { get; set; }
   }
 }

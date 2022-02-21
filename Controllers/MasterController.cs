@@ -403,13 +403,14 @@ namespace SP2.Controllers
       [FromQuery] int lenght,
       [FromQuery] string createdBy,
       [FromQuery] string forwarderName,
+      [FromQuery] bool? isDraft,
       [FromQuery] bool? isDelegate
     )
     {
       try
       {
         var result = await Service.ListDoSp2(start, lenght,
-          createdBy, forwarderName, isDelegate);
+          createdBy, forwarderName, isDraft, isDelegate);
         return Ok(new
         {
           Data = result.Item1,

@@ -968,6 +968,7 @@ namespace SP2.Data
       int lenght,
       string createdBy,
       string forwarderName,
+      bool? isDraft,
       bool? isDelegate
     )
     {
@@ -987,6 +988,9 @@ namespace SP2.Data
         doQuery = doQuery
         .Where(w => w.FrieghtForwarderName.ToLower() == forwarderName.ToLower());
 
+        if (isDraft.HasValue && isDraft.Value)
+          doQuery = doQuery.Where(w => w.PositionStatus > 0);
+        
         if (isDelegate.HasValue)
         {
           if (isDelegate.Value)
@@ -1011,6 +1015,9 @@ namespace SP2.Data
         sp2Query = sp2Query
         .Where(w => w.FrieghtForwarderName.ToLower() == forwarderName.ToLower());
 
+        if (isDraft.HasValue && isDraft.Value)
+          sp2Query = sp2Query.Where(w => w.PositionStatus > 0);
+
         if (isDelegate.HasValue)
         {
           if (isDelegate.Value)
@@ -1023,6 +1030,7 @@ namespace SP2.Data
         .ToListAsync();
 
         result.AddRange(sp2List.Select(To));
+        result = result.OrderByDescending(obd => (obd as IDataTransferObject).ModifiedDate).ToList();
         count = result.Count;
 
         if (start > 0)
@@ -1085,6 +1093,7 @@ namespace SP2.Data
 
           entity.AttorneyLetter = payload.AttorneyLetter;
           entity.BLDocument = payload.BLDocument;
+          entity.BillOfLadingNumber = payload.BLNumber;
           entity.ContractNumber = payload.ContractNumber;
           entity.FrieghtForwarderName = payload.FrieghtForwarderName;
           entity.LetterOfIndemnity = payload.LetterOfIndemnity;
@@ -1095,6 +1104,9 @@ namespace SP2.Data
           entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
+
+          foreach (var each in payload.Containers)
+          await PutDOContainerDelegate(each, entity.Id);
 
           if (ps != payload.PositionStatus ||
             psn != payload.PositionStatusName)
@@ -1113,6 +1125,7 @@ namespace SP2.Data
             };
             await Context.AddAsync(logEntity);
           }
+          await Context.SaveChangesAsync();
         }
       }
       else
@@ -1143,7 +1156,7 @@ namespace SP2.Data
           Consignee = "",
           DeliveryOrderType = "DELEGATE",
           BillOfLadingDate = DateTime.Now,
-          BillOfLadingNumber = "",
+          BillOfLadingNumber = payload.BLNumber,
           NotifyPartyAdress = "",
           NotifyPartyName = "",
           PortOfDelivery = "",
@@ -1168,9 +1181,55 @@ namespace SP2.Data
           RowStatus = 1
         };
         await Context.AddAsync(logEntity);
+        await Context.SaveChangesAsync();
+        if (payload.Containers != null)
+        foreach (var each in payload.Containers)
+        await PutDOContainerDelegate(each, newEntity.Id);
+      }
+      return JobNumber;
+    }
+
+    private async Task PutDOContainerDelegate(DelegateContainerInput input, Guid doId)
+    {
+      if (input.Id.HasValue)
+      {
+        var entity = await Context.DOContainerSet
+        .Where(w => w.Id == input.Id && w.RowStatus == 1)
+        .SingleOrDefaultAsync();
+        if (entity != null)
+        {
+          entity.ContainerNo = input.ContainerNumber;
+          entity.ContainerSize = input.ContainerSize;
+          entity.ContainerType = input.ContainerType;
+          entity.DepoName = input.DepoName;
+          entity.GrossWeight = input.GrossWeight;
+          entity.LoadType = input.LoadType;
+          entity.ModifiedBy = input.CreatedBy;
+          entity.ModifiedDate = DateTime.Now;
+          entity.PhoneNumber = input.PhoneNumber;
+          entity.SealNo = input.SealNumber;
+        }
+      }
+      {
+        var newEntity = new DeliveryOrderContainer
+        {
+          ContainerNo = input.ContainerNumber,
+          ContainerSize = input.ContainerSize,
+          ContainerType = input.ContainerType,
+          CreatedBy = input.CreatedBy,
+          CreatedDate = DateTime.Now,
+          DeliveryOrderId = doId,
+          DepoName = input.DepoName,
+          GrossWeight = input.GrossWeight,
+          Id = Guid.NewGuid(),
+          LoadType = input.LoadType,
+          PhoneNumber = input.PhoneNumber,
+          RowStatus = 1,
+          SealNo = input.SealNumber
+        };
+        await Context.AddAsync(newEntity);
       }
       await Context.SaveChangesAsync();
-      return JobNumber;
     }
 
     private async Task<string> PutSP2Delegate(DelegatePayload payload)
@@ -1200,6 +1259,7 @@ namespace SP2.Data
 
           entity.AttorneyLetter = payload.AttorneyLetter;
           entity.BLDocument = payload.BLDocument;
+          entity.BLNumber = payload.BLNumber;
           entity.ContractNumber = payload.ContractNumber;
           entity.FrieghtForwarderName = payload.FrieghtForwarderName;
           entity.LetterOfIndemnity = payload.LetterOfIndemnity;
@@ -1210,6 +1270,9 @@ namespace SP2.Data
           entity.PositionStatusName = payload.PositionStatusName;
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
+
+          foreach (var each in payload.Containers)
+          await PutSP2ContainerDelegate(each, entity.Id);
 
           if (ps != payload.PositionStatus ||
             psn != payload.PositionStatusName)
@@ -1237,6 +1300,7 @@ namespace SP2.Data
         {
           AttorneyLetter = payload.AttorneyLetter,
           BLDocument = payload.BLDocument,
+          BLNumber = payload.BLNumber,
           CreatedBy = payload.CreatedBy,
           CreatedDate = DateTime.Now,
           ContractNumber = payload.ContractNumber,
@@ -1268,9 +1332,52 @@ namespace SP2.Data
           SuratPenyerahanPetikemasId = newEntity.Id
         };
         await Context.AddAsync(logEntity);
+        foreach (var each in payload.Containers)
+        await PutSP2ContainerDelegate(each, newEntity.Id);
       }
       await Context.SaveChangesAsync();
       return JobNumber;
+    }
+
+    private async Task PutSP2ContainerDelegate(DelegateContainerInput input, Guid sp2Id)
+    {
+      if (input.Id.HasValue)
+      {
+        var entity = await Context.SP2Container
+        .Where(w => w.Id == input.Id && w.RowStatus)
+        .SingleOrDefaultAsync();
+        if (entity != null)
+        {
+          entity.BLNumber = input.BLNumber;
+          entity.ContainerNumber = input.ContainerNumber;
+          entity.ContainerSize = input.ContainerSize;
+          entity.ContainerType = input.ContainerType;
+          entity.ModifiedBy = input.CreatedBy;
+          entity.ModifiedDate = DateTime.Now;
+          entity.VesselName = input.VesselName;
+          entity.VesselNumber = input.VesselNumber;
+          entity.VoyageNumber = input.VoyageNumber;
+        }
+      }
+      else
+      {
+        var newEntity = new Container
+        {
+          BLNumber = input.BLNumber,
+          ContainerNumber = input.ContainerNumber,
+          ContainerSize = input.ContainerSize,
+          ContainerType = input.ContainerType,
+          CreatedBy = input.CreatedBy,
+          CreatedDate = DateTime.Now,
+          Id = Guid.NewGuid(),
+          RowStatus = true,
+          SuratPenyerahanPetikemasId = sp2Id,
+          VesselName = input.VesselName,
+          VesselNumber = input.VesselNumber,
+          VoyageNumber = input.VoyageNumber
+        };
+        await Context.AddAsync(newEntity);
+      }
     }
 
     public async Task<TrxDelegateDto> GetTrxDelegate(Guid Id)
@@ -1422,7 +1529,7 @@ namespace SP2.Data
     Task<IEnumerable<TransactionTypeDto>> GetTransactionTypes();
     Task<Tuple<IEnumerable<SP2List>, int>> ListSP2(ListSP2Request request);
     Task<Tuple<IEnumerable<object>, int>> ListDoSp2(int start, int lenght,
-      string createdBy, string forwarderName, bool? isDelegate);
+      string createdBy, string forwarderName, bool? isDraft, bool? isDelegate);
     Task<Guid> PutContract(ContractDto dto);
     Task<Guid> PutInvoice(InvoiceDto dto);
     Task<bool> PutInvoiceDetail(InvoiceDetailDto dto);
