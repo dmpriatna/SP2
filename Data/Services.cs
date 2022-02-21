@@ -497,11 +497,13 @@ namespace SP2.Data
         }
         else
         {
+          var now = DateTime.Now;
           var entity = new SuratPenyerahanPetikemas();
           entity.Changes(dto);
           entity.Id = Guid.NewGuid();
-          entity.CreatedDate = DateTime.Now;
+          entity.CreatedDate = now;
           entity.JobNumber = jobNumber;
+          entity.ModifiedDate = now;
           entity.PositionStatus = dto.IsDraft ? 0 : 2;
           entity.RowStatus = 1;
           await Context.AddAsync(entity);
