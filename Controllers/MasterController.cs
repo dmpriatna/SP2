@@ -514,6 +514,7 @@ namespace SP2.Controllers
         {
           AttorneyLetter = single.AttorneyLetter,
           BLDocument = single.BLDocument,
+          BLNumber = single.BLNumber,
           ContractNumber = single.ContractNumber,
           CreatedBy = string.IsNullOrWhiteSpace(createdBy) ? single.CreatedBy : createdBy,
           FrieghtForwarderName = single.FrieghtForwarderName,
