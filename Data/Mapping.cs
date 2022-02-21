@@ -275,6 +275,7 @@ namespace SP2.Data
       {
         AttorneyLetter = entity.AttorneyLetter,
         BLDocument = entity.BLDocument,
+        BLNumber = entity.BillOfLadingNumber,
         ContractNumber = entity.ContractNumber,
         CreatedBy = entity.CreatedBy,
         CreatedDate = entity.CreatedDate,
@@ -324,6 +325,7 @@ namespace SP2.Data
       {
         AttorneyLetter = entity.AttorneyLetter,
         BLDocument = entity.BLDocument,
+        BLNumber = entity.BLNumber,
         ContractNumber = entity.ContractNumber,
         CreatedBy = entity.CreatedBy,
         CreatedDate = entity.CreatedDate,

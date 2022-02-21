@@ -991,6 +991,9 @@ namespace SP2.Data
         .Where(w => w.FrieghtForwarderName.ToLower() == forwarderName.ToLower());
 
         if (isDraft.HasValue && isDraft.Value)
+          doQuery = doQuery.Where(w => w.PositionStatus == 0);
+
+        if (isDraft.HasValue && !isDraft.Value)
           doQuery = doQuery.Where(w => w.PositionStatus > 0);
         
         if (isDelegate.HasValue)
@@ -1018,6 +1021,9 @@ namespace SP2.Data
         .Where(w => w.FrieghtForwarderName.ToLower() == forwarderName.ToLower());
 
         if (isDraft.HasValue && isDraft.Value)
+          sp2Query = sp2Query.Where(w => w.PositionStatus == 0);
+
+        if (isDraft.HasValue && !isDraft.Value)
           sp2Query = sp2Query.Where(w => w.PositionStatus > 0);
 
         if (isDelegate.HasValue)
@@ -1107,8 +1113,9 @@ namespace SP2.Data
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
 
-          foreach (var each in payload.Containers)
-          await PutDOContainerDelegate(each, entity.Id);
+          // if (payload.Containers != null)
+          // foreach (var each in payload.Containers)
+          // await PutDOContainerDelegate(each, entity.Id);
 
           if (ps != payload.PositionStatus ||
             psn != payload.PositionStatusName)
@@ -1184,9 +1191,9 @@ namespace SP2.Data
         };
         await Context.AddAsync(logEntity);
         await Context.SaveChangesAsync();
-        if (payload.Containers != null)
-        foreach (var each in payload.Containers)
-        await PutDOContainerDelegate(each, newEntity.Id);
+        // if (payload.Containers != null)
+        // foreach (var each in payload.Containers)
+        // await PutDOContainerDelegate(each, newEntity.Id);
       }
       return JobNumber;
     }
@@ -1273,8 +1280,9 @@ namespace SP2.Data
           entity.SaveAsDraft = payload.SaveAsDraft;
           entity.ServiceName = payload.ServiceName.ToString();
 
-          foreach (var each in payload.Containers)
-          await PutSP2ContainerDelegate(each, entity.Id);
+          // if (payload.Containers != null)
+          // foreach (var each in payload.Containers)
+          // await PutSP2ContainerDelegate(each, entity.Id);
 
           if (ps != payload.PositionStatus ||
             psn != payload.PositionStatusName)
@@ -1334,8 +1342,9 @@ namespace SP2.Data
           SuratPenyerahanPetikemasId = newEntity.Id
         };
         await Context.AddAsync(logEntity);
-        foreach (var each in payload.Containers)
-        await PutSP2ContainerDelegate(each, newEntity.Id);
+        // if (payload.Containers != null)
+        // foreach (var each in payload.Containers)
+        // await PutSP2ContainerDelegate(each, newEntity.Id);
       }
       await Context.SaveChangesAsync();
       return JobNumber;

@@ -301,6 +301,7 @@ namespace SP2.Data
     public Guid? Id { get; set; }
     public bool SaveAsDraft { get; set; }
     public string ServiceName { get; set; }
+    public string BLNumber { get; set; }
     public string ContractNumber { get; set; }
     public string JobNumber { get; set; }
     public string FrieghtForwarderName { get; set; }
