@@ -250,6 +250,7 @@ namespace SP2.Controllers
       [FromQuery] string FreightForwarderName,
       [FromQuery] SP2StatusIn? Status,
       [FromQuery] bool? IsDelegate,
+      [FromQuery] bool? IsInProgress,
       [FromQuery] bool? IsJobNumberDesc,
       [FromQuery] bool? IsCreatedDateDesc,
       [FromQuery] bool? IsCompleteDateDesc
@@ -265,6 +266,7 @@ namespace SP2.Controllers
           Search = Search,
           FreightForwarderName = FreightForwarderName,
           IsDelegate = IsDelegate,
+          InProgress = IsInProgress,
           PaymentMethod = PaymentMethod,
           Status = Status,
           Orders = new string[] {

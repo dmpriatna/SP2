@@ -103,6 +103,7 @@ namespace SP2.Data
     public int Length { get; set; }
     public bool? IsDraft { get; set; }
     public bool? IsDelegate { get; set; }
+    public bool? InProgress { get; set; }
     public string Search { get; set; }
     public SP2StatusIn? Status { get; set; }
     public string PaymentMethod { get; set; }

@@ -777,6 +777,14 @@ namespace SP2.Data
           }
         }
 
+        if (request.InProgress.HasValue && request.InProgress.Value)
+        {
+          var postat0 = new int[] {1,2,3};
+          var postat1 = new int[] {2,3,4};
+          query = query.Where(w => w.ServiceName == null && postat0.Contains(w.PositionStatus) ||
+          w.ServiceName != null && postat1.Contains(w.PositionStatus));
+        }
+
         if (request.IsDelegate.HasValue)
         {
           if (request.IsDelegate.Value)
