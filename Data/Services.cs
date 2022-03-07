@@ -362,6 +362,7 @@ namespace SP2.Data
       return new ContractDto
       {
         BillingPeriod = entity.BillingPeriod,
+        CargoOwnerId = entity.CargoOwnerId,
         CompanyId = entity.CompanyId,
         ContractNumber = entity.ContractNumber,
         EmailPPJK = entity.EmailPPJK,
