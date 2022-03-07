@@ -200,11 +200,13 @@ namespace SP2.Controllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> ListContract()
+    public async Task<IActionResult> ListContract(
+      [FromQuery] Guid? CompanyId
+    )
     {
       try
       {
-        var result = await Service.GetContracts();
+        var result = await Service.GetContracts(CompanyId);
         return Ok(result);
       }
       catch (System.Exception se)
@@ -528,6 +530,22 @@ namespace SP2.Controllers
           SaveAsDraft = single.SaveAsDraft,
           ServiceName = Enum.Parse<ServiceType>(single.ServiceName),
         });
+        return Ok(result);
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CompanyDetail(
+      [FromQuery] Guid Id
+    )
+    {
+      try
+      {
+        var result = await Service.Company(Id);
         return Ok(result);
       }
       catch (System.Exception se)

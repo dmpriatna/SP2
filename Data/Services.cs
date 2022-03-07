@@ -38,13 +38,17 @@ namespace SP2.Data
       }
     }
 
-    public async Task<IEnumerable<ContractDto>> GetContracts()
+    public async Task<IEnumerable<ContractDto>> GetContracts(Guid? CompanyId)
     {
       try
       {
         var entities = await Context.ContractSet
         .Where(w => w.RowStatus)
         .ToListAsync();
+
+        if (CompanyId.HasValue)
+        entities = entities.Where(w => w.CompanyId == CompanyId).ToList();
+
         var result = entities.Select(To);
         return result;
       }
@@ -1533,13 +1537,31 @@ namespace SP2.Data
         throw se;
       }
     }
+
+    public async Task<CompanyOut> Company(Guid Id)
+    {
+      try
+      {
+        var entity = await Context.CompanySet
+        .Where(w => w.Id == Id)
+        .SingleOrDefaultAsync();
+        
+        var result = new CompanyOut();
+        result.Changes(entity);
+        return result;
+      }
+      catch (System.Exception se)
+      {
+        throw se;
+      }
+    }
   }
 
   public interface IService
   {
     Task<bool> CancelTransaction(Guid Id, string Reason);
     Task<SP2Detail> DetailSP2(Guid Id);
-    Task<IEnumerable<ContractDto>> GetContracts();
+    Task<IEnumerable<ContractDto>> GetContracts(Guid? CompanyId);
     Task<IEnumerable<InvoiceDto>> GetInvoices();
     Task<IEnumerable<InvoiceDetailDto>> GetInvoiceDetails(Guid InvoiceId);
     Task<IEnumerable<RateContractDto>> GetRateContracts();
@@ -1563,5 +1585,6 @@ namespace SP2.Data
     Task<TrxDelegateDto> GetTrxDelegate(Guid Id);
     Task<Tuple<IEnumerable<TrxDelegateList>,int>> GetTrxDelegates(TrxDelegateRequest request);
     Task<ContractDto> Contract(Guid Id);
+    Task<CompanyOut> Company(Guid Id);
   }
 }

@@ -358,4 +358,30 @@ namespace SP2.Data
     public string VesselNumber { get; set; }
     public string VoyageNumber { get; set; }    
   }
+
+  public class CompanyOut
+  {
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public string District { get; set; }
+    public string City { get; set; }
+    public string PostalCode { get; set; }
+    public string NIB { get; set; }
+    public string SubDistrict { get; set; }
+    public string Address { get; set; }
+    public string Province { get; set; }
+    public string Email { get; set; }
+    public string Phone { get; set; }
+    public string NPWP { get; set; }
+    public string Type { get; set; }
+    public Guid? PersonID { get; set; }
+    public Guid CreatedById { get; set; }
+    public Guid ModifiedById { get; set; }
+
+    public string CreatedBy { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public string ModifiedBy { get; set; }
+    public DateTime ModifiedDate { get; set; }
+    public bool RowStatus { get; set; }
+  }
 }
