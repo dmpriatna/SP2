@@ -1051,6 +1051,37 @@ namespace SP2.Data
         .ToListAsync();
 
         result.AddRange(sp2List.Select(To));
+
+        var ccQuery = Context.CustomClearanceSet
+        .Where(w => w.RowStatus > 0);
+
+        if (!string.IsNullOrWhiteSpace(createdBy))
+        ccQuery = ccQuery
+        .Where(w => w.CreatedBy.ToLower() == createdBy.ToLower());
+
+        // if (!string.IsNullOrWhiteSpace(forwarderName))
+        // ccQuery = ccQuery
+        // .Where(w => w.FrieghtForwarderName.ToLower() == forwarderName.ToLower());
+
+        if (isDraft.HasValue && isDraft.Value)
+          ccQuery = ccQuery.Where(w => w.PositionStatus == 0);
+
+        if (isDraft.HasValue && !isDraft.Value)
+          ccQuery = ccQuery.Where(w => w.PositionStatus > 0);
+        
+        if (isDelegate.HasValue)
+        {
+          if (isDelegate.Value)
+            ccQuery = ccQuery.Where(w => w.RowStatus == 2);
+          else
+            ccQuery = ccQuery.Where(w => w.RowStatus == 2);
+        }
+
+        var ccList = await ccQuery
+        .ToListAsync();
+
+        result.AddRange(ccList.Select(To));
+
         result = result.OrderByDescending(obd => (obd as IDataTransferObject).ModifiedDate).ToList();
         count = result.Count;
 

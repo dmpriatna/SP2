@@ -30,6 +30,8 @@ namespace SP2.Data
     public DbSet<DeliveryOrder> DeliveryOrderSet { get; set; }
     public DbSet<DeliveryOrderContainer> DOContainerSet { get; set; }
 
+    public DbSet<CustomClearanceEntity> CustomClearanceSet { get; set; }
+
     public string InvoiceNumber
     {
       get

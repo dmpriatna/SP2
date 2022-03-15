@@ -368,5 +368,35 @@ namespace SP2.Data
         ServiceName = entity.ServiceName
       };
     }
+
+    public CustomClearanceDetail To(CustomClearanceEntity entity)
+    {
+      return new CustomClearanceDetail
+      {
+        BlDate = entity.BlDate,
+        BlNumber = entity.BlNumber,
+        CargoOwnerName = entity.CargoOwnerName,
+        CargoOwnerNib = entity.CargoOwnerNib,
+        CargoOwnerNpwp = entity.CargoOwnerNpwp,
+        CreatedBy = entity.CreatedBy,
+        CreatedDate = entity.CreatedDate,
+        CustomsOfficeName = entity.CustomsOfficeName,
+        DocumentTypeName = entity.DocumentTypeName,
+        Id = entity.Id,
+        ImportTypeName = entity.ImportTypeName,
+        JobNumber = entity.JobNumber,
+        ModifiedDate = entity.ModifiedDate,
+        // NotifyEmail = entity.NotifyEmail,
+        PaymentMethodName = entity.PaymentMethodName,
+        Phone = entity.Phone,
+        PibTypeName = entity.PibTypeName,
+        PositionStatus = entity.PositionStatus,
+        PositionStatusName = entity.PositionStatusName,
+        PpjkName = entity.PpjkName,
+        PpjkNib = entity.PpjkNib,
+        PpjkNpwp = entity.PpjkNpwp,
+        RequestDate = entity.RequestDate
+      };
+    }
   }
 }
